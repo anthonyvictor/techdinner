@@ -32,7 +32,7 @@ export default function Base() {
       <Menu openMenu={openMenu} logo={logo} ativo={ativo} toggleAtivo={toggleAtivo} className="sidebar invisivel" />
       <div className="TopoBase">
         <Header toggleAtivo={toggleAtivo} />
-        <BrowserRouter>
+        <BrowserRouter className="meio">
           <Rotas rotaPrinc={rotaPrinc} />
       </BrowserRouter>
       </div>

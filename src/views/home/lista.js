@@ -1,18 +1,15 @@
 import React from "react";
 import PedidoListItem from "../../components/pedidoListItem";
 import { usePedidos } from "../../context/pedidos";
+import { Estilo } from "./listaStyle";
 
 export default function Lista() {
   const { pedidos, setPedidos } = usePedidos();
   return (
-    <div>
-      {pedidos && (
-        <ul>
-          {pedidos.map(pedido => 
+        <Estilo>
+          {pedidos ? pedidos.map(pedido => 
             (<PedidoListItem key={pedido.id} pedido={pedido} />)
-          )}
-        </ul>
-      )}
-    </div>
+          ):(<div></div>)}
+        </Estilo>
   );
 }

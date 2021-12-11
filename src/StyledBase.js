@@ -8,9 +8,7 @@ const Estilo = styled.div`
 
     .TopoBase{
         flex-grow: 2;
-        display:flex;
-        width: 100%;
-        flex-direction: column;
+        width: 100vh;
     }
 
     @media(max-width: 400px) {

@@ -45,6 +45,7 @@ export const Estilo = styled.li`
       gap: 3px;
 
       span {
+        flex-grow: 2;
         justify-content: center;
         padding: 3px;
         gap: 3px;

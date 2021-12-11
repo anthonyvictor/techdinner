@@ -12,6 +12,7 @@ export default function PedidoProvider({ children }) {
       data_inic: new Date(2021, 11, 10, 0, 31, 30),
       valor: 155.9,
       valorPago: 0,
+      taxaEntrega: 5,
       impr: 1
     },
 
@@ -23,6 +24,7 @@ export default function PedidoProvider({ children }) {
       data_inic: new Date(2021, 11, 10, 0, 10, 30),
       valor: 20,
       valorPago: 10,
+      taxaEntrega: 0,
       impr: 1
     },
 
@@ -34,6 +36,7 @@ export default function PedidoProvider({ children }) {
       data_inic: new Date(2021, 11, 9, 22, 0, 30),
       valor: 65.72,
       valorPago: 65.72,
+      taxaEntrega: 0,
       impr: 0
     },
 
@@ -45,6 +48,106 @@ export default function PedidoProvider({ children }) {
       data_inic: new Date(2021, 11, 10, 0, 1, 30),
       valor: 10,
       valorPago: 0,
+      taxaEntrega: 0,
+      impr: 0
+    },
+    {
+      id: 1016,
+      cli_nome: "Jesus Marcos",
+      cli_img: "https://www.infomoney.com.br/wp-content/uploads/2019/06/mark-zuckerberg-bloomberg-1.jpg",
+      tipo: "ENTREGA",
+      data_inic: new Date(2021, 11, 10, 0, 1, 30),
+      valor: 10,
+      valorPago: 0,
+      taxaEntrega: 0,
+      impr: 0
+    },
+    {
+      id: 1015,
+      cli_nome: "Pedro Motoboy",
+      cli_img: "https://imagem.band.com.br/f_477772.jpg",
+      tipo: "CAIXA",
+      data_inic: new Date(2021, 11, 10, 0, 1, 30),
+      valor: 10,
+      valorPago: 0,
+      taxaEntrega: 0,
+      impr: 0
+    },
+    {
+      id: 1015,
+      cli_nome: "Pedro Motoboy",
+      cli_img: "https://imagem.band.com.br/f_477772.jpg",
+      tipo: "CAIXA",
+      data_inic: new Date(2021, 11, 10, 0, 1, 30),
+      valor: 10,
+      valorPago: 0,
+      taxaEntrega: 0,
+      impr: 0
+    },
+    {
+      id: 1015,
+      cli_nome: "Pedro Motoboy",
+      cli_img: "https://imagem.band.com.br/f_477772.jpg",
+      tipo: "CAIXA",
+      data_inic: new Date(2021, 11, 10, 0, 1, 30),
+      valor: 10,
+      valorPago: 0,
+      taxaEntrega: 0,
+      impr: 0
+    },
+    {
+      id: 1015,
+      cli_nome: "Pedro Motoboy",
+      cli_img: "https://imagem.band.com.br/f_477772.jpg",
+      tipo: "CAIXA",
+      data_inic: new Date(2021, 11, 10, 0, 1, 30),
+      valor: 10,
+      valorPago: 0,
+      taxaEntrega: 0,
+      impr: 0
+    },
+    {
+      id: 1015,
+      cli_nome: "Pedro Motoboy",
+      cli_img: "https://imagem.band.com.br/f_477772.jpg",
+      tipo: "CAIXA",
+      data_inic: new Date(2021, 11, 10, 0, 1, 30),
+      valor: 10,
+      valorPago: 0,
+      taxaEntrega: 0,
+      impr: 0
+    },
+    {
+      id: 1015,
+      cli_nome: "Pedro Motoboy",
+      cli_img: "https://imagem.band.com.br/f_477772.jpg",
+      tipo: "CAIXA",
+      data_inic: new Date(2021, 11, 10, 0, 1, 30),
+      valor: 10,
+      valorPago: 0,
+      taxaEntrega: 0,
+      impr: 0
+    },
+    {
+      id: 1015,
+      cli_nome: "Pedro Motoboy",
+      cli_img: "https://imagem.band.com.br/f_477772.jpg",
+      tipo: "CAIXA",
+      data_inic: new Date(2021, 11, 10, 0, 1, 30),
+      valor: 10,
+      valorPago: 0,
+      taxaEntrega: 0,
+      impr: 0
+    },
+    {
+      id: 1015,
+      cli_nome: "Pedro Motoboy",
+      cli_img: "https://imagem.band.com.br/f_477772.jpg",
+      tipo: "CAIXA",
+      data_inic: new Date(2021, 11, 10, 0, 1, 30),
+      valor: 10,
+      valorPago: 0,
+      taxaEntrega: 0,
       impr: 0
     },
   ]);

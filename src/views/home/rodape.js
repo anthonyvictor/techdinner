@@ -1,27 +1,51 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { usePedidos } from "../../context/pedidos";
 import { formatReal } from "../../util/Format";
+import { faTruck } from "@fortawesome/free-solid-svg-icons";
+import { Estilo } from "./rodapeStyle";
 
 export default function Rodape() {
+  const { pedidos, setPedidos } = usePedidos();
 
-    const {pedidos, setPedidos} = usePedidos()
+  function getTotal() {
+    let r = 0;
 
-    function getTotal(){
-        let total = 0
+    pedidos.map((pedido) => {
+      r = r + pedido.valor;
+    });
+    return r;
+  }
 
-        pedidos.map((pedido) => {
-            total = total + pedido.valor
-        })
-        return formatReal(total)
-    }
+  function getTaxas() {
+    let r = 0;
+
+    pedidos.map((pedido) => {
+      r = r + pedido.taxaEntrega;
+    });
+    return r;
+  }
+
+  function getPago() {
+    let r = 0;
+
+    pedidos.map((pedido) => {
+      r = r + pedido.valorPago;
+    });
+    return r;
+  }
 
   return (
-    <div>
+    <Estilo>
       <div className="geral">
-        <span>Pedidos: {pedidos.length}</span>
-        <span className="adm"> | Total: {getTotal()}</span>
+        <p>Pedidos: {pedidos.length}</p>
+        <p className="adm"> | Total: {formatReal(getTotal())}</p>
       </div>
-      <div className="detalhes"></div>
-    </div>
+      <div className="detalhes">
+        <p className="tx" title="Taxas de entrega">{formatReal(getTaxas())}</p>
+        <p className="pg" title="Valor pago">{formatReal(getPago())}</p>
+        <p className="pnd" title="Valor pendente">{formatReal(getTotal() - getPago())}</p>
+      </div>
+    </Estilo>
   );
 }
