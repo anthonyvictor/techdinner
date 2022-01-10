@@ -18,13 +18,14 @@ export default function Base() {
       else{setLogo(logoNorm)}
   }
 
-        const [rotaPrinc, setrotaPrinc] = useState('home')
+        const [rotaPrinc, setrotaPrinc] = useState('/')
 
         function openMenu(e){
           setAtivo(false)
           setLogo(logoComp)
-          console.log(ativo)
-          // setrotaPrinc('/' + e.target.getAttribute('name'))
+          console.log(e)
+          setrotaPrinc('/' + e.target.getAttribute('name'))
+          console.log(rotaPrinc)
       }
 
   return (

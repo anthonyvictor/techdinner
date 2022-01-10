@@ -19,11 +19,11 @@ export default function Menu(props){
             </div>
 
             <div class="meio">
-                <div class="botao" name='home' title="Home" onClick={(e) => props.openMenu(this)}>
+                <div class="botao" name='home' title="Home" onClick={e => {props.openMenu(e)}}>
                     <FontAwesomeIcon className='icone' icon={faBorderAll}/>
                     <p>Pedidos</p>
                 </div>
-                <div class="botao" name='cad/cli'k title="Cadastros" onClick={props.openMenu}>
+                <div class="botao" name='cad/cli' title="Cadastros" onClick={props.openMenu}>
                     <FontAwesomeIcon className='icone' icon={faPizzaSlice}/>
                     <p>Cadastros</p>
                 </div>

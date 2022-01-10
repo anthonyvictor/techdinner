@@ -63,7 +63,7 @@ export default function PedidoProvider({ children }) {
       impr: 0
     },
     {
-      id: 1015,
+      id: 1017,
       cli_nome: "Pedro Motoboy",
       cli_img: "https://imagem.band.com.br/f_477772.jpg",
       tipo: "CAIXA",
@@ -74,7 +74,7 @@ export default function PedidoProvider({ children }) {
       impr: 0
     },
     {
-      id: 1015,
+      id: 1018,
       cli_nome: "Pedro Motoboy",
       cli_img: "https://imagem.band.com.br/f_477772.jpg",
       tipo: "CAIXA",
@@ -85,7 +85,7 @@ export default function PedidoProvider({ children }) {
       impr: 0
     },
     {
-      id: 1015,
+      id: 1019,
       cli_nome: "Pedro Motoboy",
       cli_img: "https://imagem.band.com.br/f_477772.jpg",
       tipo: "CAIXA",
@@ -96,7 +96,7 @@ export default function PedidoProvider({ children }) {
       impr: 0
     },
     {
-      id: 1015,
+      id: 1020,
       cli_nome: "Pedro Motoboy",
       cli_img: "https://imagem.band.com.br/f_477772.jpg",
       tipo: "CAIXA",
@@ -107,7 +107,7 @@ export default function PedidoProvider({ children }) {
       impr: 0
     },
     {
-      id: 1015,
+      id: 1021,
       cli_nome: "Pedro Motoboy",
       cli_img: "https://imagem.band.com.br/f_477772.jpg",
       tipo: "CAIXA",
@@ -118,7 +118,7 @@ export default function PedidoProvider({ children }) {
       impr: 0
     },
     {
-      id: 1015,
+      id: 1022,
       cli_nome: "Pedro Motoboy",
       cli_img: "https://imagem.band.com.br/f_477772.jpg",
       tipo: "CAIXA",
@@ -129,7 +129,7 @@ export default function PedidoProvider({ children }) {
       impr: 0
     },
     {
-      id: 1015,
+      id: 1023,
       cli_nome: "Pedro Motoboy",
       cli_img: "https://imagem.band.com.br/f_477772.jpg",
       tipo: "CAIXA",
@@ -140,7 +140,7 @@ export default function PedidoProvider({ children }) {
       impr: 0
     },
     {
-      id: 1015,
+      id: 1024,
       cli_nome: "Pedro Motoboy",
       cli_img: "https://imagem.band.com.br/f_477772.jpg",
       tipo: "CAIXA",

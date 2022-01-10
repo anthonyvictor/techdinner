@@ -124,7 +124,7 @@ export const Sidebar = styled.div `
             vertical-align: middle;
             overflow: hidden;
             gap: 10px;
-            border-bottom: 1px solid ${cores.cinzaEscuro};
+            border-bottom: 1px solid ${cores.cinzaClaro};
             
             .icone{
                 user-select: none;
@@ -202,7 +202,7 @@ export const Sidebar = styled.div `
     }
 
     @media(max-width:400px){
-        transform: translateY(-100%);
+        transform: translateY(-200%);
         position: absolute;
         width: 100%;
         z-index: 999;

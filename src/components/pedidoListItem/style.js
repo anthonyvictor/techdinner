@@ -10,7 +10,7 @@ export const Estilo = styled.li`
   background-color: ${cores.branco};
   height: 50px;
   border: 1px solid black;
-  border-radius: 5px;
+
   padding: 0 5px;
   cursor: pointer;
   overflow: hidden;
@@ -98,25 +98,25 @@ export const Estilo = styled.li`
   }
 
   &:not(:last-child) {
-    margin-bottom: 5px;
+    margin-bottom: 6px;
   }
 
   @media (max-width: 400px) {
-    height: 90px;
+    height: 70px;
 
     img {
-      width: 60px;
-      height: 60px;
+      width: 40px;
+      height: 40px;
     }
 
     .informacoes {
       .nome-cliente {
-        font-size: 25px;
+        font-size: 18px;
       }
 
       .info-secundarias {
         span {
-          font-size: 18px;
+          font-size: 15px;
         }
 
         .tipo {
@@ -128,7 +128,7 @@ export const Estilo = styled.li`
         }
 
         .valor {
-          width: 115px;
+          width: 100px;
         }
       }
     }
