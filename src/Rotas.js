@@ -2,23 +2,24 @@ import React, { useEffect } from "react"
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Home from './views/home'
 import Clientes from './views/cadastros/clientes'
-
+// import createBrowserHistory from 'history'
 
 
 const Rotas = (props) => {
+
     const history = useNavigate()
-    useEffect(() => {
-        
+    useEffect(() => {  
         history(props.rotaPrinc)
+
     },[props.rotaPrinc])
 
 
 return(
-    <Routes>
+    <Routes> 
         
-        <Route exact path="/" element={<Navigate to="/home" />} />
+        <Route exact path="/" element={<Clientes tabInicial={'Cadastro'} />} /> {/*/<Navigate to="/cad/cli" />/*/}
         <Route exact path="/home" element={<Home />} />
-        <Route exact path='/cad/cli' element={<Clientes tabInicial='Lista' />} />
+        <Route exact path='/cad/cli' element={<Clientes tabInicial={'Lista'} />} />
     </Routes>
     )
     

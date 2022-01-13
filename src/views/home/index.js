@@ -5,10 +5,9 @@ import Lista from "./lista";
 import Rodape from "./rodape";
 import Topo from "./topo";
 import FloatButton from "../../components/FloatButton";
-import { isConnected } from "../../util/misc";
 
 const Home = () => {
-  return (
+  return ( 
     <PedidoProvider>
       <Estilo>
         <FloatButton/>

@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faDownload, faEllipsisV, faSearch, faShare, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faDownload, faEllipsisV, faSearch, faShare, faTrash } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import styled from 'styled-components';
 import * as cores from '../context/cores'
@@ -44,7 +44,7 @@ function ImageViewer(props) {
           </div>
 
           <div className='img-container'>
-            {props.img && (<img src={props.img} />)}
+            {props.img && (<img src={props.img} alt='imagem' />)}
           </div>
           
       </Container>

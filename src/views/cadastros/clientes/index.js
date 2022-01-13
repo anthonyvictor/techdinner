@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import reactDom from "react-dom";
 import ClientesProvider from "../../../context/clientes";
 import Lista from "./lista";
 import Cadastro from "./cadastro";
@@ -7,15 +6,17 @@ import { Estilo } from "./style";
 import FloatButton from "../../../components/FloatButton";
 
 
-const Clientes = (tabInicial) => {
-  const [tab, setTab] = useState(tabInicial)
+const Clientes = (props) => {
+  var tab = props.tabInicial
+
+  useEffect(() => {switchTab()}, [])
   function tabClick(e){
     let tgt = e.target
     if(tgt.innerText === '+'){
-      setTab('Cadastro')
+      tab = 'Cadastro'
       tgt.innerText = '<'
     }else if(tgt.innerText === '<'){
-      setTab('Lista')
+      tab = 'Lista'
       tgt.innerText = '+'
     }else if(tgt.classList.contains('ativo') === false){    
         for(let bt of tgt.parentElement.children){
@@ -26,28 +27,27 @@ const Clientes = (tabInicial) => {
             bt.classList.remove('ativo')
           }
           tgt.classList.add('ativo')
-          setTab(tgt.innerHTML)
+          tab = tgt.innerHTML
         }
       }
     }
 
-  const [tabContent, setTabContent] = useState(switchTab())
+  const [tabContent, setTabContent] = useState(<></>)
 
   function switchTab(){
-    const tabb =  tab.toString().toUpperCase()
+    const tabb =  tab.toUpperCase()
      switch(tabb){
        case 'LISTA': 
-         return (<Lista />)
+         setTabContent(<Lista />)
+         break
        case 'CADASTRO':
-         return (<Cadastro />)
+         setTabContent(<Cadastro />)
+         break
        default:
-         return (<Lista />)
+         setTabContent(<Lista />)
+         break
      }
   }
-
-useEffect(() => {
-   setTabContent(switchTab())
-  },[tab])
 
   return (
     <Estilo>
@@ -57,9 +57,9 @@ useEffect(() => {
           <button onClick={e => {tabClick(e)}}>Cadastro</button>
         </div>
         <FloatButton clique={tabClick} />
-        {
-          tabContent
-        }
+
+        {tabContent}
+
       </ClientesProvider>
     </Estilo>
   );

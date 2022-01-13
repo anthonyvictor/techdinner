@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import { Estilo } from "./style";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import { formatReal } from "../../util/Format";
 
 import {
   faClock,
   faHome,
   faMobile,
-  faMobileAlt,
   faMoneyBillWaveAlt,
   faPrint,
   faQuestion,
@@ -44,7 +42,7 @@ export default function PedidoListItem(pedido) {
 
     if(dur === ''){
       dur = (h < 1 ? "" : Math.floor(h) + "h")
-      if(dur == ''){
+      if(dur === ''){
         dur = Math.floor(m) + "m"
     }else{
       dur = dur + Math.floor(m)
@@ -64,6 +62,9 @@ export default function PedidoListItem(pedido) {
 
       case "APLICATIVO":
         return "#591357";
+        
+        default:
+          return '#000'
     }
   }
 
@@ -144,7 +145,7 @@ export default function PedidoListItem(pedido) {
       }}
       className="pedido"
     >
-      <img src={pedido.cli_img} />
+      <img src={pedido.cli_img} alt="Imagem do cliente" />
       <div className="informacoes">
         <p className="nome-cliente">{pedido.cli_nome}</p>
         <div className="info-secundarias">

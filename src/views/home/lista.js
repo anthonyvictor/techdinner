@@ -4,7 +4,7 @@ import { usePedidos } from "../../context/pedidos";
 import { Estilo } from "./listaStyle";
 
 export default function Lista() {
-  const { pedidos, setPedidos } = usePedidos();
+  const { pedidos } = usePedidos();
   return (
         <Estilo>
           {pedidos ? pedidos.map(pedido => 

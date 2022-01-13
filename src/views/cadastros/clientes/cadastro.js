@@ -59,7 +59,7 @@ export default function Cadastro(props) {
         <div id="endereco-left">
 
           <div id="logradouro-container" className="txt">
-            <label htmlFor="logradouro">Endereço, logradouro:</label>
+            <label htmlFor="logradouro">Logradouro:</label>
             <label id="logradouro">{formatEndereco(endereco, false)}</label>
             <button>Alterar</button>
           </div>
@@ -160,14 +160,11 @@ const Principal = styled.form`
       div{
         flex-grow: 2;
         label{
-          background-color: red;
           display: block;
-          width: 90px; 
-          
+          width: 100px; 
+          min-width: 100px;
         }
       }
-
-      
 
       #logradouro-container {
         width: 100%;
@@ -197,7 +194,7 @@ const Principal = styled.form`
     gap: 5px;
 
     * {
-      font-size: 20px;
+      font-size: 16px;
     }
 
     input {

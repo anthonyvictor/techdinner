@@ -46,7 +46,8 @@ function PictureBox(props) {
     
   return (
     <Container>
-      <img ref={imgElement} src={imagem} onTouchStart={(e) => imagem === '' ? setShowImageViewer(true) : load()} />
+      <img ref={imgElement} src={imagem} alt="Imagem"
+      onTouchStart={(e) => imagem === '' ? setShowImageViewer(true) : load()} />
 
       <div className="botoes">
 

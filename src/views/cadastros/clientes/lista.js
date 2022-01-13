@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV, faFilter } from "@fortawesome/free-solid-svg-icons";
-import React, { useEffect } from "react";
+import React from "react";
 import { useClientes } from "../../../context/clientes";
 import { Estilo } from "./listaStyle";
 import * as format from "../../../util/Format";
@@ -27,7 +27,7 @@ export default function Lista() {
           <li key={cliente.id}>
             <div className="container">
               <div className="img-id">
-                {cliente.img && (<img src={cliente.img} />)}
+                {cliente.img && (<img src={cliente.img} alt="imagem" />)}
                 <label className="id">{cliente.id}</label>
               </div>
               <div className="info">
