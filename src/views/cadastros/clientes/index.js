@@ -9,7 +9,12 @@ import FloatButton from "../../../components/FloatButton";
 const Clientes = (props) => {
   var tab = props.tabInicial
 
+  const [floatVisible, setFloatVisible] = useState(false)
+
   useEffect(() => {switchTab()}, [])
+  
+
+
   function tabClick(e){
     let tgt = e.target
     if(tgt.innerText === '+'){
@@ -39,12 +44,15 @@ const Clientes = (props) => {
      switch(tabb){
        case 'LISTA': 
          setTabContent(<Lista />)
+         setFloatVisible(true)
          break
        case 'CADASTRO':
          setTabContent(<Cadastro />)
+         setFloatVisible(false)
          break
        default:
          setTabContent(<Lista />)
+         setFloatVisible(true)
          break
      }
   }
@@ -56,7 +64,8 @@ const Clientes = (props) => {
           <button onClick={e => {tabClick(e)}}>Lista</button>
           <button onClick={e => {tabClick(e)}}>Cadastro</button>
         </div>
-        <FloatButton clique={tabClick} />
+        
+       {floatVisible && <FloatButton clique={tabClick} />}
 
         {tabContent}
 

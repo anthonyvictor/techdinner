@@ -1,24 +1,24 @@
 import { Container } from './style';
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useRef, useState } from "react";
+import React, {useRef, useState } from "react";
 import ContextMenu from '../contextMenu';
-import { formatPhoneNumber } from '../../util/Format'
-
+import { formatPhoneNumber, formatNumber } from '../../util/Format'
+import { copiarParaClipboard } from '../../util/misc';
+import CopyView from '../CopyView';
 
 
 function Tagger(props) {
 
-
-    const [array, setArray] = useState(props.array ? props.array : [])
+    // const [array, props.setArray] = useState(props.array ? props.array : [])
     // const [currTxt, setCurrTxt] = useState('')
     const myInput = useRef()
     const tagItem = useRef()
 
 
     function add(){
-        if(props.tipo === 'tel' ? inputValue.length >= 8 : inputValue.length > 2){
-            let formattedVal = inputValue.trim()
+        if(props.tipo === 'tel' ? props.state.length >= 8 : props.state.length > 2){
+            let formattedVal = props.state.trim()
             switch(props.tipo){
                 case 'tel':
                     formattedVal = formatPhoneNumber(formattedVal, true)
@@ -29,15 +29,15 @@ function Tagger(props) {
             } 
             if(formattedVal === '') {
                 alert('Valor inválido!')
-            } else if(array.filter(item => item === formattedVal).length === 0){
-               setArray([...array, formattedVal])
+            } else if(props.array.filter(item => props.tipo === 'tel' ? formatPhoneNumber(item) === formattedVal : item === formattedVal).length === 0){
+               props.setArray([...props.array, formattedVal])
 
-               setInputValue('')
+               props.setState('')
                 myInput.current.focus()
             }else{
                 alert('Valor já inserido!')
 
-                setInputValue('')
+                props.setState('')
                 myInput.current.focus()
             }
 
@@ -49,27 +49,26 @@ function Tagger(props) {
 
     function remove(txt){
         if(window.confirm('Deseja excluir este item?')){
-            setArray(array.filter(item => item !== txt))
+            props.setArray(props.array.filter(item => props.tipo === 'tel' ? formatPhoneNumber(item) !== formatPhoneNumber(txt) : item !== txt))
         }
     }
 
     function editar(txt){
         let liberado = true
-        if(inputValue.length > 2){
+        if(props.state.length > 2){
             if(!window.confirm('Deseja cancelar a edição atual?')){
                 liberado = false
             }
         }
         if(liberado){
-            setInputValue(txt)
-            setArray(array.filter(item => item !== txt))
+            props.setState(txt)
+            props.setArray(props.array.filter(item => props.tipo === 'tel' ? formatPhoneNumber(item) !== formatPhoneNumber(txt) : item !== txt))
             myInput.current.focus()
         }
     }
 
     const [openMenu, setOpenMenu] = useState(false)
     const [currItem, setCurrItem] = useState(null)
-    const [inputValue, setInputValue] = useState('')
 
     function onChangeHandler(e){
         let val = e.target.value
@@ -84,7 +83,7 @@ function Tagger(props) {
                 val = val
                 break;
         }
-        setInputValue(val)
+        props.setState(val)
         
         // pattern={"[(][0-9]{2}[)]\s(9)[0-9]{4}-[0-9]{4}"}
     }
@@ -95,33 +94,79 @@ function Tagger(props) {
         }
     }
 
+    const [showCopyView, setShowCopyView] = useState(false)
+
   return (
   <Container className="Tagger" contextMenu='menuc'>
     <div>
         <button type="button" tabIndex={'-1'} onClick={(e) => {add()}}>+</button>
-        <input id='txt' value={inputValue} ref={myInput} type={props.tipo ? props.tipo : 'text'} onChange={e => onChangeHandler(e)} onKeyUp={e => onKeyUpHandler(e)}/>
+        <input id='txt' value={props.state} ref={myInput} type={props.tipo ? props.tipo : 'text'} 
+        onChange={e => onChangeHandler(e)} 
+        onKeyUp={e => onKeyUpHandler(e)}/>
         <label htmlFor="txt">{props.label}:</label>
     </div>
-    <ul className='array'>{array.map(i => (<li key={i} onClick={(e) => {
-            setCurrItem(e.target)
-            setOpenMenu(!openMenu)
-        }}>{i}</li>))}
+    <ul className='array'>{props.array.map(i => 
+    (
+    <li key={i} 
+            onClick={(e) => {
+                setCurrItem(e.target)
+                setOpenMenu(!openMenu)
+            }
+        }>{props.tipo === 'tel'? formatPhoneNumber(i) : i}
+        </li>
+        ))}
     </ul>
 
 
     {openMenu && (
         <ContextMenu pos={currItem.getBoundingClientRect()}
-        openMenu={openMenu} setOpenMenu={() => setOpenMenu(false)}>
+        openMenu={openMenu} setOpenMenu={() => {
+            setShowCopyView(false)
+            setOpenMenu(false)
+        }}>
             
-            <li onClick={() => editar(currItem.innerHTML)}>Editar</li>
+            <li 
+            onClick={() => 
+                {
+                    editar(props.tipo === 'tel' ? formatNumber(currItem.innerHTML) : currItem.innerHTML)
+                    setOpenMenu(false)
+                }
+                }>
+            Editar
+            </li>
 
-            <li onClick={() => {navigator.clipboard.writeText(currItem.innerHTML)}}>Copiar</li>
+            <li 
+            onTouchStart={(e) =>
+            {
+                e.preventDefault()
+                setShowCopyView(true)
+            }}
+            onClick={() => 
+                {
+                    copiarParaClipboard(currItem.innerHTML)
+                    setOpenMenu(false)
+                }}>
+            Copiar
+            </li>
 
-            <li onClick={() => remove(currItem.innerHTML)}>Excluir</li>
+            <li 
+            onClick={() => 
+                {
+                    remove(props.tipo === 'tel' ? formatNumber(currItem.innerHTML) : currItem.innerHTML)
+                    setOpenMenu(false)
+                }}>
+                Excluir
+            </li>
 
-            <li>Mensagem</li>
+            <li className={props.tipo === 'tel' ? 'disabled' : 'hidden'}>
+                Mensagem
+            </li>
 
-            <li>Ligar</li>
+            <li  className={props.tipo === 'tel' ? 'disabled' : 'hidden'}>
+                Ligar
+            </li>
+
+            {showCopyView && <CopyView txt={currItem.innerHTML} />}
         </ContextMenu>
     )}
 

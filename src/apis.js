@@ -4,19 +4,23 @@ import { isConnected } from "./util/misc";
 export async function getLatLng(endereco) {
   let res = null
 
+  
   if (isConnected()){
     let logradouroEnabled = true  
 
     // 
-    // endereco.logradouro.replace(" ", "+") +
+    // 
 
   const url =
     "https://maps.googleapis.com/maps/api/geocode/json?sensor=false" +
     "&components=postal_code:" +
     endereco.cep.replace(/'[.-]'/gi, "") +
     "&address=" +
+    endereco.logradouro.replace(" ", "+") +
     "|&country:Brazil&key=" +
     GoogleApiKey()
+
+    console.log('url', url)
 
     const raw = await fetch(url, {method: 'GET'}).then((resp) => resp.json())
     .then((json) =>(res = json.results.length > 0 ? json.results[0].geometry.location : {}))

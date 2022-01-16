@@ -2,9 +2,13 @@ import React from 'react';
 import { Container } from './style';
 
 function ContextMenu(props) {
-    console.log(props.pos.left)
   return (
-        <Container pos={props.pos} className='Context-Menu' onClick={props.setOpenMenu}>
+        <Container pos={props.pos} className='Context-Menu' 
+        onClick={e => {
+            if(e.target === e.currentTarget){
+                props.setOpenMenu(false)
+            }
+        }}>
             <ul>
                 <label>Menu</label>
                 {props.children}

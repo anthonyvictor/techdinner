@@ -1,51 +1,92 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faDownload, faEllipsisV, faSearch, faShare, faTrash } from '@fortawesome/free-solid-svg-icons';
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import * as cores from '../context/cores'
+import { loadImage, sleep } from '../util/misc';
+import ContextMenu from './contextMenu';
+import { saveAs } from 'file-saver'
 
 function ImageViewer(props) {
-    function menu(){
-        return(
-            <div>
-                <button type='button' disabled={props.showOp === false} onTouchStart={e => props.close()}>
-                    <FontAwesomeIcon icon={faSearch} />
-                </button>
 
-                <button type='button' disabled={props.showOp === false || props.img === ''}>
-                    <FontAwesomeIcon icon={faTrash} />
-                </button>
+    async function fechar(){
+          await sleep(50)
+          props.setShowImageViewer(false)
+      }
 
-                <button type='button' disabled={props.img === ''}>
-                    <FontAwesomeIcon icon={faShare} />
-                </button>
-
-                <button type='button' disabled={props.img === ''}>
-                    <FontAwesomeIcon icon={faDownload} />
-                </button>
-            </div>
-        )
-    }
+    const [showContext, setShowContext] = useState(false)
 
   return (
       <Container>
           <div className='nav'>
             <span>
-                <button type='button' onTouchEnd={e => props.close()}>
+                <button type='button' onTouchEnd={e => fechar()}>
                     <FontAwesomeIcon icon={faArrowLeft} />
                 </button>
                 <label>Imagem</label>
             </span>
 
-            <button type='button'>
+            <button type='button' onTouchEnd={e => {setShowContext(true)}}>
                 <FontAwesomeIcon icon={faEllipsisV} />
             </button>
 
           </div>
 
-          <div className='img-container'>
-            {props.img && (<img src={props.img} alt='imagem' />)}
+          <div className="img-containerr">
+            {props.imagem && (<img src={props.imagem} alt='imagem' />)}
           </div>
+
+
+          {showContext && 
+          (<ContextMenu 
+          setOpenMenu={() => setShowContext(false)} 
+          pos={0}>
+                <li 
+                className={props.showOp === false ? 'disabled' : ''}
+                onTouchStart={() => {
+                    let input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = "image/*";
+                    input.onchange = _ => {
+                        let files = Array.from(input.files);
+                        props.setImagem((URL.createObjectURL(files[0])))
+                        setShowContext(false)
+                    };
+                    
+                    input.click();
+                    
+                    // props.setImagem(loadImage(props.imagem))
+                    }}>
+                    <FontAwesomeIcon icon={faSearch} />
+                    <p>Carregar</p>
+                </li>
+
+                <li 
+                className={props.showOp === false || props.imagem === '' ? 'disabled' : ''}
+                onTouchStart={() => {
+                    props.setImagem('')
+                    setShowContext(false)
+                    fechar()
+                }}>
+                    <FontAwesomeIcon icon={faTrash} />
+                    <p>Remover</p>
+                </li>
+
+                <li 
+                className={props.imagem === '' ? 'disabled hidden' : 'hidden'}>
+                    <FontAwesomeIcon icon={faShare} />
+                    <p>Compartilhar</p>
+                </li>
+
+                <li className={props.imagem === '' ? 'disabled' : ''}
+                onTouchStart={e => {
+                        saveAs(props.imagem, props.nome)
+                        setShowContext(false)
+                }}>
+                    <FontAwesomeIcon icon={faDownload} />
+                    <p>Baixar</p>
+                </li>
+            </ContextMenu>)}
           
       </Container>
   )
@@ -94,7 +135,7 @@ button{
     }
 }
 
-.img-container{
+.img-containerr{
 
     flex-grow: 2;
     display: flex;
@@ -104,11 +145,13 @@ button{
     
 
     img{
-    aspect-ratio: 1;
     min-width: 100%;
     object-fit: cover;
     background-color: white;
-    
+    /* width: 100hmin;  */
+    height: 100vmin;
+    /* aspect-ratio: 1; */
+    box-shadow: 0px 10px 20px rgba(0,0,0,.4)
 }
 }
 

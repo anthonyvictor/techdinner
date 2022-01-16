@@ -6,34 +6,76 @@ import Mapa from "../../../components/Mapa";
 
 import PictureBox from "../../../components/PictureBox";
 import { formatEndereco } from "../../../util/Format";
+import { isNEU, sleep } from "../../../util/misc";
 
 export default function Cadastro(props) {
-  const [endereco, setEndereco] = useState({
+  let end1 = {
+    logradouro: "Ladeira do Jardim Zoológico Ladeira do Jardim Zoológico",
+    local: "Pizzaria Delicia da Bahia",
+    numero: 427,
+    cep: "40170720",
+    bairro: "Ondina",
+    referencia: "Na pracinha do Zoológico, prox. a igreja Maanaim",
+    taxa: 2,
+  };
+
+  let end2 = {
     logradouro: "427",
     cep: "40170720",
-  });
+  };
 
-  const [map, setMap] = useState(<Mapa endereco={endereco} />);
+  // useEffect(() => {
+  //   return () => {
+  //     if (contato !== "" || tag !== "") {
+  //       alert("TEM TEXTO FDP");
+  //     }
+  //   };
+  // });
 
-  const enderInput = useRef();
-  const cepInput = useRef();
-  const latlongInput = useRef();
+  const [imagem, setImagem] = useState(
+    "https://exame.com/wp-content/uploads/2016/09/size_960_16_9_zuckerberg-sorriso-460-jpg.jpg"
+  );
+  const [nome, setNome] = useState("João Goularte");
 
-  function procurarEndereco() {
-    if (latlongInput.current.value.trim().length === 0) {
-      setEndereco({
-        logradouro: enderInput.current.value,
-        cep: cepInput.current.value,
-      });
-    } else {
-      setMap(<Mapa endereco={endereco} />);
+  //Valor dos input
+  const [contato, setContato] = useState("");
+  const [tag, setTag] = useState("");
+
+  //Arrays de tags
+  const [tags, setTags] = useState(["Paulinha Abelha"]);
+  const [contatos, setContatos] = useState(["988554455", "988885555"]);
+
+  const [endereco, setEndereco] = useState(end1);
+
+  function salvar() {}
+  function limpar() {
+    const res = window.confirm("Limpar formulário?")
+    if(res) {
+      setImagem('');
+      setNome("");
+      setContato("");
+      setTag("");
+      setTags([]);
+      setContatos([]);
+      setEndereco({});
     }
   }
+  let timeout = null;
+  function alterarEndereco(obj) {
+    clearTimeout(timeout);
+    timeout = setTimeout(function () {
+      setEndereco({ ...endereco, ...obj });
+    }, 1000);
+  }
+
+  // useEffect(() => {
+  //   console.log("Novo end:", endereco);
+  // }, [endereco]);
 
   return (
     <Estilo>
       <div id="top-container">
-        <PictureBox img={props.initialImg ? props.initialImg : ""} />
+        <PictureBox imagem={imagem} setImagem={setImagem} nome={nome} />
 
         <div className="id-nome">
           <label>
@@ -45,53 +87,110 @@ export default function Cadastro(props) {
           </label>
           <div className="txt nome-section">
             <label htmlFor="nome">Nome:</label>
-            <input id="nome" name="nome" type="text" autoFocus />
+            <input
+              id="nome"
+              name="nome"
+              type="text"
+              autoFocus
+              value={nome}
+              onChange={(e) => {
+                setNome(e.target.value);
+              }}
+              onBlur={(e) => {
+                e.target.value = e.target.value.trim();
+              }}
+            />
           </div>
         </div>
       </div>
 
       <div id="tags-container">
-        <Tagger tipo="tel" label={"Contato"} />
-        <Tagger label={"Apelidos"} />
+        <Tagger
+          tipo="tel"
+          label={"Contato"}
+          state={contato}
+          setState={setContato}
+          array={contatos}
+        />
+        <Tagger label={"Apelidos"} state={tag} setState={setTag} array={tags} />
       </div>
 
       <section id="endereco-container">
         <div id="endereco-left">
-
           <div id="logradouro-container" className="txt">
             <label htmlFor="logradouro">Logradouro:</label>
-            <label id="logradouro">{formatEndereco(endereco, false)}</label>
-            <button>Alterar</button>
+            <label id="logradouro">
+              {formatEndereco(endereco, { withTaxa: false, withLocal: false })}
+            </label>
+            <button type="button">Alterar</button>
           </div>
 
           <div id="numero-container" className="txt">
             <label htmlFor="numero">Número:</label>
-            <input id="numero" />
+            <input
+              id="numero"
+              placeholder="1600"
+              value={isNEU(endereco) ? '' : endereco.numero}
+              onChange={(e) => {
+                alterarEndereco({ numero: e.target.value.trim() });
+              }}
+              onBlur={(e) => {
+                e.target.value = e.target.value.trim();
+              }}
+            />
           </div>
 
           <div id="local-container" className="txt">
             <label htmlFor="local">Local da entrega:</label>
-            <input
+            <textarea
+              rows={2}
               id="local"
               placeholder="Casa, Edifício, Apartamento, Condomínio, Hospital, Escola..."
+              value={isNEU(endereco) ? '' : endereco.local}
+              onChange={(e) => {
+                alterarEndereco({ local: e.target.value.trim() });
+              }}
+              onBlur={(e) => {
+                e.target.value = e.target.value.trim();
+              }}
             />
-            <button>Salvar</button>
+            <button
+              type="button"
+              onClick={(e) => {
+                alert(e.target,'notImplemented')
+              }}
+            >
+              Salvar
+            </button>
           </div>
 
           <div id="referencia-container" className="txt">
             <label htmlFor="referencia">Ponto de referência:</label>
-            <input id="referencia" placeholder="Ao lado de.. Em frente à.." />
+            <textarea
+              rows={2}
+              id="referencia"
+              placeholder="Ao lado de.. Em frente à.."
+              value={isNEU(endereco) ? '' : endereco.referencia}
+              onChange={(e) => {
+                alterarEndereco({ referencia: e.target.value.trim() });
+              }}
+              onBlur={(e) => {
+                e.target.value = e.target.value.trim();
+              }}
+            />
           </div>
         </div>
 
-        <div id="endereco-right">{map}</div>
+        <div id="endereco-right">
+          <Mapa endereco={endereco} />
+        </div>
       </section>
 
       <section id="bottom-container">
-        <button id="salvar" type="button">
+        <button id="salvar" type="button" onClick={() => salvar()}>
           Salvar
         </button>
-        <button id="limpar" type="button">
+        <button id="limpar" type="button" onClick={() => limpar()}>
           Limpar
         </button>
       </section>
@@ -104,23 +203,15 @@ const Principal = styled.form`
   height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: stretch;
   gap: 10px;
   background-color: ${cores.light};
-
-  #tags-container {
-    display: flex;
-    justify-content: stretch;
-    gap: 20px;
-
-    .Tagger {
-      width: 50%;
-    }
-  }
+  overflow-y: auto;
 
   #top-container {
     display: flex;
     width: 100%;
-    height: 120px;
+    flex-basis: 120px;
     padding: 5px;
     gap: 5px;
 
@@ -130,6 +221,21 @@ const Principal = styled.form`
       flex-direction: column;
       justify-content: center;
       gap: 15px;
+
+      .txt {
+        display: flex;
+        user-select: none;
+
+        gap: 5px;
+
+        * {
+          font-size: 16px;
+        }
+
+        input {
+          flex-grow: 2;
+        }
+      }
 
       label {
         user-select: none;
@@ -144,12 +250,26 @@ const Principal = styled.form`
     }
   }
 
+  #tags-container {
+    display: flex;
+    justify-content: stretch;
+    gap: 20px;
+    height: auto;
+
+    .Tagger {
+      width: 50%;
+    }
+  }
+
   #endereco-container {
     border: 1px solid black;
     padding: 5px;
     display: flex;
     gap: 10px;
-    height: 400px;
+    max-height: 220px;
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
+
+    width: 100%;
 
     #endereco-left {
       width: 100%;
@@ -157,48 +277,75 @@ const Principal = styled.form`
       flex-direction: column;
       gap: 5px;
 
-      div{
+      * {
+        font-size: 16px;
+      }
+
+      div {
         flex-grow: 2;
-        label{
+        height: 40px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        label {
           display: block;
-          width: 100px; 
+          width: 100px;
           min-width: 100px;
+        }
+        input,
+        textarea {
+          flex-grow: 2;
+          flex-shrink: 2;
+          height: 100%;
+          font-family: sans-serif;
+          resize: none;
+        }
+        button {
+          width: 70px;
+          height: 100%;
+          cursor: pointer;
         }
       }
 
       #logradouro-container {
         width: 100%;
+        flex-basis: 90px;
         display: flex;
 
         #logradouro {
           border-bottom: 1px solid black;
           max-width: 100%;
           flex-grow: 2;
+          overflow-y: auto;
         }
-      }
-
-      #numero-container {
-        width: 50px;
       }
     }
 
     #endereco-right {
+      display: none;
       width: 400px;
     }
   }
 
-  .txt {
+  #bottom-container {
     display: flex;
-    user-select: none;
+    max-height: 70px;
 
-    gap: 5px;
-
-    * {
-      font-size: 16px;
+    /* position: fixed;
+    bottom: 0;
+    width: 100%; */
+    gap: 30px;
+    padding: 10px;
+    flex-grow: 1;
+    button {
+      font-size: 20px;
+      cursor: pointer;
     }
-
-    input {
-      flex-grow: 2;
+    #salvar {
+      flex-grow: 3;
+    }
+    #limpar {
+      flex-grow: 1;
     }
   }
 `;
@@ -206,6 +353,11 @@ const Principal = styled.form`
 const Estilo = styled(Principal)`
   @media (max-width: 400px) {
     animation: RollDown linear 0.3s;
+    display: block;
+    & > :not(:last-child) {
+      margin-bottom: 10px;
+    }
+    overflow-y: auto;
 
     @keyframes RollDown {
       from {
@@ -229,13 +381,26 @@ const Estilo = styled(Principal)`
       border: 1px solid black;
       padding: 5px;
       display: flex;
+      flex-direction: column;
       gap: 10px;
-      height: 400px;
+      height: max-content;
+      max-height: max-content;
 
       #endereco-left {
         width: 100%;
-        * {
-          margin-top: 3px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        div {
+          display: flex;
+
+          label {
+            display: inline-block;
+            vertical-align: middle;
+            width: 90px;
+            min-width: 90px;
+          }
         }
 
         #logradouro-container {
@@ -243,26 +408,38 @@ const Estilo = styled(Principal)`
           display: flex;
 
           #logradouro {
-            border-bottom: 1px solid black;
             max-width: 100%;
-            flex-grow: 2;
+            max-height: 100%;
           }
         }
 
-        #numero-container {
-          width: 50px;
+        #local-container,
+        #referencia-container {
+          height: 100px;
+
+          button {
+            display: none;
+          }
+        }
+
+        textarea {
         }
       }
 
       #endereco-right {
-        width: 400px;
+        display: none;
+        width: 100%;
       }
     }
 
-    .txt {
+    /* .txt {
       label {
+        
         font-size: 16px;
       }
+    } */
+    #bottom-container {
+      height: 90px;
     }
   }
 `;

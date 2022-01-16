@@ -1,10 +1,15 @@
 import { DDD } from '../context/local'
+import { isNEU } from './misc';
 
-export function formatReal(valor) {
+export function formatReal(valor) : string {
     return valor.toLocaleString("pt-br", {
       style: "currency",
       currency: "BRL",
     });
+  }
+
+  export function formatCEP(valor) {
+    return `${valor.slice(0,5)}-${valor.slice(5,8)}`
   }
 
   export function formatNumber(valor){
@@ -45,6 +50,19 @@ export function formatReal(valor) {
     return valor
   }
 
-  export function formatEndereco(endereco : Object, taxa : Boolean){
-    
+  export function formatEndereco(endereco, opcoes){
+    if(!isNEU(endereco)){
+      let _taxa = opcoes.withTaxa === true ? formatReal(endereco.taxa) : ''
+      let _loc = opcoes.withLocal && endereco.local ? endereco.local : '' 
+      let _log = endereco.logradouro
+      let _num = opcoes.withLocal && endereco.numero ? endereco.numero : '' 
+      let _bai = endereco.bairro
+      let _ref = opcoes.withLocal &&  endereco.referencia ? endereco.referencia : ''
+      let _cep = formatCEP(endereco.cep)
+        return [_taxa.toString(), _loc.toString(), _log.toString(), 
+          _num.toString(), _bai.toString(), _ref.toString(), 
+          _cep].filter(x => x !== '').join(', ')
+    }else{
+      return ''
+    }
   }

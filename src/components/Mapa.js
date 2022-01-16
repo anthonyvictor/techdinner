@@ -1,5 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-function Mapa(props) {return (<></>)}
+import imagemMapa from '../images/map-location.jpg'
+import styled from "styled-components";
+
+export default function Mapa(props) {
+  return (
+    <Container>
+      <img src={imagemMapa}></img>
+    </Container>
+)}
 
 
 
@@ -7,7 +15,7 @@ function Mapa(props) {return (<></>)}
 // import GoogleMapReact from "google-map-react";
 // import { Wrapper, Status } from "@googlemaps/react-wrapper";
 // import { GoogleApiKey } from "../context/local";
-// import styled from "styled-components";
+// 
 // import * as api from '../apis'
 
 // function Mapa(props) {
@@ -15,26 +23,27 @@ function Mapa(props) {return (<></>)}
 //   //           let ltlg = {lat: Number(v.split(' ')[0]), lng: Number(v.split(' ')[1])}
 //   let latLng = {}
 
-//   // navigator.geolocation.getCurrentPosition(function (position) {
-//   //   latLng = {lat: position.coords.latitude, lng:position.coords.longitude}
-//   // });
-
-
-//   api.getLatLng(props.endereco).then(res => {
-//     setMap(<GoogleMapReact
-//       bootstrapURLKeys={{ key: GoogleApiKey() }}
-//       center={res}
-//       zoom={zoom}
-//       yesIWantToUseGoogleMapApiInternals
-//       onGoogleApiLoaded={({ map, maps }) => 
-//       new maps.Marker({
-//         position: res,
-//         map,
-//         title: "Hello World!",
-//       })}/>)})
+//   let myPos = navigator.geolocation.getCurrentPosition(function (position) {
+//      return {lat: position.coords.latitude, lng: position.coords.longitude}
+//   })
 
 //   const [map, setMap] = useState(<></>)
-  
+
+//   useEffect(() => 
+//     api.getLatLng(props.endereco).then(res => {
+//         setMap(
+//             <GoogleMapReact
+//             bootstrapURLKeys={{ key: GoogleApiKey() }}
+//             center={res} zoom={zoom}
+//             yesIWantToUseGoogleMapApiInternals
+//             onGoogleApiLoaded={({ map, maps }) => 
+//             new maps.Marker({position: res, map, title: "Local da entrega.",})
+//             }/>
+//         )
+//         console.log("endereco: ====== ", props.endereco)
+//         console.log("resposta da api: ====== ", res)
+//         console.log("Mapa criado: ====== ", map)
+// }), [])
 
 //   const [zoom, setZoom] = useState(18)
 
@@ -65,25 +74,31 @@ function Mapa(props) {return (<></>)}
 // export default Mapa;
 
 
-// const Container = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   border: 1px solid black;
-//   box-sizing: border-box;
-//   padding: 2px;
-//   width: 100%;
-//   height: 100%;
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  box-sizing: border-box;
+  padding: 2px;
+  width: 100%;
+  height: 100%;
 
-//   .map-container{
-//     width: 100%;
-//     height: 100%;
-//   }
+  img{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
 
-//   .zoom-container{
-//     width: 100%;
+  .map-container{
+    width: 100%;
+    height: 100%;
+  }
+
+  .zoom-container{
+    width: 100%;
     
-//     input{width: 100%}
-//   }
+    input{width: 100%}
+  }
 
 
 //   @media(max-width: 400px){

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import {
   faClipboard,
@@ -7,29 +7,21 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ImageViewer from "./ImageViewer";
-import { sleep } from '../util/misc';
+
+// import * as clip from 'clipboard-monitor'
+
 import * as cores from '../context/cores'
+import { loadImage } from "../util/misc";
 
 function PictureBox(props) {
-
-    const [imagem, setImagem] = useState(props.img)
     const imgElement = useRef()
 
 
     function remove() {
-        setImagem('')
+        props.setImagem('')
     }
     
-    function load() {
-        let input = document.createElement('input');
-        input.type = 'file';
-        input.accept = "image/*";
-        input.onchange = _ => {
-            let files = Array.from(input.files);
-            setImagem(URL.createObjectURL(files[0]))
-        };
-        input.click();
-    }
+    
 
 
     const [showImageViewer, setShowImageViewer] = useState(false)
@@ -37,26 +29,83 @@ function PictureBox(props) {
     function newImageViewer(){
         return(
         <ImageViewer 
-        img={imagem} 
-        close={() => async function(){
-            await sleep(50)
-            setShowImageViewer(false)
-        }} />)
+        imagem={props.imagem}
+        setImagem={props.setImagem}
+        setShowImageViewer={setShowImageViewer}
+        nome={props.nome}
+         />)
     }
+
+
+    // clip(500)
+
+    // const clipMonit = require('clipboard-monitor');
+ 
+    // //initialize & optionally set the interval with which to monitor the clipboard
+     
+    // var monitor = clipMonit(500);
+     
+    // /*
+    // NOTE: interval defaults to 500ms so you can simply initialize using:
+    //     'monitor = clipMonit()';
+    // */
+     
+     
+    // //now monitor your events...
+     
+    // //'copy. event is fired every time data is copied to the clipboard
+    // monitor.on('copy', function (data) {
+    //     //do something with the data
+    //     console.log(data);
+    // });
+     
+     
+    // //Stop the monitoring the clipboard
+    // useEffect(() => {return () => {monitor.end();}},[])
+
+
+
+
+
     
   return (
     <Container>
-      <img ref={imgElement} src={imagem} alt="Imagem"
-      onTouchStart={(e) => imagem === '' ? setShowImageViewer(true) : load()} />
+      <div className="img-container" 
+      onTouchEnd={(e) => {if(props.imagem === ''){
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.accept = "image/*";
+        input.onchange = _ => {
+            let files = Array.from(input.files);
+            props.setImagem(URL.createObjectURL(files[0]))
+        }
+        
+        input.click();
+       }else{
+          setShowImageViewer(true)
+      }}}>
+       {props.imagem !== '' && <img ref={imgElement} src={props.imagem} alt="Imagem" />} 
+      </div>
+      
 
       <div className="botoes">
 
-        <button type="button" id="carregar" onClick={(e) => load()}>
+        <button type="button" id="carregar" onClick={(e) => {
+          let input = document.createElement('input');
+          input.type = 'file';
+          input.accept = "image/*";
+          input.onchange = _ => {
+              let files = Array.from(input.files);
+              props.setImagem(URL.createObjectURL(files[0]))
+          }
+          
+          input.click();
+        }}>
           <FontAwesomeIcon icon={faSearch} />
         </button>
 
         <button type="button" id="remover" onClick={(e) => remove()}
-          disabled={imagem.length > 0 ? false : true}>
+          disabled={props.imagem.length > 0 ? false : true}>
           <FontAwesomeIcon icon={faTimes} />
         </button>
 
@@ -80,15 +129,22 @@ display: flex;
 gap: 5px;
 padding: 5px;
 
-img{
-        border: 1px solid black;
-        background-color: white;
-        flex-basis: 100px;
-        height:100px;
-        width: 100px;
-        min-width: 100px;
+.img-container{
+  height:100px;
+  max-width: 100px;
+  min-width: 100px;
+  border: 1px solid black;
+  background-color: white;
+  img{
+        width: 100%;
+        height: 100%;
+        
+        /* flex-basis: 100px; */
+        
+        
         object-fit: cover;
     }
+}
 
     .botoes{
         
@@ -114,7 +170,7 @@ img{
     }
 
   @media (max-width: 400px) {
-    .buttons {
+    .botoes {
       display: none;
     }
   }
