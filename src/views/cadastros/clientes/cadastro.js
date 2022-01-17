@@ -6,7 +6,7 @@ import Mapa from "../../../components/Mapa";
 
 import PictureBox from "../../../components/PictureBox";
 import { formatEndereco } from "../../../util/Format";
-import { isNEU, sleep } from "../../../util/misc";
+import { isNEU } from "../../../util/misc";
 
 export default function Cadastro(props) {
   let end1 = {
@@ -71,9 +71,9 @@ export default function Cadastro(props) {
   // useEffect(() => {
   //   console.log("Novo end:", endereco);
   // }, [endereco]);
-
+  
   return (
-    <Estilo>
+    <Estilo>      
       <div id="top-container">
         <PictureBox imagem={imagem} setImagem={setImagem} nome={nome} />
 

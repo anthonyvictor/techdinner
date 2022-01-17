@@ -8,18 +8,18 @@
       "type": "image/x-icon"
     },
     {
-      "src": "favicon/logo192.png",
+      "src": "favicon/android-chrome-192x192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "favicon/logo512.png",
+      "src": "favicon/android-chrome-512x512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#1e272e",
+  "background_color": "#0d1114"
 }

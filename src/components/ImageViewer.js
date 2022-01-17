@@ -44,19 +44,9 @@ function ImageViewer(props) {
                 <li 
                 className={props.showOp === false ? 'disabled' : ''}
                 onTouchStart={() => {
-                    let input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = "image/*";
-                    input.onchange = _ => {
-                        let files = Array.from(input.files);
-                        props.setImagem((URL.createObjectURL(files[0])))
-                        setShowContext(false)
-                    };
-                    
-                    input.click();
-                    
-                    // props.setImagem(loadImage(props.imagem))
-                    }}>
+                    loadImage(props.setImagem)
+                    setShowContext(false)
+                }}>
                     <FontAwesomeIcon icon={faSearch} />
                     <p>Carregar</p>
                 </li>
@@ -80,7 +70,8 @@ function ImageViewer(props) {
 
                 <li className={props.imagem === '' ? 'disabled' : ''}
                 onTouchStart={e => {
-                        saveAs(props.imagem, props.nome)
+                        let d = new Date().toLocaleDateString('pt-br').replace(/'[\s-:]'/,'')
+                        saveAs(props.imagem, props.nome + '-' + d)
                         setShowContext(false)
                 }}>
                     <FontAwesomeIcon icon={faDownload} />

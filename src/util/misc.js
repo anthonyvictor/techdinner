@@ -8,14 +8,13 @@ export function sleep(ms) {
   }
 
 
-  export function loadImage(defaultImage) {
+  export function loadImage(setObj) {
     let input = document.createElement('input');
     input.type = 'file';
     input.accept = "image/*";
     input.onchange = _ => {
         let files = Array.from(input.files);
-        defaultImage = (URL.createObjectURL(files[0]))
-        return defaultImage
+        setObj((URL.createObjectURL(files[0])))
     };
     
     input.click();
@@ -24,6 +23,19 @@ export function sleep(ms) {
 
 export async function copiarParaClipboard(val){
   await navigator.clipboard.writeText(val)
+
+}
+
+export async function colarDoClipboard({obj, setObj}){
+//   await navigator.clipboard.readText().then((e) => {
+// console.log(e)
+// // fetch(e)
+// //   .then(response => response.blob())
+// //   .then(imageBlob => {
+// //       const imageObjectURL = URL.createObjectURL(imageBlob);
+// //       setObj(imageBlob)
+// //   })
+//   })
 
 }
 
@@ -45,3 +57,16 @@ export function isNEU (val) {
 
   );
 };
+
+
+const fileSize = (size) => {
+  if (size === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.floor(Math.log(size) / Math.log(k));
+  return parseFloat((size / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+const fileType = (fileName) => {
+  return fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length) || fileName;
+}

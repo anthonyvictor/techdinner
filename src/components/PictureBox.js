@@ -1,28 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
-import {
-  faClipboard,
-  faSearch,
-  faTimes,
-} from "@fortawesome/free-solid-svg-icons";
+import {  faClipboard,  faSearch,  faTimes,} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ImageViewer from "./ImageViewer";
-
-// import * as clip from 'clipboard-monitor'
-
 import * as cores from '../context/cores'
-import { loadImage } from "../util/misc";
+import { colarDoClipboard, isNEU, loadImage } from "../util/misc";
 
 function PictureBox(props) {
-    const imgElement = useRef()
 
-
-    function remove() {
+  function remove() {
         props.setImagem('')
     }
-    
-    
-
 
     const [showImageViewer, setShowImageViewer] = useState(false)
 
@@ -35,81 +23,77 @@ function PictureBox(props) {
         nome={props.nome}
          />)
     }
+    const [showDragArea, setShowDragArea] = useState(false)
 
+    function handleDragEnter(e){
+      e.preventDefault()
+      setShowDragArea(true)
+    }
 
-    // clip(500)
+    function handleDragLeave(e){
+      e.preventDefault()
+      setShowDragArea(false)
+    }
 
-    // const clipMonit = require('clipboard-monitor');
- 
-    // //initialize & optionally set the interval with which to monitor the clipboard
-     
-    // var monitor = clipMonit(500);
-     
-    // /*
-    // NOTE: interval defaults to 500ms so you can simply initialize using:
-    //     'monitor = clipMonit()';
-    // */
-     
-     
-    // //now monitor your events...
-     
-    // //'copy. event is fired every time data is copied to the clipboard
-    // monitor.on('copy', function (data) {
-    //     //do something with the data
-    //     console.log(data);
-    // });
-     
-     
-    // //Stop the monitoring the clipboard
-    // useEffect(() => {return () => {monitor.end();}},[])
+    function handleDragOver(e){
+      e.preventDefault()
+    }
 
+    function handleOnDrop(e){
+      e.preventDefault()
+      const files = e.dataTransfer.files;
+      for(let file of files){
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = function(e) {
+          if(file.size && file.type.startsWith('image')){
+            props.setImagem(e.target.result)
+          }
+        }
+      }
+      setShowDragArea(false)
+    }
 
+    function openOrLoadImage(){
+      isNEU(props.imagem) ? 
+      loadImage(props.setImagem) :  
+      setShowImageViewer(true)
+    }
 
+    const renderDropAreaElement = () => {
+      return <div className="drop-area" />
+    }
 
+    const renderImageElement = () => {
+      return <img src={props.imagem} alt="Imagem" />
+    }
 
-    
   return (
     <Container>
       <div className="img-container" 
-      onTouchEnd={(e) => {if(props.imagem === ''){
-        let input = document.createElement('input');
-        input.type = 'file';
-        input.accept = "image/*";
-        input.onchange = _ => {
-            let files = Array.from(input.files);
-            props.setImagem(URL.createObjectURL(files[0]))
-        }
-        
-        input.click();
-       }else{
-          setShowImageViewer(true)
-      }}}>
-       {props.imagem !== '' && <img ref={imgElement} src={props.imagem} alt="Imagem" />} 
+      onDragEnter={handleDragEnter} onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver} onDrop={handleOnDrop}
+      onTouchEnd={openOrLoadImage}>
+        {showDragArea && renderDropAreaElement()}
+        {!isNEU(props.imagem) && renderImageElement()} 
       </div>
       
 
       <div className="botoes">
 
-        <button type="button" id="carregar" onClick={(e) => {
-          let input = document.createElement('input');
-          input.type = 'file';
-          input.accept = "image/*";
-          input.onchange = _ => {
-              let files = Array.from(input.files);
-              props.setImagem(URL.createObjectURL(files[0]))
-          }
-          
-          input.click();
-        }}>
+        <button type="button" id="carregar" 
+        onClick={(e) => {loadImage(props.setImagem)}}>
           <FontAwesomeIcon icon={faSearch} />
         </button>
 
-        <button type="button" id="remover" onClick={(e) => remove()}
-          disabled={props.imagem.length > 0 ? false : true}>
+        <button type="button" id="remover" 
+        onClick={(e) => remove()}
+        disabled={props.imagem.length > 0 ? false : true}>
           <FontAwesomeIcon icon={faTimes} />
         </button>
 
-        <button type="button" id="colar">
+        <button type="button" id="colar"
+        onClick={e => colarDoClipboard({obj: props.imagem, setObj: props.setImagem})}>
           <FontAwesomeIcon icon={faClipboard} />
         </button>
 
@@ -135,13 +119,34 @@ padding: 5px;
   min-width: 100px;
   border: 1px solid black;
   background-color: white;
+  position: relative;
+
+  .drop-area{
+    pointer-events: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(256,256,256,.8);
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &::after{
+      content: 'Solte para colar';
+      text-align: center;
+      font-size: 20px;
+    }
+  }
+
   img{
+        z-index: -999;
+        pointer-events: none;
+        user-select: none;
         width: 100%;
         height: 100%;
-        
-        /* flex-basis: 100px; */
-        
-        
         object-fit: cover;
     }
 }
