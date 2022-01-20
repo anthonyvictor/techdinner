@@ -21,23 +21,24 @@ export function sleep(ms) {
     
 }
 
-export async function copiarParaClipboard(val){
+export async function copiar(val){
   await navigator.clipboard.writeText(val)
 
 }
 
-export async function colarDoClipboard({obj, setObj}){
+// export async function colarDoClipboard({obj, setObj}){
 //   await navigator.clipboard.readText().then((e) => {
 // console.log(e)
-// // fetch(e)
-// //   .then(response => response.blob())
-// //   .then(imageBlob => {
-// //       const imageObjectURL = URL.createObjectURL(imageBlob);
-// //       setObj(imageBlob)
-// //   })
+// setObj(e.replace('"',''))
+// // // fetch(e)
+// // //   .then(response => response.blob())
+// // //   .then(imageBlob => {
+// // //       const imageObjectURL = URL.createObjectURL(imageBlob);
+// // //       setObj(imageBlob)
+// // //   })
 //   })
 
-}
+// }
 
 /**
  * @name isNullEmptyUndefined
@@ -69,4 +70,27 @@ const fileSize = (size) => {
 
 const fileType = (fileName) => {
   return fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length) || fileName;
+}
+
+
+export function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+export function removeAccents(txt){
+  return txt
+  .replace(/[ÀÁÂÃÄÅ]/ig,'A')
+  .replace(/[Ç]/ig,'C')
+  .replace(/[ÈÉÊË]/ig,'E')
+  .replace(/[ÌÍÎÏ]/ig,'I')
+  .replace(/[ÒÓÔÕÖ]/ig,'O')
+  .replace(/[ÙÚÛÜ]/ig,'U')
+
+  .replace(/[àáâãäå]/ig,'a')
+  .replace(/[ç]/ig,'c')
+  .replace(/[èéêë]/ig,'e')
+  .replace(/[ìíîï]/ig,'i')
+  .replace(/[òóôõö]/ig,'o')
+  .replace(/[ùúûü]/ig,'u')
+  .trim()
 }

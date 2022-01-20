@@ -17,7 +17,7 @@ const Rotas = (props) => {
 return(
     <Routes> 
         
-        <Route exact path="/" element={<Clientes tabInicial={'Cadastro'} />} /> {/*/<Navigate to="/cad/cli" />/*/}
+        <Route exact path="/" element={<Navigate to="/home" />} /> {/*/<Clientes tabInicial={'Cadastro'} />/*/}
         <Route exact path="/home" element={<Home />} />
         <Route exact path='/cad/cli' element={<Clientes tabInicial={'Lista'} />} />
     </Routes>

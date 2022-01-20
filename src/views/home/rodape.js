@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import { usePedidos } from "../../context/pedidos";
+import { usePedidos } from "../../context/pedidosContext";
 import { formatReal } from "../../util/Format";
 import { faTruck } from "@fortawesome/free-solid-svg-icons";
 import { Estilo } from "./rodapeStyle";

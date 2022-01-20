@@ -1,6 +1,6 @@
 import React from "react";
 import Estilo from "./style";
-import PedidoProvider from "../../context/pedidos";
+import PedidoProvider from "../../context/pedidosContext";
 import Lista from "./lista";
 import Rodape from "./rodape";
 import Topo from "./topo";

@@ -12,5 +12,9 @@ export const light = '#e3e3e3'
 
 export const amarelo = '#ffdd59'
 
+export const vermelhoEscuro = '#ff3f34'
+
+export const verdeEscuro = '#05c46b'
+
 
 ///https://flatuicolors.com/palette/se

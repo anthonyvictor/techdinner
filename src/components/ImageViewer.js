@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faDownload, faEllipsisV, faSearch, faShare, faTrash } from '@fortawesome/free-solid-svg-icons';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import * as cores from '../context/cores'
+import * as cores from '../util/cores'
 import { loadImage, sleep } from '../util/misc';
 import ContextMenu from './contextMenu';
 import { saveAs } from 'file-saver'
@@ -39,8 +39,7 @@ function ImageViewer(props) {
 
           {showContext && 
           (<ContextMenu 
-          setOpenMenu={() => setShowContext(false)} 
-          pos={0}>
+          close={() => setShowContext(false)} >
                 <li 
                 className={props.showOp === false ? 'disabled' : ''}
                 onTouchStart={() => {

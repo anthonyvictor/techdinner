@@ -1,10 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
-import {  faClipboard,  faSearch,  faTimes,} from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faTimes} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ImageViewer from "./ImageViewer";
-import * as cores from '../context/cores'
-import { colarDoClipboard, isNEU, loadImage } from "../util/misc";
+import * as cores from '../util/cores'
+import { isNEU, loadImage } from "../util/misc";
 
 function PictureBox(props) {
 
@@ -88,15 +88,9 @@ function PictureBox(props) {
 
         <button type="button" id="remover" 
         onClick={(e) => remove()}
-        disabled={props.imagem.length > 0 ? false : true}>
+        disabled={props.imagem ? props.imagem.length > 0 ? false : true : false}>
           <FontAwesomeIcon icon={faTimes} />
         </button>
-
-        <button type="button" id="colar"
-        onClick={e => colarDoClipboard({obj: props.imagem, setObj: props.setImagem})}>
-          <FontAwesomeIcon icon={faClipboard} />
-        </button>
-
       </div>
 
       {showImageViewer && newImageViewer()}
@@ -112,6 +106,7 @@ height: 100% ;
 display: flex;
 gap: 5px;
 padding: 5px;
+
 
 .img-container{
   height:100px;
@@ -143,7 +138,7 @@ padding: 5px;
 
   img{
         z-index: -999;
-        pointer-events: none;
+        /* pointer-events: none; */
         user-select: none;
         width: 100%;
         height: 100%;

@@ -1,4 +1,5 @@
-import { GoogleApiKey } from "./context/local";
+import { GoogleApiKey } from "./util/local";
+import { formatNumber, formatPhoneNumber } from "./util/Format";
 import { isConnected } from "./util/misc";
 
 export async function getLatLng(endereco) {
@@ -35,4 +36,12 @@ export async function getLatLng(endereco) {
   //     .catch((e) => console.log(e));
 
   //   return resp;
+}
+
+
+
+export function sendWhatsAppMessage(txt, phoneNumber){
+  phoneNumber = formatPhoneNumber(phoneNumber, true, true)
+  phoneNumber = formatNumber(phoneNumber)
+  window.open("https://api.whatsapp.com/send?phone=" + phoneNumber)
 }

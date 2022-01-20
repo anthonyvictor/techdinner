@@ -3,10 +3,10 @@ import { Container } from './style';
 
 function ContextMenu(props) {
   return (
-        <Container pos={props.pos} className='Context-Menu' 
+        <Container pos={props.pos ? props.pos : ''} className='Context-Menu' 
         onClick={e => {
             if(e.target === e.currentTarget){
-                props.setOpenMenu(false)
+                props.close()
             }
         }}>
             <ul>

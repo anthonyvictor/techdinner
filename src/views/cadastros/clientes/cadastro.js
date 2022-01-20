@@ -1,65 +1,30 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Tagger from "../../../components/Tagger";
-import * as cores from "../../../context/cores";
+import * as cores from "../../../util/cores";
 import Mapa from "../../../components/Mapa";
 
 import PictureBox from "../../../components/PictureBox";
 import { formatEndereco } from "../../../util/Format";
 import { isNEU } from "../../../util/misc";
+import { useCadCli } from "../../../context/cadClientesContext";
 
 export default function Cadastro(props) {
-  let end1 = {
-    logradouro: "Ladeira do Jardim Zoológico Ladeira do Jardim Zoológico",
-    local: "Pizzaria Delicia da Bahia",
-    numero: 427,
-    cep: "40170720",
-    bairro: "Ondina",
-    referencia: "Na pracinha do Zoológico, prox. a igreja Maanaim",
-    taxa: 2,
-  };
 
-  let end2 = {
-    logradouro: "427",
-    cep: "40170720",
-  };
-
-  // useEffect(() => {
-  //   return () => {
-  //     if (contato !== "" || tag !== "") {
-  //       alert("TEM TEXTO FDP");
-  //     }
-  //   };
-  // });
-
-  const [imagem, setImagem] = useState(
-    "https://exame.com/wp-content/uploads/2016/09/size_960_16_9_zuckerberg-sorriso-460-jpg.jpg"
-  );
-  const [nome, setNome] = useState("João Goularte");
-
-  //Valor dos input
-  const [contato, setContato] = useState("");
-  const [tag, setTag] = useState("");
-
-  //Arrays de tags
-  const [tags, setTags] = useState(["Paulinha Abelha"]);
-  const [contatos, setContatos] = useState(["988554455", "988885555"]);
-
-  const [endereco, setEndereco] = useState(end1);
-
+  const {
+    id, setId,
+    imagem, setImagem,
+    nome, setNome,
+    contato, setContato,
+    tag, setTag,
+    contatos, setContatos,
+    tags, setTags,
+    endereco, setEndereco,
+    limpar
+  } = useCadCli()
+  
   function salvar() {}
-  function limpar() {
-    const res = window.confirm("Limpar formulário?")
-    if(res) {
-      setImagem('');
-      setNome("");
-      setContato("");
-      setTag("");
-      setTags([]);
-      setContatos([]);
-      setEndereco({});
-    }
-  }
+  
   let timeout = null;
   function alterarEndereco(obj) {
     clearTimeout(timeout);
@@ -79,11 +44,7 @@ export default function Cadastro(props) {
 
         <div className="id-nome">
           <label>
-            {props.cliente && props.cliente.id.length > 0 ? (
-              <>Id: {props.cliente.id}</>
-            ) : (
-              <>Cliente Novo!</>
-            )}
+            {id > 0 ? `Id: ${id}` : 'Cliente Novo!'}
           </label>
           <div className="txt nome-section">
             <label htmlFor="nome">Nome:</label>
@@ -157,7 +118,7 @@ export default function Cadastro(props) {
             <button
               type="button"
               onClick={(e) => {
-                alert(e.target,'notImplemented')
+                throw new Error('Não implementado')
               }}
             >
               Salvar
@@ -182,7 +143,7 @@ export default function Cadastro(props) {
         </div>
 
         <div id="endereco-right">
-          <Mapa endereco={endereco} />
+          {/* <Mapa endereco={endereco} /> */}
         </div>
       </section>
 
@@ -190,7 +151,7 @@ export default function Cadastro(props) {
         <button id="salvar" type="button" onClick={() => salvar()}>
           Salvar
         </button>
-        <button id="limpar" type="button" onClick={() => limpar()}>
+        <button id="limpar" type="button" onClick={() => limpar(true)}>
           Limpar
         </button>
       </section>
@@ -207,6 +168,8 @@ const Principal = styled.form`
   gap: 10px;
   background-color: ${cores.light};
   overflow-y: auto;
+  border: 1px solid black;
+  box-sizing: border-box;
 
   #top-container {
     display: flex;
@@ -330,43 +293,33 @@ const Principal = styled.form`
   #bottom-container {
     display: flex;
     max-height: 70px;
-
-    /* position: fixed;
-    bottom: 0;
-    width: 100%; */
     gap: 30px;
-    padding: 10px;
+    padding: 6px;
     flex-grow: 1;
     button {
       font-size: 20px;
       cursor: pointer;
+      outline: none;
+      border: 1.5px solid black;
     }
     #salvar {
       flex-grow: 3;
+      background-color: ${cores.verdeEscuro}
     }
     #limpar {
       flex-grow: 1;
+      background-color: ${cores.vermelhoEscuro}
     }
   }
 `;
 
 const Estilo = styled(Principal)`
   @media (max-width: 400px) {
-    animation: RollDown linear 0.3s;
     display: block;
     & > :not(:last-child) {
       margin-bottom: 10px;
     }
     overflow-y: auto;
-
-    @keyframes RollDown {
-      from {
-        transform: translateY(-200%);
-      }
-      to {
-        transform: translateY(0%);
-      }
-    }
 
     #tags-container {
       flex-direction: column;

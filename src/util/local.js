@@ -1,4 +1,4 @@
-    export const DDD = () => {return '71'}
+    export const MyDDD = () => {return '71'}
 
 
 

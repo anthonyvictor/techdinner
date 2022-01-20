@@ -1,92 +1,83 @@
 import styled from "styled-components";
-import * as cores from '../../context/cores'
+import * as cores from "../../util/cores";
 
 export const Container = styled.div`
-    left: 0;
-    top: 0;
-    position: absolute;
-    width: 100%;
-    height: 100% ;
-    background-color: transparent;
-    animation: Abrir .2s linear;
+  left: 0;
+  top: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
 
-    @media(max-width: 400px){
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: rgba(0,0,0,.7);
-    }
-    
-    @keyframes Abrir{
-        from{height: 0};
-        to{height: 100%}
-    }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
 
-    ul{
-    @media(min-width: 401px){
-    left: calc(${(props) => props.pos.left}px + ${(props) => props.pos.width}px);
-    top: calc(${(props) => props.pos.top}px + 2%);
-    height: auto;
-    width: max-content;
-    min-width: 150px;
-    max-height: 350px;
+  @keyframes Abrir {
+    from {
+      height: 0;
+      opacity: 0;
     }
-    overflow: hidden;
-    position: absolute;
+    to {
+      height: auto;
+      opacity: 100%;
+    }
+  }
+
+  ul {
+    animation: Abrir 0.5s linear;
+    width: 250px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    overflow-y: auto;
     list-style: none;
     background-color: white;
     display: flex;
     flex-direction: column;
-    gap: 3px;
-    
-    height: 50%;
-    width: 80%;
-    min-width: 150px;
-    max-height: 80%;
+    gap: 0px;
+    height: fit-content;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+    padding: 20px 10px;
+    box-sizing: border-box;
 
-    box-shadow: 2px 2px 10px rgba(0,0,0,.5);
-    padding: 10px 5px;
-
-    label{
-        width: 100%;
-        text-align: center;
-        margin-bottom: 15px;
-        color: gray;
+    label {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 15px;
+      color: gray;
     }
 
-    li{
-        
-        border-bottom: .1px solid gray;
-        width: 100%;
-        padding: 5px;
-        color: black;
-        user-select: none;
-        
+    li {
+      width: 100%;
+      padding: 5px;
+      color: black;
+      user-select: none;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      font-size: 1.5rem;
+      height: 60px ;
+      flex-grow: 0;
+      flex-shrink: 0;
 
-        @media(max-width: 400px){
-            flex-grow: 2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
 
-            *{font-size: 1.3rem;}
-        }
 
-        &:not(.disabled):hover{
-            background-color: ${cores.cinzaClaro};
-            cursor: pointer;
-        }
+      &:not(.disabled):hover {
+        background-color: ${cores.cinzaClaro};
+        cursor: pointer;
+      }
 
-        &.disabled{
-            color: darkgrey;
-            pointer-events: none;
-        }
+      &.disabled {
+        color: darkgrey;
+        pointer-events: none;
+      }
 
-        &.hidden{
-            display: none;
-        }
+      &.hidden {
+        display: none;
+      }
     }
-    }
-
-`
+  }
+`;

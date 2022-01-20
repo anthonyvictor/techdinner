@@ -1,10 +1,9 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {Sidebar} from './style'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faBorderAll, faChartPie, faCog, faPizzaSlice, faQuestion, faUser } from '@fortawesome/free-solid-svg-icons'
 import { useAuth } from '../../auth'
 export default function Menu(props){
-
     const {user} = useAuth()
 
     return (

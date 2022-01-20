@@ -23,9 +23,7 @@ export default function Base() {
         function openMenu(e){
           setAtivo(false)
           setLogo(logoComp)
-          console.log(e)
           setrotaPrinc('/' + e.target.getAttribute('name'))
-          console.log(rotaPrinc)
       }
 
   return (

@@ -15,10 +15,11 @@ const Container = styled.div`
 
   @media (max-width: 400px) {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
+    width: 80%;
+    height: 60%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -28,6 +29,11 @@ const Container = styled.div`
     h6 {
       user-select: none;
       pointer-events: none;
+    }
+
+    h1{
+      user-select: all;
+      pointer-events: fill;
     }
 
     *{

@@ -1,10 +1,13 @@
 import styled from "styled-components";
-import * as cores from '../../../context/cores'
+import * as cores from "../../../util/cores";
 
 export const Estilo = styled.ul`
   overflow-y: auto;
   padding: 2px;
-  
+  border: 1px solid black;
+  box-sizing: border-box;
+  background-color: ${cores.light};
+  flex-grow: 2;
   .pesquisa{
         display: flex;
         padding: 5px 2px;
@@ -16,12 +19,13 @@ export const Estilo = styled.ul`
             font-size: 22px;
             flex-grow: 2;
             border: none;
+            background-color: transparent;
             border-bottom: 1px solid black;
-            ;
 
             &::placeholder{
                 font-style: italic;
                 font-size: 25px;
+                user-select: none;
                 
             }
         }
@@ -45,9 +49,7 @@ export const Estilo = styled.ul`
     border: 1px solid black;
     padding: 1px;
     box-sizing: border-box;
-    background-color: ${cores.branco};
-
-    
+    background-color: ${cores.branco};    
     
     .container{
       user-select: none;
@@ -65,8 +67,8 @@ export const Estilo = styled.ul`
         font-size: 10px;
         min-width:40px;
         img{
-        cursor: pointer;
-        pointer-events: fill;
+        /* cursor: pointer;
+        pointer-events: fill; */
         border-radius: 50%;
         border: 2px solid black;
         width: 40px;
@@ -131,7 +133,6 @@ export const Estilo = styled.ul`
 
   @media(max-width: 400px){
 
-
     .pesquisa{
                 input{
                 font-size: 25px;
@@ -149,9 +150,21 @@ export const Estilo = styled.ul`
             }
             }
 
-    li:last-child{
-      margin-bottom: 80px;
-    }
+            li{
+              .container{
+                .info{
+                  .endereco{
+                    font-size: 12px;
+                  }
+                  .bottom-info{
+                    font-size:10px;
+                  }
+                } 
+              }
+          }
+            }
+
+    
   }
 
 `;

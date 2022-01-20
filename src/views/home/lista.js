@@ -1,6 +1,6 @@
 import React from "react";
 import PedidoListItem from "../../components/pedidoListItem";
-import { usePedidos } from "../../context/pedidos";
+import { usePedidos } from "../../context/pedidosContext";
 import { Estilo } from "./listaStyle";
 
 export default function Lista() {

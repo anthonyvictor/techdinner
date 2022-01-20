@@ -1,74 +1,26 @@
-import React, { useEffect, useState } from "react";
-import ClientesProvider from "../../../context/clientes";
+import React, { useEffect, useRef, useState } from "react";
+import ClientesProvider from "../../../context/clientesContext";
 import Lista from "./lista";
 import Cadastro from "./cadastro";
 import { Estilo } from "./style";
-import FloatButton from "../../../components/FloatButton";
-
+import TabControl from "../../../components/TabControl";
+import CadCliProvider from "../../../context/cadClientesContext";
+import TabControlProvider from "../../../context/tabControlContext";
 
 const Clientes = (props) => {
-  var tab = props.tabInicial
-
-  const [floatVisible, setFloatVisible] = useState(false)
-
-  useEffect(() => {switchTab()}, [])
-  
-
-
-  function tabClick(e){
-    let tgt = e.target
-    if(tgt.innerText === '+'){
-      tab = 'Cadastro'
-      tgt.innerText = '<'
-    }else if(tgt.innerText === '<'){
-      tab = 'Lista'
-      tgt.innerText = '+'
-    }else if(tgt.classList.contains('ativo') === false){    
-        for(let bt of tgt.parentElement.children){
-
-          let igual = bt.innerHTML === tgt.innerHTML
-    
-          if (!(igual)) {
-            bt.classList.remove('ativo')
-          }
-          tgt.classList.add('ativo')
-          tab = tgt.innerHTML
-        }
-      }
-    }
-
-  const [tabContent, setTabContent] = useState(<></>)
-
-  function switchTab(){
-    const tabb =  tab.toUpperCase()
-     switch(tabb){
-       case 'LISTA': 
-         setTabContent(<Lista />)
-         setFloatVisible(true)
-         break
-       case 'CADASTRO':
-         setTabContent(<Cadastro />)
-         setFloatVisible(false)
-         break
-       default:
-         setTabContent(<Lista />)
-         setFloatVisible(true)
-         break
-     }
-  }
+  const tabs = [
+    { titulo: "Lista", elemento: <Lista /> },
+    { titulo: "Cadastro", elemento: <Cadastro /> }
+  ];
 
   return (
     <Estilo>
       <ClientesProvider>
-        <div className="tab">
-          <button onClick={e => {tabClick(e)}}>Lista</button>
-          <button onClick={e => {tabClick(e)}}>Cadastro</button>
-        </div>
-        
-       {floatVisible && <FloatButton clique={tabClick} />}
-
-        {tabContent}
-
+        <CadCliProvider>
+          <TabControlProvider tabs={tabs} tabInicial={props.tabInicial}>
+            <TabControl />
+          </TabControlProvider>
+        </CadCliProvider>
       </ClientesProvider>
     </Estilo>
   );

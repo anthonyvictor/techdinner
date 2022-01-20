@@ -1,10 +1,8 @@
 import { Container } from './style';
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, {useRef, useState } from "react";
 import ContextMenu from '../contextMenu';
 import { formatPhoneNumber, formatNumber } from '../../util/Format'
-import { copiarParaClipboard } from '../../util/misc';
+import { copiar } from '../../util/misc';
 import CopyView from '../CopyView';
 
 
@@ -13,8 +11,6 @@ function Tagger(props) {
     // const [array, props.setArray] = useState(props.array ? props.array : [])
     // const [currTxt, setCurrTxt] = useState('')
     const myInput = useRef()
-    const tagItem = useRef()
-
 
     function add(){
         if(props.tipo === 'tel' ? props.state.length >= 8 : props.state.length > 2){
@@ -120,7 +116,7 @@ function Tagger(props) {
 
     {openMenu && (
         <ContextMenu pos={currItem.getBoundingClientRect()}
-        openMenu={openMenu} setOpenMenu={() => {
+        close={() => {
             setShowCopyView(false)
             setOpenMenu(false)
         }}>
@@ -143,7 +139,7 @@ function Tagger(props) {
             }}
             onClick={() => 
                 {
-                    copiarParaClipboard(currItem.innerHTML)
+                    copiar(currItem.innerHTML)
                     setOpenMenu(false)
                 }}>
             Copiar
