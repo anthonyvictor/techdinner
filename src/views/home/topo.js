@@ -12,8 +12,8 @@ export default function Topo(){
                 <FontAwesomeIcon icon={faEllipsisV}></FontAwesomeIcon>
               </button>
             </span>
-            <select>
-              <option selected>Todos</option>
+            <select defaultValue={{value: 'Todos', label: 'Todos'}}>
+              <option >Todos</option>
               <option>Caixa</option>
               <option>Entrega</option>
               <option>Aplicativo</option>

@@ -51,26 +51,27 @@ export function isNEU (val) {
     // assim, nós também podemos verificar valores undefined. null == undefined = true
     // nós queremos que {} retorne false. não podemos usar !! porque !!{} retorna true
     // !!{} = true and !!{name:"yilmaz"} = true. !! não funciona com objetos
-    val == null ||
-    val == "" ||
+    !val ||
+    val === null ||
+    val === "" ||
     (Array.isArray(val) && val.length === 0) ||
-    (val.constructor === Object && Object.keys(val).length === 0)
+    (typeof(val) === 'object' && Object.keys(val).length === 0)
 
   );
 };
 
 
-const fileSize = (size) => {
-  if (size === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(size) / Math.log(k));
-  return parseFloat((size / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
+// const fileSize = (size) => {
+//   if (size === 0) return '0 Bytes';
+//   const k = 1024;
+//   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+//   const i = Math.floor(Math.log(size) / Math.log(k));
+//   return parseFloat((size / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+// }
 
-const fileType = (fileName) => {
-  return fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length) || fileName;
-}
+// const fileType = (fileName) => {
+//   return fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length) || fileName;
+// }
 
 
 export function isNumeric(n) {

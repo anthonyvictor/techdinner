@@ -25,5 +25,5 @@ const Botao = styled.button`
 `;
 
 export default function FloatButton(props) {
-  return <Botao onClick={props.clique ? e => props.clique(e) : {}} className="float-button">+</Botao>;
+  return <Botao onClick={e => {props.clique && props.clique(e)}} className="float-button">+</Botao>;
 }

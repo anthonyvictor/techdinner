@@ -1,38 +1,21 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { usePedidos } from "../../context/pedidosContext";
 import { formatReal } from "../../util/Format";
-import { faTruck } from "@fortawesome/free-solid-svg-icons";
 import { Estilo } from "./rodapeStyle";
 
 export default function Rodape() {
-  const { pedidos, setPedidos } = usePedidos();
+  const { pedidos } = usePedidos();
 
   function getTotal() {
-    let r = 0;
-
-    pedidos.map((pedido) => {
-      r = r + pedido.valor;
-    });
-    return r;
+    return pedidos.reduce((a, b) => a + b.valor, 0)
   }
 
   function getTaxas() {
-    let r = 0;
-
-    pedidos.map((pedido) => {
-      r = r + pedido.taxaEntrega;
-    });
-    return r;
+    return pedidos.reduce((a, b) => a + b.taxaEntrega, 0)
   }
 
   function getPago() {
-    let r = 0;
-
-    pedidos.map((pedido) => {
-      r = r + pedido.valorPago;
-    });
-    return r;
+    return pedidos.reduce((a, b) => a + b.valorPago, 0)
   }
 
   return (

@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import './App.css';
+import React from 'react';
 import GlobalStyle from './globals'
 import Base from './Base'
 import Login from './views/login' 
@@ -9,17 +8,29 @@ function App() {
 
   const {user} = useAuth()
 
-  if(user === null){
-    return(
-      <Login />
-    )
-  }else{
-    return (
-      <Base>
-      <GlobalStyle />
-      </Base>
-     )
-  }
+  return(
+    user 
+      ? (
+        <Base>
+        <GlobalStyle />
+        </Base>
+      ):(
+        <Login />
+      )
+    
+  )
+  
+  // <Global />
+
+  // if(user === null){
+  //   return(
+  //     <Login />
+  //   )
+  // }else{
+  //   return (
+      
+  //    )
+  // }
  
 }
 

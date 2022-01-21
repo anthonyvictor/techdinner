@@ -12,6 +12,7 @@ import CopyView from "../../../components/CopyView";
 import ImageViewer from '../../../components/ImageViewer'
 import * as apis from '../../../apis' 
 import * as msg from '../../../util/Mensagens'
+import { NotImplementedError } from "../../../exceptions/notImplementedError";
 
 export default function Lista() {
   const { setCurrentTab, tabs } = useTabControl();
@@ -23,17 +24,12 @@ export default function Lista() {
     setImagem,
     nome,
     setNome,
-    contato,
-    setContato,
-    tag,
-    setTag,
     contatos,
     setContatos,
     tags,
     setTags,
     endereco,
     setEndereco,
-    limpar,
   } = useCadCli();
 
   useEffect(() => {
@@ -58,15 +54,15 @@ export default function Lista() {
       .toUpperCase()
       .replace("  ", " ")
       .replace("  ", " ")
-      .replace(/[^a-z0-9\,]/gi, "");
+      .replace(/[^a-z0-9,]/gi, "");
 
-    let pesqNumero = pesqTexto.replace(/[^0-9\,]/gi);
+    let pesqNumero = pesqTexto.replace(/[^0-9,]/gi);
 
     let pesqPhone = format.formatNumber(
       format.formatPhoneNumber(pesqNumero, false)
     );
 
-    let val = txt.toUpperCase().replace(/[^a-z0-9\,]/gi, "");
+    let val = txt.toUpperCase().replace(/[^a-z0-9,]/gi, "");
     return (
       val.includes(pesqTexto) ||
       val.includes(pesqNumero) ||
@@ -204,7 +200,7 @@ export default function Lista() {
     if(cliente.pedidos && Number.parseInt(cliente.pedidos) > 0){
       alert('Impossível excluir, este cliente já realizou pedidos!')
     }else if(window.confirm('Deseja REALMENTE excluir este cliente? Seus dados serão PERMANENTEMENTE apagados.')){
-      throw new Error('Não implementado')
+      throw new NotImplementedError()
     }
   }
 
@@ -237,7 +233,7 @@ export default function Lista() {
           }}
         />
         <button className="filtro"
-        onClick={()=>{throw new Error('Não implementado')}}>
+        onClick={()=>{throw new NotImplementedError()}}>
           <FontAwesomeIcon icon={faFilter}></FontAwesomeIcon>
         </button>
       </div>
@@ -246,7 +242,7 @@ export default function Lista() {
         clientes
           .filter((cliente) => search !== ""
               ? filtro(JSON.stringify(cliente))
-              : cliente.nome === cliente.nome
+              : true
           )
           .map((cliente) => (
             <li
@@ -264,6 +260,7 @@ export default function Lista() {
                 <div className="info">
                   <label className="nome">{cliente.nome}</label>
                   <span className="contato">, {cliente.contato.join(", ")}</span>
+                  {console.log(cliente.nome, !isNEU(cliente.tags), cliente.tags)}
                   <span className="tags">{!isNEU(cliente.tags) && ', ' + cliente.tags.join(', ')}</span>
 
                   <p className="endereco">{format.formatEndereco(cliente.endereco,{withLocal: true})}</p>

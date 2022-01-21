@@ -7,7 +7,6 @@ export async function getLatLng(endereco) {
 
   
   if (isConnected()){
-    let logradouroEnabled = true  
 
     // 
     // 
@@ -23,7 +22,7 @@ export async function getLatLng(endereco) {
 
     console.log('url', url)
 
-    const raw = await fetch(url, {method: 'GET'}).then((resp) => resp.json())
+    await fetch(url, {method: 'GET'}).then((resp) => resp.json())
     .then((json) =>(res = json.results.length > 0 ? json.results[0].geometry.location : {}))
   }
 

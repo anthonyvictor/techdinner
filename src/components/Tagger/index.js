@@ -7,9 +7,6 @@ import CopyView from '../CopyView';
 
 
 function Tagger(props) {
-
-    // const [array, props.setArray] = useState(props.array ? props.array : [])
-    // const [currTxt, setCurrTxt] = useState('')
     const myInput = useRef()
 
     function add(){
@@ -22,6 +19,8 @@ function Tagger(props) {
                 case 'number':
                     formattedVal = formatPhoneNumber(formattedVal, true)
                     break;
+                default:
+                    break
             } 
             if(formattedVal === '') {
                 alert('Valor inválido!')
@@ -76,7 +75,6 @@ function Tagger(props) {
                 val = val.replace(/[^0-9]/ig, "")
                 break;
             default:
-                val = val
                 break;
         }
         props.setState(val)

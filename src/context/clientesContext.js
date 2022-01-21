@@ -56,7 +56,6 @@ export default function ClientesProvider({ children }) {
         img: 'https://pbs.twimg.com/media/EVhhRzkXYAIP2WU?format=jpg&name=large',
         tags: ['Cantor'], 
         contato: ['98828-8585', '99992-5899','98875-8845','98855-4455'], 
-        endereco: 'Mansao Wildberger, Rua Napoleao Bonaparte, 5858 - Brotas',
         endereco: {
             logradouro: 'Rua das prostitutas pra casar',
             numero: '200', 
@@ -73,8 +72,7 @@ export default function ClientesProvider({ children }) {
         {id: 5523, nome: 'Junior Brumado',
         img: 'https://www.bahianoticias.com.br/fotos/esportes_noticias/51008/IMAGEM_NOTICIA_5.jpg?checksum=1555325719',
         tags: [], 
-        contato: ['98520-5422'], 
-        endereco: 'Arena Fonte Nova, 5255 Dique',
+        contato: ['98520-5422'],
         endereco: {
             logradouro: 'Rua Grosmipildo Santiago',
             local: 'Banco do Pau Duro',
@@ -91,7 +89,6 @@ export default function ClientesProvider({ children }) {
         img: 'https://pbs.twimg.com/media/FDnIElFWEAcYu5Z?format=jpg&name=900x900',
         tags: ['Atriz daquele site', 'Morena', 'Bonita'], 
         contato: ['99588-5225','98855-4455', '99588-5858'], 
-        endereco: 'Alagoas, acre',
         endereco: {
             logradouro: 'Ladeira da puta que pariu',
             numero: '544', 

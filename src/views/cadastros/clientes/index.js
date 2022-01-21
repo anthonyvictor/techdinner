@@ -1,29 +1,43 @@
-import React, { useEffect, useRef, useState } from "react";
-import ClientesProvider from "../../../context/clientesContext";
+import React from "react";
+import styled from "styled-components";
+
+//VIEWS
 import Lista from "./lista";
 import Cadastro from "./cadastro";
-import { Estilo } from "./style";
-import TabControl from "../../../components/TabControl";
+
+//CONTEXT
+import ClientesProvider from "../../../context/clientesContext";
 import CadCliProvider from "../../../context/cadClientesContext";
 import TabControlProvider from "../../../context/tabControlContext";
 
-const Clientes = (props) => {
+//COMPONENTS
+import { TabControl } from "../../../components/TabControl";
+
+const Clientes = () => {
   const tabs = [
-    { titulo: "Lista", elemento: <Lista /> },
-    { titulo: "Cadastro", elemento: <Cadastro /> }
+    { link: '/cad/cli/lista', titulo: "Lista", elemento: <Lista /> },
+    { link: '/cad/cli/cad', titulo: "Cadastro", elemento: <Cadastro /> }
   ];
 
   return (
-    <Estilo>
+    <Container>
       <ClientesProvider>
         <CadCliProvider>
-          <TabControlProvider tabs={tabs} tabInicial={props.tabInicial}>
+          <TabControlProvider tabs={tabs}>
             <TabControl />
           </TabControlProvider>
         </CadCliProvider>
       </ClientesProvider>
-    </Estilo>
+    </Container>
   );
 };
 
 export default Clientes;
+
+
+const Container = styled.div`
+    height: calc(100vh - 50px);
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+`

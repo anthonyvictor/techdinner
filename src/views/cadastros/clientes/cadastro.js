@@ -1,29 +1,30 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import Tagger from "../../../components/Tagger";
 import * as cores from "../../../util/cores";
-import Mapa from "../../../components/Mapa";
+// import Mapa from "../../../components/Mapa";
 
 import PictureBox from "../../../components/PictureBox";
 import { formatEndereco } from "../../../util/Format";
 import { isNEU } from "../../../util/misc";
 import { useCadCli } from "../../../context/cadClientesContext";
+import { NotImplementedError } from "../../../exceptions/notImplementedError";
 
-export default function Cadastro(props) {
+export default function Cadastro() {
 
   const {
-    id, setId,
+    id,
     imagem, setImagem,
     nome, setNome,
     contato, setContato,
     tag, setTag,
-    contatos, setContatos,
-    tags, setTags,
+    contatos,
+    tags,
     endereco, setEndereco,
     limpar
   } = useCadCli()
   
-  function salvar() {}
+  function salvar() { throw new NotImplementedError()}
   
   let timeout = null;
   function alterarEndereco(obj) {
@@ -83,7 +84,8 @@ export default function Cadastro(props) {
             <label id="logradouro">
               {formatEndereco(endereco, { withTaxa: false, withLocal: false })}
             </label>
-            <button type="button">Alterar</button>
+            <button type="button"
+            onClick={()=>{throw new NotImplementedError()}}>Alterar</button>
           </div>
 
           <div id="numero-container" className="txt">
@@ -118,7 +120,7 @@ export default function Cadastro(props) {
             <button
               type="button"
               onClick={(e) => {
-                throw new Error('Não implementado')
+                throw new NotImplementedError()
               }}
             >
               Salvar
@@ -160,16 +162,12 @@ export default function Cadastro(props) {
 }
 
 const Principal = styled.form`
-  padding: 5px;
-  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: stretch;
   gap: 10px;
-  background-color: ${cores.light};
   overflow-y: auto;
-  border: 1px solid black;
-  box-sizing: border-box;
+
 
   #top-container {
     display: flex;

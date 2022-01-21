@@ -1,40 +1,50 @@
-import React, { useState } from "react";
+import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import Rotas from "./Rotas";
-import Menu from "./components/menu";
+import MainMenu from "./components/mainMenu";
 import Header from "./components/header";
-import Estilo from "./StyledBase";
-import logoComp from "./images/logo-compressed-white.svg"
-import logoNorm from"./images/logo-extended-white.svg"
+import styled from "styled-components";
+
+import RotasProvider from "./context/rotasContext";
+import MainMenuProvider from "./context/mainMenuContext";
+import Globals from "./globals";
 
 export default function Base() {
-  const [ativo, setAtivo] = useState(false)
-  const [logo, setLogo] = useState(logoComp)
-
-  const toggleAtivo = (e) => {
-    e.preventDefault()
-      setAtivo(!ativo)
-      if(ativo === true){setLogo(logoComp)}
-      else{setLogo(logoNorm)}
-  }
-
-        const [rotaPrinc, setrotaPrinc] = useState('/')
-
-        function openMenu(e){
-          setAtivo(false)
-          setLogo(logoComp)
-          setrotaPrinc('/' + e.target.getAttribute('name'))
-      }
-
   return (
-    <Estilo>
-      <Menu openMenu={openMenu} logo={logo} ativo={ativo} toggleAtivo={toggleAtivo} className="sidebar invisivel" />
-      <div className="TopoBase">
-        <Header toggleAtivo={toggleAtivo} />
-        <BrowserRouter className="meio">
-          <Rotas rotaPrinc={rotaPrinc} />
-      </BrowserRouter>
-      </div>
-    </Estilo>
+    <Container>
+      <RotasProvider>
+        <MainMenuProvider>
+
+          <MainMenu className="invisivel" />
+
+          <div className="topo-base">
+            <Header />
+            <BrowserRouter className="meio">
+              <Rotas />
+            </BrowserRouter>
+            <Globals />
+          </div>
+
+        </MainMenuProvider>
+      </RotasProvider>
+    </Container>
   );
-};
+}
+
+const Container = styled.div`
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+
+    .topo-base{
+        flex-grow: 2;
+        width: 100vh;
+    }
+
+    @media(max-width: 400px) {
+    .topo-base{
+        flex-shrink: 10;
+    }
+  }
+`

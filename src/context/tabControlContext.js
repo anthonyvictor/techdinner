@@ -1,28 +1,30 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { isNEU } from "../util/misc";
 
 const TabControlContext = createContext()
 
 function TabControlProvider(props) {
     
-    const [tabs, setTabs] = useState(props.tabs)
-    const [currentTab, setCurrentTab] = useState(getDefault());
+    const location = useLocation()
+    
 
   function getDefault() {
-    if (!isNEU(props.tabInicial)) {
-      let listFilter = tabs.filter(
-        (t) => t.titulo.toUpperCase() === props.tabInicial.toUpperCase()
-      );
-      if (!isNEU(listFilter) && listFilter.length > 0) {
-        return listFilter.pop().elemento;
+    if (location.pathname) {
+      let filtered = props.tabs.filter(e => e.link === location.pathname)
+      console.log(filtered)
+      if (!isNEU(filtered) && filtered.length > 0) {
+        return filtered.pop().elemento;
       }
     } else {
-      return tabs[0].elemento;
+      return props.tabs[0].elemento;
     }
   }
 
+  const [currentTab, setCurrentTab] = useState(getDefault());
+
   return (
-        <TabControlContext.Provider value={{currentTab, setCurrentTab, tabs}}  >
+        <TabControlContext.Provider value={{currentTab, setCurrentTab, tabs: props.tabs}}  >
             {props.children}
         </TabControlContext.Provider>
     )

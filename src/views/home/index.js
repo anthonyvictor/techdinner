@@ -6,6 +6,7 @@ import Rodape from "./rodape";
 import Topo from "./topo";
 import FloatButton from "../../components/FloatButton";
 
+
 const Home = () => {
   return ( 
     <PedidoProvider>

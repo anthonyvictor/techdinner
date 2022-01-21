@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import * as cores from "../util/cores";
 import { useTabControl } from "../context/tabControlContext";
+import { useRotas } from "../context/rotasContext";
 
-function TabControl() {
+export const TabControl = () => {
 
-  const {currentTab, setCurrentTab, tabs} = useTabControl()
+  const {currentTab, tabs} = useTabControl()
+  const {setCurrentRoute} = useRotas()
 
   return (
     <Container>
@@ -13,8 +15,10 @@ function TabControl() {
         {tabs &&
           tabs.map((t) => (
             <button
+            key={t.link}
               onClick={() => {
-                setCurrentTab(t.elemento);
+                setCurrentRoute(t.link)
+                // setCurrentTab(t.elemento);
               }}
             >
               {t.titulo}
@@ -25,8 +29,6 @@ function TabControl() {
     </Container>
   );
 }
-
-export default TabControl;
 
 const Container = styled.div`
   width: 100%;
@@ -56,6 +58,15 @@ const Container = styled.div`
         background-color: ${cores.cinzaClaro};
       }
     }
+  }
+
+  & > :not(.top){
+    height: 100%;
+    width: 100%;
+    padding: 5px;
+    background-color: ${cores.light};
+    border: 1px solid black;
+    box-sizing: border-box;
   }
 
   @media (max-width: 400px) {
