@@ -30,8 +30,11 @@ export default function MainMenu(){
             case 'cad':
                 arr = {
                     nome: nome, views: [
-                    {titulo: 'Clientes', link: '/cad/cli/lista'},
-                    {titulo: 'Endereços', link: '/cad/end/endloc/lista'}
+                    {titulo: 'Clientes', link: '/cad/clientes/lista'},
+                    {titulo: 'Endereços', link: '/cad/endloc/lista'},
+                    {titulo: 'Pizzas', link: '/cad/pizzas/sabores'},
+                    {titulo: 'Bebidas', link: '/cad/bebidas'},
+                    {titulo: 'Outros', link: '/cad/outros'}
                 ]}
                 break
             default:
@@ -55,7 +58,7 @@ export default function MainMenu(){
     }
 
     return (
-        <Sidebar ref={sidebarRef} className={ativo ? 'ativo' : null}>
+        <Sidebar ref={sidebarRef} className={ativo ? 'ativo' : undefined}>
             <div className="topo">
 
                 <div className="botao" onClick={e => {

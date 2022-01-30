@@ -15,7 +15,9 @@ function MainMenuProvider(props) {
   const {setCurrentRoute} = useRotas()
 
   const toggleAtivo = (e) => {
-    e.preventDefault()
+    if(e.type === 'touchend'){
+      e.preventDefault()
+    }
       setAtivo(!ativo)
       
   }

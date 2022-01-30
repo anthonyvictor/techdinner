@@ -3,12 +3,15 @@ import * as cores from '../../util/cores'
 export default styled.div`
     height: 50px;
     max-height: 50px;
-    background-color: ${cores.preto};
+    background-color: ${cores.cinzaDark};
     width: 100%;
     
+    flex-shrink: 0;
+    flex-grow: 0;
+
     box-sizing: border-box;
     overflow: hidden;
-    color: ${cores.branco}; 
+    color: ${cores.brancoEscuro}; 
     display: flex;
     align-items:center;
     padding: 0px 20px 0px 20px;

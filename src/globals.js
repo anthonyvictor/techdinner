@@ -7,10 +7,17 @@ export default createGlobalStyle`
     outline: 0;
     box-sizing: border-box;
   }
+
+  input,
+    textarea,
+    select {
+      text-transform: uppercase;
+    }
+    
   body {
     -webkit-font-smoothing: antialiased !important;
   }
   body html #root {
-    height: 100%;
+    height: 100vh;
   }
 `;

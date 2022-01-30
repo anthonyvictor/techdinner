@@ -103,15 +103,15 @@ export default PictureBox;
 
 const Container = styled.div`
 height: 100% ;
+width: 100% ;
 display: flex;
 gap: 5px;
 padding: 5px;
 
-
 .img-container{
-  height:100px;
-  max-width: 100px;
-  min-width: 100px;
+  height: 100%;
+  flex-basis: 150px;
+  flex-grow: 0;
   border: 1px solid black;
   background-color: white;
   position: relative;

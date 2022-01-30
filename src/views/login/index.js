@@ -1,8 +1,10 @@
 import React from 'react';
 import { Container } from './style';
 import Logo from '../../images/logo-normal-black.svg'
+// import { useAuth } from '../../auth';
 
 function Login() {
+    // const {user, setUser} = useAuth()
   return(
       <Container>
           <img src={Logo} alt='Logo-TechDinner'></img>

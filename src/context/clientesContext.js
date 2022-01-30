@@ -8,7 +8,7 @@ export default function ClientesProvider({ children }) {
 
     const [clientes, setClientes] = useState([
         {id: 5519, nome: 'Carlos Henrique',
-        img: '',
+        imagem: '',
         tags: ['Filho de dona Quinha'], 
         contato: ['98855-8855','98855-4455'], 
         endereco: {
@@ -25,7 +25,7 @@ export default function ClientesProvider({ children }) {
         },
         
         {id: 5520, nome: 'Julia Andrade',
-        img: '',
+        imagem: '',
         tags: ['Loira', 'Usa óculos'], 
         contato: ['98585-5566'], 
         endereco: {
@@ -43,7 +43,7 @@ export default function ClientesProvider({ children }) {
         },
 
         {id: 5521, nome: 'João Gomes',
-        img: '',
+        imagem: '',
         tags: [], 
         contato: ['98888-5562','99758-1231'], 
         endereco: null,
@@ -53,7 +53,7 @@ export default function ClientesProvider({ children }) {
         },
 
         {id: 5522, nome: 'Kevi Jonny',
-        img: 'https://pbs.twimg.com/media/EVhhRzkXYAIP2WU?format=jpg&name=large',
+        imagem: 'https://pbs.twimg.com/media/EVhhRzkXYAIP2WU?format=jpg&name=large',
         tags: ['Cantor'], 
         contato: ['98828-8585', '99992-5899','98875-8845','98855-4455'], 
         endereco: {
@@ -70,7 +70,7 @@ export default function ClientesProvider({ children }) {
         },
 
         {id: 5523, nome: 'Junior Brumado',
-        img: 'https://www.bahianoticias.com.br/fotos/esportes_noticias/51008/IMAGEM_NOTICIA_5.jpg?checksum=1555325719',
+        imagem: 'https://www.bahianoticias.com.br/fotos/esportes_noticias/51008/IMAGEM_NOTICIA_5.jpg?checksum=1555325719',
         tags: [], 
         contato: ['98520-5422'],
         endereco: {
@@ -86,7 +86,7 @@ export default function ClientesProvider({ children }) {
         },
 
         {id: 5524, nome: 'Alle Pjtx',
-        img: 'https://pbs.twimg.com/media/FDnIElFWEAcYu5Z?format=jpg&name=900x900',
+        imagem: 'https://pbs.twimg.com/media/FDnIElFWEAcYu5Z?format=jpg&name=900x900',
         tags: ['Atriz daquele site', 'Morena', 'Bonita'], 
         contato: ['99588-5225','98855-4455', '99588-5858'], 
         endereco: {
@@ -103,7 +103,7 @@ export default function ClientesProvider({ children }) {
         valorGasto: 205
         },
         {id: 5525, nome: 'Lauraro Martinez',
-        img: 'https://static-wp-tor15-prd.torcedores.com/wp-content/uploads/2021/09/lautaromartinez.jpeg',
+        imagem: 'https://static-wp-tor15-prd.torcedores.com/wp-content/uploads/2021/09/lautaromartinez.jpeg',
         tags: ['Joga no internacional de Porto alegre'], 
         contato: ['99982-5625','98954-4277', '98881-5118'], 
         endereco: {
@@ -118,7 +118,7 @@ export default function ClientesProvider({ children }) {
         valorGasto: 0
         },
         {id: 5526, nome: 'Pelé Garrincha',
-        img: 'https://s2.glbimg.com/3yYiyOpBqQhoTCxa8uzd9nx_IH4=/512x320/smart/e.glbimg.com/og/ed/f/original/2012/11/08/neymar.jpg',
+        imagem: 'https://s2.glbimg.com/3yYiyOpBqQhoTCxa8uzd9nx_IH4=/512x320/smart/e.glbimg.com/og/ed/f/original/2012/11/08/neymar.jpg',
         tags: ['Milior do mundo'], 
         contato: ['99558-5412'], 
         endereco: null,
@@ -127,7 +127,7 @@ export default function ClientesProvider({ children }) {
         valorGasto: 50
         },
         {id: 5527, nome: 'Xana Gata',
-        img: 'https://images.shazam.com/coverart/t531950618_s400.jpg',
+        imagem: 'https://images.shazam.com/coverart/t531950618_s400.jpg',
         tags: ['Cantora', 'Safada'], 
         contato: ['71 98828-5845'], 
         endereco: null,
@@ -150,7 +150,7 @@ export default function ClientesProvider({ children }) {
         valorGasto: 25
         },
         {id: 5529, nome: 'Tony Garrido',
-        img: 'https://cf.shopee.com.br/file/422e122df2ee0aa47c0005d4ee8c7e2f',
+        imagem: 'https://cf.shopee.com.br/file/422e122df2ee0aa47c0005d4ee8c7e2f',
         contato: ['99212223'], 
         endereco: {
             logradouro: 'Ladeira do Xaponã',
@@ -162,6 +162,78 @@ export default function ClientesProvider({ children }) {
         pedidos: 20,
         ultPedido: '03/01/2020',
         valorGasto: 325
+        },
+        {id: 5530, nome: 'Antonio Fagundes Lima',
+        imagem: 'https://pbs.twimg.com/profile_images/1291386378195017733/Swnj1R8g_400x400.jpg',
+        contato: ['988887777', '89899898'], 
+        endereco: {
+            logradouro: 'Avenida Put All Hands Up',
+            numero: '911', 
+            cep: "41510746",
+            bairro: "Enol Ma Pipou Sei",
+            taxa: 7,
+        },
+        pedidos: 1,
+        ultPedido: '30/01/2022',
+        valorGasto: 25
+        },
+        {id: 5531, nome: 'Ana Eulioteria',
+        imagem: 'https://campanhademulher.org/files/2020/10/ANA-JULIA.png',
+        contato: ['74 9 8775-9696'], 
+        tags: ['Medica', 'TRABALHA NO JORGE VALENTE'],
+        endereco: null,
+        pedidos: 0,
+        ultPedido: null,
+        valorGasto: 0
+        },
+        {id: 5532, nome: 'Pedro Motoboy',
+        imagem: 'https://images-na.ssl-images-amazon.com/images/S/amzn-author-media-prod/me6b414jf6m5tulb2elg17ntja._SX450_.jpg',
+        contato: ['7598745-6321'], 
+        endereco: {
+            logradouro: 'Travessa do caralho quente',
+            numero: '550', 
+            cep: "41152200",
+            bairro: "Ondina",
+            taxa: 2,
+        },
+        pedidos: 2,
+        ultPedido: '30/01/2022',
+        valorGasto: 20
+        },
+        {id: 5533, nome: 'Jesus Marcos',
+        imagem: 'https://img.r7.com/images/momo-michael-jackson-el-ayuwoki-08032019145801827?dimensions=615x462',
+        contato: ['955886622'], 
+        endereco: {
+            logradouro: 'Rua da minha taca',
+            numero: '1120', 
+            cep: "40140515",
+            bairro: "Graça",
+            taxa: 7,
+        },
+        pedidos: 1,
+        ultPedido: '20/01/2022',
+        valorGasto: 10
+        },
+        {id: 5534, nome: 'Rusben da Aaura',
+        imagem: 'https://www.infomoney.com.br/wp-content/uploads/2019/06/mark-zuckerberg-bloomberg-1.jpg',
+        contato: ['988665566','988778898'], 
+        endereco: null,
+        pedidos: 5,
+        ultPedido: '03/01/2020',
+        valorGasto: 120
+        },
+        {id: 5535, nome: 'Carlos dos Santos',
+        imagem: 'https://imagem.band.com.br/f_477772.jpg',
+        contato: ['99995555','987654123'], 
+        endereco: {
+            logradouro: 'Rua das amarguras de amaralina e amargosa amargas',
+            cep: "40110220",
+            bairro: "Barra",
+            taxa: 7,
+        },
+        pedidos: 0,
+        ultPedido: null,
+        valorGasto: 0
         },
     ])
 

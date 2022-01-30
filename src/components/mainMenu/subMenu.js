@@ -40,9 +40,10 @@ const Container = styled.div`
     height: 100vh;
     position: absolute;
     overflow: hidden;
+    z-index: 999;
 
     .sub-menu{
-    background-color: ${cores.preto};
+    background-color: ${cores.cinzaDark};
     min-width: 150px;
     position: absolute;
     left: 0;
@@ -69,7 +70,7 @@ const Container = styled.div`
         padding: 15px 10px;
         background-color: transparent;
         border: none;
-        border-bottom: 1px solid ${cores.branco};
+        border-bottom: 1px solid ${cores.brancoEscuro};
 
         &:hover{
             color: ${cores.amarelo};

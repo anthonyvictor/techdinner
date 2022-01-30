@@ -4,5 +4,6 @@ export class NotImplementedError extends Error{
         super(message)
         this.name = 'NaoImplementadoErro'
         alert(message)
+        window.location.reload()
     }
 }

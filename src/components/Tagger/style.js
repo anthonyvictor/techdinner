@@ -56,7 +56,7 @@ export const Container = styled.div`
     li {
       flex-shrink: 0;
       height: 30px;
-      background-color: ${cores.cinza};
+      background-color: ${cores.cinzaEscuro};
       color: white;
       padding: 2px 8px;
       border-radius: 10px;

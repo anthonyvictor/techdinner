@@ -1,15 +1,26 @@
 import React, { createContext, useContext, useState } from "react";
+import { useClientes } from "./clientesContext";
+import { useLocais } from "./locaisContext";
 
 const PedidoContext = createContext();
 
-export default function PedidoProvider({ children }) {
+export default function PedidosProvider({ children }) {
+  const {clientes} = useClientes()
   const [pedidos, setPedidos] = useState([
     {
       id: 98,
-      cli_nome: "Antonio Fagundes Lima",
-      cli_img: "https://pbs.twimg.com/profile_images/1291386378195017733/Swnj1R8g_400x400.jpg",
+      cliente: clientes[12],
       tipo: "ENTREGA",
-      data_inic: new Date(2021, 11, 10, 0, 31, 30),
+      endereco: {
+        id: 1,
+        logradouro: 'Rua Leopoldo da Desgraça', 
+        cep: "40195745",
+        bairro: 'Pituba',
+        taxa: 4,
+        local: 'Hotel Bahia Bella',
+        numero: '1660'    
+      },
+      dataInic: new Date(2021, 11, 10, 0, 31, 30),
       valor: 155.9,
       valorPago: 0,
       taxaEntrega: 5,
@@ -18,10 +29,9 @@ export default function PedidoProvider({ children }) {
 
     {
       id: 850,
-      cli_nome: "Ana Eulioteria",
-      cli_img: "https://campanhademulher.org/files/2020/10/ANA-JULIA.png",
+      cliente: {},//clientes[5],
       tipo: "CAIXA",
-      data_inic: new Date(2021, 11, 10, 0, 10, 30),
+      dataInic: new Date(2021, 11, 10, 0, 10, 30),
       valor: 20,
       valorPago: 10,
       taxaEntrega: 0,
@@ -30,10 +40,9 @@ export default function PedidoProvider({ children }) {
 
     {
       id: 540,
-      cli_nome: "Carlos dos Santos",
-      cli_img: "https://images-na.ssl-images-amazon.com/images/S/amzn-author-media-prod/me6b414jf6m5tulb2elg17ntja._SX450_.jpg",
+      cliente: clientes[15],
       tipo: "APLICATIVO",
-      data_inic: new Date(2021, 11, 9, 22, 0, 30),
+      dataInic: new Date(2021, 11, 9, 22, 0, 30),
       valor: 65.72,
       valorPago: 65.72,
       taxaEntrega: 0,
@@ -42,10 +51,9 @@ export default function PedidoProvider({ children }) {
 
     {
       id: 1015,
-      cli_nome: "Pedro Motoboy",
-      cli_img: "https://imagem.band.com.br/f_477772.jpg",
+      cliente: clientes[3],
       tipo: "CAIXA",
-      data_inic: new Date(2021, 11, 10, 0, 1, 30),
+      dataInic: new Date(2021, 11, 10, 0, 1, 30),
       valor: 10,
       valorPago: 0,
       taxaEntrega: 0,
@@ -53,10 +61,17 @@ export default function PedidoProvider({ children }) {
     },
     {
       id: 1016,
-      cli_nome: "Jesus Marcos",
-      cli_img: "https://www.infomoney.com.br/wp-content/uploads/2019/06/mark-zuckerberg-bloomberg-1.jpg",
+      cliente: clientes[4],
       tipo: "ENTREGA",
-      data_inic: new Date(2021, 11, 10, 0, 1, 30),
+      endereco: {
+        id: 550,
+        logradouro: 'Avenida Vasco da Gama', 
+        cep: "40195745",
+        bairro: 'Rio Vermelho',
+        taxa: 7,
+        numero: '1660'    
+      },
+      dataInic: new Date(2021, 11, 10, 0, 1, 30),
       valor: 10,
       valorPago: 0,
       taxaEntrega: 0,
@@ -64,92 +79,14 @@ export default function PedidoProvider({ children }) {
     },
     {
       id: 1017,
-      cli_nome: "Pedro Motoboy",
-      cli_img: "https://imagem.band.com.br/f_477772.jpg",
+      cliente: clientes[16],
       tipo: "CAIXA",
-      data_inic: new Date(2021, 11, 10, 0, 1, 30),
+      dataInic: new Date(2021, 11, 10, 0, 1, 30),
       valor: 10,
       valorPago: 0,
       taxaEntrega: 0,
       impr: 0
-    },
-    {
-      id: 1018,
-      cli_nome: "Pedro Motoboy",
-      cli_img: "https://imagem.band.com.br/f_477772.jpg",
-      tipo: "CAIXA",
-      data_inic: new Date(2021, 11, 10, 0, 1, 30),
-      valor: 10,
-      valorPago: 0,
-      taxaEntrega: 0,
-      impr: 0
-    },
-    {
-      id: 1019,
-      cli_nome: "Pedro Motoboy",
-      cli_img: "https://imagem.band.com.br/f_477772.jpg",
-      tipo: "CAIXA",
-      data_inic: new Date(2021, 11, 10, 0, 1, 30),
-      valor: 10,
-      valorPago: 0,
-      taxaEntrega: 0,
-      impr: 0
-    },
-    {
-      id: 1020,
-      cli_nome: "Pedro Motoboy",
-      cli_img: "https://imagem.band.com.br/f_477772.jpg",
-      tipo: "CAIXA",
-      data_inic: new Date(2021, 11, 10, 0, 1, 30),
-      valor: 10,
-      valorPago: 0,
-      taxaEntrega: 0,
-      impr: 0
-    },
-    {
-      id: 1021,
-      cli_nome: "Pedro Motoboy",
-      cli_img: "https://imagem.band.com.br/f_477772.jpg",
-      tipo: "CAIXA",
-      data_inic: new Date(2021, 11, 10, 0, 1, 30),
-      valor: 10,
-      valorPago: 0,
-      taxaEntrega: 0,
-      impr: 0
-    },
-    {
-      id: 1022,
-      cli_nome: "Pedro Motoboy",
-      cli_img: "https://imagem.band.com.br/f_477772.jpg",
-      tipo: "CAIXA",
-      data_inic: new Date(2021, 11, 10, 0, 1, 30),
-      valor: 10,
-      valorPago: 0,
-      taxaEntrega: 0,
-      impr: 0
-    },
-    {
-      id: 1023,
-      cli_nome: "Pedro Motoboy",
-      cli_img: "https://imagem.band.com.br/f_477772.jpg",
-      tipo: "CAIXA",
-      data_inic: new Date(2021, 11, 10, 0, 1, 30),
-      valor: 10,
-      valorPago: 0,
-      taxaEntrega: 0,
-      impr: 0
-    },
-    {
-      id: 1024,
-      cli_nome: "Pedro Motoboy",
-      cli_img: "https://imagem.band.com.br/f_477772.jpg",
-      tipo: "CAIXA",
-      data_inic: new Date(2021, 11, 10, 0, 1, 30),
-      valor: 10,
-      valorPago: 0,
-      taxaEntrega: 0,
-      impr: 0
-    },
+    }
   ]);
 
   return (

@@ -5,7 +5,7 @@ export default function CopyView(props) {
   return (
     <Container className="copy-container">
       <h6>Toque e segure no texto abaixo para copiar:</h6>
-      <h1>{props.txt}</h1>
+      <p className="texto">{props.txt}</p>
     </Container>
   );
 }
@@ -31,9 +31,11 @@ const Container = styled.div`
       pointer-events: none;
     }
 
-    h1{
+    .texto{
+      font-size: 15px;
       user-select: all;
       pointer-events: fill;
+      white-space: pre-wrap;
     }
 
     *{

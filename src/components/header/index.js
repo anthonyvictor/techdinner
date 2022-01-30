@@ -10,7 +10,7 @@ export default function Header(props) {
     return(
        <Estilo>
            <FontAwesomeIcon className='hamb icone' icon={faBars} 
-           onTouchStart={toggleAtivo}/>
+           onTouchEnd={toggleAtivo}/>
 
            <h2>TechDinner 1.0</h2>
            

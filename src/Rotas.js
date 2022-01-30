@@ -6,9 +6,13 @@ import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Home from "./views/home";
 import Clientes from "./views/cadastros/clientes";
 import Enderecos from "./views/cadastros/enderecos";
+import Pizzas from "./views/cadastros/pizzas";
 
 //CONTEXT
 import { useRotas } from "./context/rotasContext";
+import Bebidas from "./views/cadastros/bebidas";
+import Outros from "./views/cadastros/outros";
+
 
 const Rotas = () => {
   const { currentRoute } = useRotas();
@@ -20,20 +24,51 @@ const Rotas = () => {
 
   return (
     <Routes>
-      <Route exact path="/home" element={<Home />} />
 
-      <Route exact path="/" element={<Navigate to="/home" />} />
+      <Route 
+        exact 
+        path="/" 
+        element={<Navigate to="/home" />} />
+
+      <Route 
+        exact 
+        path="/home" 
+        element={<Home />} />
 
       <Route
         exact
-        path="/cad/cli/*"
+        path="/cad/clientes/*"
         element={<Clientes />}
       />
 
       <Route
         exact
-        path="/cad/end/endloc/*"
+        path="/cad/endloc/*"
         element={<Enderecos />}
+      />
+      
+      <Route
+        exact
+        path="/cad/pizzas/*"
+        element={<Pizzas />}
+      />
+
+      <Route
+        exact
+        path="/cad/bebidas"
+        element={<Bebidas />}
+      />
+
+      <Route
+        exact
+        path="/cad/outros"
+        element={<Outros />}
+      />
+
+      <Route
+        exact
+        path="/pedido/*"
+        element={<Home />}
       />
       
     </Routes>

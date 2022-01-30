@@ -4,7 +4,7 @@ import * as cores from "../util/cores";
 
 const Botao = styled.button`
   display: none;
-  background-color: ${cores.preto};
+  background-color: ${cores.cinzaDark};
 
   @media (max-width: 400px) {
     display: block;

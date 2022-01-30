@@ -3,57 +3,53 @@ import React, { createContext, useContext, useState } from 'react';
 const CadCliContext = createContext()
 
 function CadCliProvider({ children }) {
+  const Empty = {
+    id: null, 
+    nome: '',
+        imagem: '',
+        tags: [], 
+        contato: [], 
+        endereco: {
+            logradouro: '',
+            numero: '', 
+            local: '',
+            cep: "",
+            bairro: "",
+            taxa: null,
+        },
+        pedidos: null,
+        ultPedido: '',
+        valorGasto: null
+  }
+  const [lista, setLista] = useState(<></>)
+  const [curr, setCurr] = useState(Empty)
 
-  const [id, setId] = useState(0)
+  
+  // const [id, setId] = useState(0)
 
-  const [imagem, setImagem] = useState(
-    "https://exame.com/wp-content/uploads/2016/09/size_960_16_9_zuckerberg-sorriso-460-jpg.jpg"
-  );
-  const [nome, setNome] = useState("João Goularte")
+  // const [imagem, setImagem] = useState("");
+  // const [nome, setNome] = useState("")
 
-  //Valor dos input
-  const [contato, setContato] = useState("")
-  const [tag, setTag] = useState("")
+  // //Valor dos input
+  // const [contato, setContato] = useState("")
+  // const [tag, setTag] = useState("")
 
-  //Arrays de tags
-  const [tags, setTags] = useState(["Paulinha Abelha"])
-  const [contatos, setContatos] = useState(["988554455", "988885555"])
+  // //Arrays de tags
+  // const [tags, setTags] = useState([])
+  // const [contatos, setContatos] = useState([])
 
-  const [endereco, setEndereco] = useState({
-    logradouro: "Ladeira do Jardim Zoológico Ladeira do Jardim Zoológico",
-    local: "Pizzaria Delicia da Bahia",
-    numero: 427,
-    cep: "40170720",
-    bairro: "Ondina",
-    referencia: "Na pracinha do Zoológico, prox. a igreja Maanaim",
-    taxa: 2,
-  })
+  // const [endereco, setEndereco] = useState({})
 
   function limpar(confirm) {
     const res = confirm && window.confirm("Limpar formulário?")
     if(res) {
-      setId('')
-      setImagem('');
-      setNome("");
-      setContato("");
-      setTag("");
-      setTags([]);
-      setContatos([]);
-      setEndereco({});
+      setCurr(Empty)
     }
   }
 
   return (
     <CadCliContext.Provider value={{
-      id, setId,
-      imagem, setImagem,
-      nome, setNome,
-      contato, setContato,
-      tag, setTag,
-      contatos, setContatos,
-      tags, setTags,
-      endereco, setEndereco,
-      limpar
+     curr, setCurr, limpar, lista, setLista
     }}>
       {children}
     </CadCliContext.Provider>

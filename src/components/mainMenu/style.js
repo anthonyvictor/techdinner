@@ -5,7 +5,7 @@ export const Sidebar = styled.div `
   height: 100vh;
   /* position: absolute; */
   width: 50px;
-  background-color: ${cores.preto};
+  background-color: ${cores.cinzaDark};
   display: flex;
   flex-direction: column;
   justify-content: stretch;
@@ -21,6 +21,7 @@ export const Sidebar = styled.div `
     }
 
     &.ativo {
+        z-index: 999;
         position: absolute;
         width: 300px;
         .topo{
@@ -73,7 +74,7 @@ export const Sidebar = styled.div `
             align-items: center;
             max-height: 50px;
             min-height: 50px;
-            color: ${cores.branco};
+            color: ${cores.brancoEscuro};
             gap: 10px;
             box-sizing: border-box;
             overflow: hidden;
@@ -124,21 +125,21 @@ export const Sidebar = styled.div `
             vertical-align: middle;
             overflow: hidden;
             gap: 10px;
-            border-bottom: 1px solid ${cores.cinzaClaro};
+            border-bottom: 1px solid ${cores.cinza};
             
             .icone{
                 user-select: none;
                 pointer-events: none;
                 font-size: 30px;
                 width: 30px;
-                color: ${cores.branco};
+                color: ${cores.brancoEscuro};
                 vertical-align: middle;
                 height: auto;
             }
 
             p{
                 vertical-align: middle;
-                color: ${cores.branco};
+                color: ${cores.brancoEscuro};
                 display: none;
                 height: auto;
                 width: 80px;
@@ -164,13 +165,13 @@ export const Sidebar = styled.div `
 
     .rodape{
         display: flex;
-        background-color: ${cores.cinza};
+        background-color: ${cores.cinzaEscuro};
         overflow: hidden;
         box-sizing: border-box;
         align-items: center;
         justify-content: center;
         padding: 5px;       
-        color: ${cores.branco};
+        color: ${cores.brancoEscuro};
         height: 70px;
         gap: 20px;
         cursor: pointer;

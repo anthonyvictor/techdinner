@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 //VIEWS
-import Lista from "./lista";
+import ListaCli from "./lista";
 import Cadastro from "./cadastro";
 
 //CONTEXT
@@ -15,8 +15,8 @@ import { TabControl } from "../../../components/TabControl";
 
 const Clientes = () => {
   const tabs = [
-    { link: '/cad/cli/lista', titulo: "Lista", elemento: <Lista /> },
-    { link: '/cad/cli/cad', titulo: "Cadastro", elemento: <Cadastro /> }
+    { link: '/cad/clientes/lista', titulo: "Lista", elemento: <ListaCli /> },
+    { link: '/cad/clientes/cad', titulo: "Cadastro", elemento: <Cadastro /> }
   ];
 
   return (

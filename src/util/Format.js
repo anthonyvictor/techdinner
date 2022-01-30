@@ -1,15 +1,24 @@
 import { MyDDD } from './local'
-import { isNEU } from './misc';
+import * as misc from './misc';
 
-export function formatReal(valor) : string {
-    return valor.toLocaleString("pt-br", {
+export function formatReal(valor) {
+    return Number.parseFloat(valor).toLocaleString("pt-br", {
       style: "currency",
-      currency: "BRL",
-    });
+      currency: "BRL",})
+  }
+
+  export function formatCurrency(valor) {
+    return Number.parseFloat(valor).toLocaleString("pt-br", {
+      style: "decimal"})
   }
 
   export function formatCEP(valor) {
-    return `${valor.slice(0,5)}-${valor.slice(5,8)}`
+    if(valor.length === 8){
+      return `${valor.slice(0,5)}-${valor.slice(5,8)}`
+    }else{
+      return valor
+    }
+    
   }
 
   export function formatNumber(valor){
@@ -55,9 +64,9 @@ export function formatReal(valor) : string {
   }
 
   export function formatEndereco(endereco, opcoes){
-    if(!isNEU(endereco)){
+    if(!misc.isNEU(endereco)){
       if(typeof endereco === 'object' && !Array.isArray(endereco)){
-        let _taxa = opcoes.withTaxa === true ? formatReal(endereco.taxa) : ''
+        let _taxa = opcoes.withTaxa && opcoes.withTaxa === true ? formatReal(endereco.taxa) : ''
         let _loc = opcoes.withLocal && endereco.local ? endereco.local : '' 
         let _log = endereco.logradouro
         let _num = opcoes.withLocal && endereco.numero ? endereco.numero : '' 
@@ -74,3 +83,32 @@ export function formatReal(valor) : string {
       return ''
     }
   }
+
+  export function formatBebida(obj){
+    if(!misc.isNEU(obj)){
+      let tipo = obj.tipo
+      let nome = obj.nome
+      let sabor = obj.sabor ? obj.sabor : ''
+      let tamanho = formatLitro(obj.tamanho)
+
+      return [tipo, nome, sabor, tamanho].filter(e => e !== '').join(' ')
+      
+    }else{
+      return ''
+    }
+  }
+
+  export function formatLitro(ml){
+    return ml >= 1000 ? ml / 1000 + 'l' : ml + 'ml'
+  }
+
+ export function formatAbrev(txt){
+    const last = txt.charAt(txt.slice(0, 4))
+    const vogal = misc.isVogal(last)
+    if (vogal) {
+        return txt.slice(0, 3)
+    }else{
+        return txt.slice(0, 4)
+    }
+    
+}
