@@ -14,15 +14,15 @@ import TabControlProvider from "../../../context/tabControlContext";
 import { TabControl } from "../../../components/TabControl";
 
 const Clientes = () => {
+  const links = ['/cad/clientes/lista', '/cad/clientes/cad']
   const tabs = [
-    { link: '/cad/clientes/lista', titulo: "Lista", elemento: <ListaCli /> },
-    { link: '/cad/clientes/cad', titulo: "Cadastro", elemento: <Cadastro /> }
-  ];
-
+    { link: links[0], titulo: "Lista", elemento: <ListaCli tabs={links} /> },
+    { link: links[1], titulo: "Cadastro", elemento: <Cadastro tabs={links} /> }
+  ]
   return (
     <Container>
       <ClientesProvider>
-        <CadCliProvider>
+        <CadCliProvider >
           <TabControlProvider tabs={tabs}>
             <TabControl />
           </TabControlProvider>

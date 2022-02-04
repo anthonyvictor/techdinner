@@ -26,11 +26,11 @@ function Sabores() {
     useEffect(() => {
         setFiltered(sabores.filter(e => misc.filtro(e, search)))
     }, [search]) //eslint-disable-line
-
+    const orderTipo = (a,b) => a.numero > b.numero ? 1 : a.numero === b.numero ? -1 : 0 
     useEffect(() => {
       if (filtered) {
         setLista(
-          filtered.map((e) => (
+          filtered.sort(orderTipo).map((e) => (
             <li key={e.id}>
               <label 
               className={`item-ativo ${e.ativo ? 'true' : 'false'}`} 
@@ -475,7 +475,7 @@ position: relative;
   }
 
 
-  @media (max-width: 400px){
+  @media (max-width: 550px){
     display: block;
     overflow-y: auto;
     .esq{

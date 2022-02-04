@@ -32,7 +32,7 @@ function App() {
   
                 <div className="topo-base">
                   <Header />
-                    <Rotas className="meio" />
+                  <Rotas className="meio" />
                   <Globals />
                 </div>
               </MainMenuProvider>
@@ -53,7 +53,7 @@ export default App;
 
 const Container = styled.div`
   display: flex;
-  width: 100%;
+  width: 100vw;
   height: 100vh ;
   overflow: hidden;
   
@@ -61,7 +61,7 @@ const Container = styled.div`
     width: 100% ;
     display: flex;
     flex-direction: column;
-
+    
   }
 
   

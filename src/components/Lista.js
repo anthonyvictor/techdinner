@@ -9,13 +9,13 @@ import * as cores from '../util/cores'
 import { useLista } from '../context/listaContext';
 
 export const Lista = (props) => {
-  const {allowMultiSelect, onConfirm, selectedDataArray} = useLista()
+  const {allowMultiSelect, onConfirm, selectedDataArray, grid} = useLista()
   // mustRefresh &&
   function getIsSelected(id){
     return allowMultiSelect ? selectedDataArray.some(e => misc.equals(e.id, id)) : false
   }
   return (
-    <Container className={'lista-component'}>
+    <Container className={'lista-component'} grid={grid}>
         
           {props.children && (props.children.length > 0) && 
           <ul>
@@ -81,6 +81,7 @@ const Item = (props) => {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  min-height: 50px;
   width: 100%;
   height: 100%;
   justify-content: stretch;
@@ -91,17 +92,30 @@ const Container = styled.div`
   ul {
     display: flex;
     flex-direction: column;
+    gap: 5px;
+    
+    ${(props) => !(props.grid === true)}{
+      @media (min-width: 550px){
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-auto-rows: max-content;
+        row-gap: 5px;
+        column-gap: 5px;
+      }
+    }
+
     overflow-y: auto;
     height: 100%;
-    gap: 5px;
+    
     .lista-component-li {
+      /* min-height: 70px; */
       display: flex;
       align-items: center;
       padding: 5px;
       gap: 5px;
       border: 1px solid black;
       background-color: ${cores.brancoEscuro};
-      flex-basis: 50px;
+      flex-basis: 70px;
 
       &.selected {
         background-color: ${cores.verde};

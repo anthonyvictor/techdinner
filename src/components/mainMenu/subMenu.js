@@ -78,7 +78,7 @@ const Container = styled.div`
     }
     }
 
-    @media (max-width: 400px){
+    @media (max-width: 550px){
         background-color: rgba(0,0,0,.8);
         width: 100vw;
         left: 0;

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import styled from 'styled-components';
 import * as cores from '../util/cores'
 
@@ -10,7 +11,6 @@ function ContextMenuProvider({children}) {
 
     function fechar(e){
         if(e === true || e.target === e.currentTarget){
-            //setCopyView(null);
             setComponent(null);
             setObj(null)
         }
@@ -52,15 +52,15 @@ function ContextMenu() {
 
     const {obj, fechar} = useContextMenu()
     function itemClick(e){
-        e.click();
         fechar(true);
+        e.click();
     }
 
     function itemTouch(event, e){
         if(e.touch){
             event.preventDefault()
-            e.touch();
             fechar(true)
+            e.touch();
         }
     }
 
@@ -71,18 +71,22 @@ function ContextMenu() {
     }
 
     return (
-      <Container onClick={fechar}>
+      <Container onMouseDown={fechar}>
         <div className="context-menu-container">
             
             <p className='titulo'>Menu</p>
 
             <div className="botoes">
-                {obj.map((e, i) => (
-                <button key={i} className={getClassName(e)}
+                {obj.map((e, i) => 
+                !e.text 
+                    ? <button key={i} className={getClassName(e)}
                 onClick={() => itemClick(e)}
                 onTouchStart={(event) => itemTouch(event, e)}
                 >{e.title}</button>
-                ))}
+                : <CopyToClipboard key={i} text={e.text} onCopy={() => fechar(true)} >
+                    <button className={getClassName(e)}>{e.title}</button>
+                </CopyToClipboard>
+                )}
             </div>
 
           <p className="rodape">TechDinner - Sistema de pedidos</p>

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 
 const CadCliContext = createContext()
 
-function CadCliProvider({ children }) {
+function CadCliProvider(props) {
   const Empty = {
     id: null, 
     nome: '',
@@ -22,23 +22,7 @@ function CadCliProvider({ children }) {
         valorGasto: null
   }
   const [lista, setLista] = useState(<></>)
-  const [curr, setCurr] = useState(Empty)
-
-  
-  // const [id, setId] = useState(0)
-
-  // const [imagem, setImagem] = useState("");
-  // const [nome, setNome] = useState("")
-
-  // //Valor dos input
-  // const [contato, setContato] = useState("")
-  // const [tag, setTag] = useState("")
-
-  // //Arrays de tags
-  // const [tags, setTags] = useState([])
-  // const [contatos, setContatos] = useState([])
-
-  // const [endereco, setEndereco] = useState({})
+  const [curr, setCurr] = useState(props.cliente ?? Empty)
 
   function limpar(confirm) {
     const res = confirm && window.confirm("Limpar formulário?")
@@ -51,7 +35,7 @@ function CadCliProvider({ children }) {
     <CadCliContext.Provider value={{
      curr, setCurr, limpar, lista, setLista
     }}>
-      {children}
+      {props.children}
     </CadCliContext.Provider>
   )
 }

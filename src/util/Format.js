@@ -63,16 +63,16 @@ export function formatReal(valor) {
     return valor
   }
 
-  export function formatEndereco(endereco, opcoes){
+  export function formatEndereco(endereco, withTaxa = false, withLocal = true, withCep = true){
     if(!misc.isNEU(endereco)){
       if(typeof endereco === 'object' && !Array.isArray(endereco)){
-        let _taxa = opcoes.withTaxa && opcoes.withTaxa === true ? formatReal(endereco.taxa) : ''
-        let _loc = opcoes.withLocal && endereco.local ? endereco.local : '' 
+        let _taxa = withTaxa && withTaxa === true ? formatReal(endereco.taxa) : ''
+        let _loc = withLocal && endereco.local ? endereco.local : '' 
         let _log = endereco.logradouro
-        let _num = opcoes.withLocal && endereco.numero ? endereco.numero : '' 
+        let _num = withLocal && endereco.numero ? endereco.numero : '' 
         let _bai = endereco.bairro
-        let _ref = opcoes.withLocal &&  endereco.referencia ? endereco.referencia : ''
-        let _cep = formatCEP(endereco.cep)
+        let _ref = withLocal &&  endereco.referencia ? endereco.referencia : ''
+        let _cep = withCep ? formatCEP(endereco.cep) : ''
           return [_taxa.toString(), _loc.toString(), _log.toString(), 
             _num.toString(), _bai.toString(), _ref.toString(), 
             _cep].filter(x => x !== '').join(', ') 
@@ -111,4 +111,12 @@ export function formatReal(valor) {
         return txt.slice(0, 4)
     }
     
+}
+
+
+export const encodeBase64 = (data) => {
+  return Buffer.from(data).toString('base64');
+}
+export const decodeBase64 = (data) => {
+  return Buffer.from(data, 'base64').toString('ascii');
 }

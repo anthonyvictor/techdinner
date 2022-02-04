@@ -19,6 +19,7 @@ export const SearchBar = (props) => {
   return (
     <Container className={"searchbar-component"}>
       <input
+        ref={props._ref}
         id="search-input"
         autoComplete="off"
         type="search"
@@ -76,7 +77,7 @@ const Container = styled.div`
 
     }
 
-    @media (max-width: 400px){
+    @media (max-width: 550px){
       height: 60px;
       gap: 1px;
 

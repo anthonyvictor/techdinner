@@ -169,7 +169,7 @@ padding: 5px;
         }
     }
 
-  @media (max-width: 400px) {
+  @media (max-width: 550px) {
     .botoes {
       display: none;
     }

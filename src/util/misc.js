@@ -23,7 +23,13 @@ export function sleep(ms) {
 }
 
 export async function copiar(val){
-  await navigator.clipboard.writeText(val)
+  // await navigator.clipboard.writeText(val)
+
+  navigator.clipboard.writeText("pica").then(function() {
+    alert('copiou')
+  }, function() {
+    alert('não copiou')
+  });
 
 }
 
@@ -181,4 +187,10 @@ export function filtro(obj, search, longNumber = false, phoneNumber = false) {
 
 export function isMobile(){
   return window.screen.width <= 400
+}
+
+export function toDate(dateStr) {
+  let dmy = dateStr.split(' ')[0].split("/");
+  let hms = dateStr.split(' ')[1].split(":");
+  return new Date(dmy[2], dmy[1] - 1, dmy[0], hms[0] ?? 0, hms[1] ?? 0, hms[2] ?? 0);
 }

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { SearchBar } from "../../../components/SearchBar";
-import CopyView from "../../../components/CopyView";
 import ImageViewer from "../../../components/ImageViewer";
 
 import * as apis from "../../../apis";
@@ -13,7 +12,6 @@ import * as cores from "../../../util/cores";
 
 import { useClientes } from "../../../context/clientesContext";
 import { useCadCli } from "../../../context/cadClientesContext";
-import { useTabControl } from "../../../context/tabControlContext";
 import { useRotas } from "../../../context/rotasContext";
 import ListaProvider from "../../../context/listaContext";
 import {Lista} from '../../../components/Lista'
@@ -23,14 +21,12 @@ import { useContextMenu } from "../../../context/contextMenuContext";
 
 
 
-export default function ListaCli() {
-  const { tabs } = useTabControl();
+export default function ListaCli(props) {
   const {setCurrentRoute} = useRotas()
   const {curr, setCurr, lista, setLista} = useCadCli();
   const [search, setSearch] = useState("");
   const { clientes } = useClientes();
-  const {contextMenu} = useContextMenu()
-  const [copyView, setCopyView] = useState(null);
+  const {contextMenu, fechar} = useContextMenu()
   const [imageView, setImageView] = useState(null);
   const [filtered, setFiltered] = useState([])
   
@@ -74,65 +70,40 @@ export default function ListaCli() {
     ])
   }
   function itemClick(e){
-    editar(e)
-  }
-
-  function copiar(txt) {
-    if (!misc.isNEU(txt)) {
-      misc.copiar(txt);
-    } else {
-      alert("Dados inválidos para copiar");
-    }
-  }
-
-  function copiarMobile(txt) {
-    if (!misc.isNEU(txt)) {
-      setCopyView(<CopyView txt={txt} />);
-    } else {
-      alert("Dados inválidos para copiar");
+    if(props.retorno){
+      props.retorno(e)
+    }else{
+      editar(e)
     }
   }
 
   const c_all = (cliente) => {
     return `Cliente: ${cliente.nome}
     \nContato: ${cliente.contato.join(", ")}
-    \nEndereço: ${format.formatEndereco(cliente.endereco, {withTaxa: false, withLocal: true})}`
-  }
-  
-  const c_end = (cliente) => {
-    return format.formatEndereco(cliente.endereco,{withTaxa: true, withLocal: true})
-  }
-
-  const c_ctt = (cliente) => {
-    return cliente.contato.join(", ")
+    \nEndereço: ${format.formatEndereco(cliente.endereco, false, true)}`
   }
 
   function openContextCopiar(cliente) {
-
+    console.log('abrir')
     contextMenu([
       {title: 'iD', 
-      click:() => copiar(cliente.id), 
-      touch: () => copiarMobile(cliente.id),
+      text: cliente.id,
       enabled: true, visible: true},
 
       {title: 'Nome', 
-      click:() => copiar(cliente.nome), 
-      touch: () => copiarMobile(cliente.nome),
+      text: cliente.nome,
       enabled: true, visible: true},
 
       {title: 'Contato', 
-      click:() => copiar(c_ctt(cliente)), 
-      touch: () => copiarMobile(c_ctt(cliente)),
+      text: cliente.contato.join(", "),
       enabled: true, visible: true},
 
       {title: 'Endereço', 
-      click:() => copiar(c_end(cliente)), 
-      touch: () => copiarMobile(c_end(cliente)),
+      text: format.formatEndereco(cliente.endereco,true, true),
       enabled: true, visible: !!cliente.endereco},
 
       {title: 'Tudo', 
-      click:() => copiar(c_all(cliente)), 
-      touch:() => copiarMobile(c_all(cliente)), 
+      text: c_all(cliente),
       enabled: true, visible: !!cliente.endereco}
     ])
   }
@@ -161,14 +132,14 @@ export default function ListaCli() {
   }
 
   function editar(cliente) {
-    let preenchido = !misc.isNEU(curr)
+    let preenchido = !misc.isNEU(misc.joinObj(curr))
 
     if (curr && curr.id === cliente.id) {
-      setCurrentRoute(tabs[1].link)
+      setCurrentRoute(props.tabs[1])
     } else if ((preenchido && window.confirm("Deseja cancelar a edição atual?")) ||
       !preenchido) {
       setCurr(cliente)
-      setCurrentRoute(tabs[1].link)
+      setCurrentRoute(props.tabs[1])
     }
   }
 
@@ -264,7 +235,7 @@ export default function ListaCli() {
                 </span>
 
                 <p className="endereco">
-                  {format.formatEndereco(cliente.endereco, { withLocal: true })}
+                  {format.formatEndereco(cliente.endereco, false, true)}
                 </p>
 
                 <div className="bottom-info">
@@ -305,7 +276,6 @@ export default function ListaCli() {
           {lista}
         </Lista>
       </ListaProvider>
-      {copyView}
       {imageView}
     </Estilo>
   );
@@ -318,7 +288,10 @@ export default function ListaCli() {
 const Estilo = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: stretch;
+  overflow-y: auto;
+  width: 100% ;
+  height: 100% ;
+  flex-grow: 2;
 
   .inicio {
     font-size: 10px;
@@ -385,7 +358,7 @@ const Estilo = styled.div`
     pointer-events: fill;
   }
 
-  @media (max-width: 400px) {
+  @media (max-width: 550px) {
     #lista {
       .cli-li {
         padding: 10px 2px;

@@ -59,7 +59,11 @@ export const Bebidas = () => {
 
                     <div className='centro'>
                         <div>
-                        <label className='nome'>{[e.nome, e.sabor ? e.sabor : '', format.formatLitro(e.tamanho)].filter(e => e !== '').join(' ')}</label>
+                        <label className='nome'>
+                          {[e.nome, e.sabor ? e.sabor : '', format.formatLitro(e.tamanho)]
+                          .filter(e => e !== '')
+                          .join(' ')}
+                          </label>
                         {!e.visivel && <strong className={`item-visivel ${e.visivel
                         ? 'true' : 'false'}`}> - {e.visivel
                         ? 'Visível' : 'Invisível'}</strong>}
@@ -135,7 +139,7 @@ export const Bebidas = () => {
             onChange={(e) => setCurr({...curr, tipo: e.target.value})} />
             <datalist id='tipos-lista'>
                 {[...new Set(bebidas.map(e => e.tipo).filter(e => !misc.isNEU(e)))].map(e => (
-                    <option>{e}</option>
+                    <option key={e}>{e}</option>
                 ))}
             </datalist>
         </section>
@@ -157,7 +161,7 @@ export const Bebidas = () => {
             />
             <datalist id='sabores-lista'>
                 {[...new Set(bebidas.map(e => e.sabor).filter(e => !misc.isNEU(e)))].map(e => (
-                    <option>{e}</option>
+                    <option key={e}>{e}</option>
                 ))}
             </datalist>
           </section>
@@ -395,7 +399,7 @@ const Container = styled.div`
     }
   }
 
-  @media (max-width: 400px){
+  @media (max-width: 550px){
     flex-direction: column;
   }
 `;

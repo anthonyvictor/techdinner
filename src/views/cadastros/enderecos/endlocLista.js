@@ -6,11 +6,10 @@ import { useLocais } from "../../../context/locaisContext";
 import * as Format from "../../../util/Format";
 import * as cores from '../../../util/cores'
 import * as misc from '../../../util/misc'
-import CopyView from "../../../components/CopyView";
 import { useCadEndereco } from "../../../context/cadEnderecosContext";
 import { useTabControl } from "../../../context/tabControlContext";
 import { useRotas } from "../../../context/rotasContext";
-import * as infoLocal from '../../../util/local'
+import * as apis from '../../../apis'
 import ListaProvider from "../../../context/listaContext";
 import { Lista } from "../../../components/Lista";
 import { useContextMenu } from "../../../context/contextMenuContext";
@@ -29,7 +28,6 @@ function EndLocLista(props) {
   const { setCurrentRoute } = useRotas()
 
   const {contextMenu} = useContextMenu()
-  const [copyView, setCopyView] = useState(null);
 
   function editar(e){
     let preenchido = !misc.isNEU(misc.joinObj(currEL))
@@ -53,41 +51,10 @@ function EndLocLista(props) {
   }
 
   function maps(e){
-
-    if(!misc.isNEU(e.logradouro)){
-      let logradouro = e.logradouro.replace(/\s\(+.+\)+/,'')
-      let cidade = infoLocal.MyCity()
-      let estado = infoLocal.MyStateCode()
-      let cep = e.cep.replace(/[-.]/,'')
-      let numero = e.numero ?? ''
-      let all = [logradouro, numero, cidade, estado, cep].filter(txt => !misc.isNEU(txt)).join(' ').replace(' ', '+')
-      let url = `https://maps.google.com/maps?q=${all}`
-  
-      window.open(url)
-    }else{
-      throw new Error('Endereço vazio!')
-    }
+    apis.enderecoToUrl(e).then(url => window.open(url))
   }
   
   function excluir(e){}
-
-  function copiarMobile(txt) {
-    txt = Format.formatEndereco(txt, {withTaxa:true,withLocal:true})
-    if (!misc.isNEU(txt)) {
-        setCopyView(<CopyView txt={txt} />)
-    } else {
-      alert("Dados inválidos para copiar");
-    }
-  }
-
-  function copiar(txt) {
-    txt = Format.formatEndereco(txt, {withTaxa:true,withLocal:true})
-    if (!misc.isNEU(txt)) {
-        misc.copiar(txt)
-    } else {
-      alert("Dados inválidos para copiar");
-    }
-  }
 
   function itemClick(e){
     editar(e)
@@ -111,20 +78,18 @@ function EndLocLista(props) {
   }
 
   function c_end(endereco){
-    return Format.formatEndereco(endereco, {withTaxa: true, withLocal: true})
+    return Format.formatEndereco(endereco, true, true)
   }
 
   function openContextCopiar(endereco) {
 
     contextMenu([
       {title: 'CEP', 
-      click:() => copiar(endereco.cep), 
-      touch:() => copiarMobile(endereco.cep), 
+      text: endereco.cep,
       enabled: true, visible: true},
 
       {title: 'Tudo', 
-      click:() => copiar(c_end(endereco)), 
-      touch:() => copiarMobile(c_end(endereco)), 
+      text: c_end(endereco),
       enabled: true, visible: true}
     ])
   }
@@ -142,7 +107,7 @@ function EndLocLista(props) {
           <li key={e.id}>
             <h3 className="inicio">{Format.formatReal(e.taxa)}</h3>
             <label className="centro">
-              {Format.formatEndereco(e, { withTaxa: false, withLocal: true })}
+              {Format.formatEndereco(e, false, true)}
             </label>
           </li>
         ))
@@ -159,7 +124,6 @@ function EndLocLista(props) {
             {lista}
         </Lista>
         </ListaProvider>
-      {copyView}
     </Container>
   );
 }

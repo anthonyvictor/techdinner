@@ -6,7 +6,7 @@ const Botao = styled.button`
   display: none;
   background-color: ${cores.cinzaDark};
 
-  @media (max-width: 400px) {
+  @media (max-width: 550px) {
     display: block;
     position: absolute;
     right: 0;

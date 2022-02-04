@@ -59,7 +59,7 @@ flex-shrink: 0;
 
 
 
-      @media (max-width: 400px) {
+      @media (max-width: 550px) {
         display: none;
   }
 

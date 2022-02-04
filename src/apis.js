@@ -1,12 +1,12 @@
-import { GoogleApiKey } from "./util/local";
+import * as local from "./util/local";
 import { formatNumber, formatPhoneNumber } from "./util/Format";
-import { isConnected } from "./util/misc";
+import * as misc from "./util/misc";
 
 export async function getLatLng(endereco) {
   let res = null
 
   
-  if (isConnected()){
+  if (misc.isConnected()){
 
     // 
     // 
@@ -18,7 +18,7 @@ export async function getLatLng(endereco) {
     "&address=" +
     endereco.logradouro.replace(" ", "+") +
     "|&country:Brazil&key=" +
-    GoogleApiKey()
+    local.GoogleApiKey()
 
     console.log('url', url)
 
@@ -40,7 +40,28 @@ export async function getLatLng(endereco) {
 
 
 export function sendWhatsAppMessage(txt, phoneNumber){
+  txt = txt !== '' ? "&text=" + txt.replace(' ', '+') : ''
   phoneNumber = formatPhoneNumber(phoneNumber, true, true)
   phoneNumber = formatNumber(phoneNumber)
-  window.open("https://api.whatsapp.com/send?phone=" + phoneNumber)
+  window.open("https://api.whatsapp.com/send?phone=" + phoneNumber + txt)
+}
+
+export function enderecoToUrl(endereco){
+  return new Promise((resolve, reject) => {
+    if(!misc.isNEU(endereco.logradouro)){
+      let logradouro = endereco.logradouro.replace(/\s\(+.+\)+/,'')
+      let cidade = local.MyCity()
+      let estado = local.MyStateCode()
+      let cep = endereco.cep.replace(/[-.]/,'')
+      let numero = endereco.numero ?? ''
+      let all = [logradouro, numero, cidade, estado, cep]
+      .filter(txt => !misc.isNEU(txt))
+      .join(' ')
+      .replace(' ', '+')
+      let url = `https://maps.google.com/maps?q=${all}`
+      resolve(url)
+    }else{
+      reject('Endereço vazio!!')
+    }
+  })
 }

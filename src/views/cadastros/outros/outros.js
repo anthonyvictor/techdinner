@@ -283,7 +283,7 @@ const Container = styled.div`
        
     }
   }
-  @media (max-width: 400px){
+  @media (max-width: 550px){
     flex-direction: column;
     overflow-y: auto;
   }

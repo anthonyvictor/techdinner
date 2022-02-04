@@ -9,14 +9,12 @@ export const TabControl = () => {
 
   const {currentTab, setCurrentTab, tabs, getDefault} = useTabControl()
 
-  const {setCurrentRoute} = useRotas()
-
-  const loc = useLocation()
+  const {setCurrentRoute, location} = useRotas()
 
   const top = useRef()
 
   useEffect(() => {
-    let curr = tabs.filter(e => e.link === loc.pathname)
+    let curr = tabs.filter(e => e.link === location.pathname)
     if(curr.length > 0){
       for(let bt of top.current.children){
         if(bt.innerHTML === curr[0].titulo){
@@ -30,7 +28,7 @@ export const TabControl = () => {
     
     useEffect(() => {
       setCurrentTab(getDefault())
-    },[loc.pathname]) // eslint-disable-line react-hooks/exhaustive-deps
+    },[location.pathname]) // eslint-disable-line react-hooks/exhaustive-deps
     
 
   return (
@@ -112,7 +110,7 @@ const Container = styled.div`
     }
   }
 
-  @media (max-width: 400px) {
+  @media (max-width: 550px) {
     flex-direction: column-reverse;
 
     .top {

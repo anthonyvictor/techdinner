@@ -69,7 +69,7 @@ export const Container = styled.div`
     }
   }
 
-  @media(max-width:400px){
+  @media(max-width: 550px){
     div{
 
       label{

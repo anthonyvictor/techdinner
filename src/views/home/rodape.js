@@ -2,6 +2,7 @@ import React from "react";
 import { usePedidos } from "../../context/pedidosContext";
 import { formatReal } from "../../util/Format";
 import styled from "styled-components";
+import * as misc from "../../util/misc";
 
 export default function Rodape() {
   const { pedidos } = usePedidos();
@@ -11,7 +12,9 @@ export default function Rodape() {
   }
 
   function getTaxas() {
-    return pedidos.reduce((a, b) => a + b.taxaEntrega, 0)
+    const enderecos = pedidos.filter(e => !misc.isNEU(e.endereco)).map(e => e.endereco)
+    const taxas = enderecos.filter(e => !misc.isNEU(e.taxa)).map(e => e.taxa).reduce((a,b) => a + b, 0)
+    return taxas
   }
 
   function getPago() {
@@ -86,7 +89,7 @@ height: 30px;
       }
     }
 
-    @media (max-width: 400px){
+    @media (max-width: 550px){
         .geral p {
         font-weight: 600;
         line-height: 36px;

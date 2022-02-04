@@ -412,7 +412,7 @@ const Container = styled.div`
       background-color: ${cores.vermelho};
     }
   }
-  @media (max-width: 400px) {
+  @media (max-width: 550px) {
     display: block;
     overflow-y: auto;
     .esq {

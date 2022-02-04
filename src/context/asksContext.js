@@ -50,7 +50,7 @@ function Ask(){
     const {obj, fechar} = useAsk()
 
     return(
-        <Container onClick={(e) => {obj.allowCancel && fechar(e)}}>
+        <Container onMouseDown={(e) => {obj.allowCancel && fechar(e)}}>
             <div className='ask-container'>
                 
                 <div className='titulo'>

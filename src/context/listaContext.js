@@ -10,7 +10,6 @@ function ListaProvider(props) {
     const [selectedDataArray, setSelectedDataArray] = useState(props.selectedDataArray ?? [])
     const setResponseArray = props.setResponseArray ?? (() => {})
     const [hoveredData, setHoveredData] = useState(null)
-
     const {itemDoubleClick, itemRightClick} = props
     const allowMultiSelect = props.allowMultiSelect ?? false
     const allowKeyPressObserver = props.allowKeysObserver ?? true
@@ -91,8 +90,9 @@ function ListaProvider(props) {
                 const enter = {is: specialKeyPressed === 'Enter' && (hoveredData || fullDataArray.length === 1)}
                 
                 if(enter.is){
-                    itemDoubleClick(hoveredData)
+                    itemDoubleClick(hoveredData ?? fullDataArray[0])
                 }else {
+                    console.log(down.val)
                     setHoveredData(up.is ? up.val : down.val)
                 }
             }
@@ -114,7 +114,9 @@ function ListaProvider(props) {
 
             hoveredData, setHoveredData,
 
-            onConfirm, onItemClick, onRightClick
+            onConfirm, onItemClick, onRightClick,
+
+            grid: props.grid
             }} >
             {props.children}
         </ListaContext.Provider>

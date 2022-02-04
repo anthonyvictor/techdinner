@@ -23,18 +23,18 @@ export default function Lista() {
 
 const ListaContainer = styled.ul`
   overflow-y: auto;
-  width: 100%;
-  height: calc(100vh - 140px); 
+  /* width: 100%;
+  height: 100% ;//calc(100vh - 140px);  */
   padding: 5px 0;
   border: none;
+  flex-grow: 2;
 
 
   @media (max-width: 760px){
     padding: 10px 10px;
   }
 
-  @media (max-width: 400px){
-      height: calc(100vh - 90px);
+  @media (max-width: 550px){
       padding: 5px 10px 60px 10px;
   }
 `;
@@ -45,11 +45,7 @@ function Item({pedido}) {
   const {curr, setCurr} = useHome() 
   const [duracao, setDuracao] = useState(getDuration())
 
-  setInterval(function() {
-    setDuracao(getDuration())
-  }, 1000);
-
-  function getDuration() {
+function getDuration() {
     let dataATUAL = new Date();
 
     let ms = dataATUAL - pedido.dataInic;
@@ -77,8 +73,6 @@ function Item({pedido}) {
 
     return dur;
   }
-
-  
 
   function CorHora() {
     let data_atual = new Date();
@@ -136,9 +130,11 @@ function Item({pedido}) {
   // let itemImg = images(`./${pedido.cli_img}`).default;
   
 useEffect(() => {
-  
-  return() => { setInterval(null)}
+  const timer = setInterval(
+    () => {setDuracao(getDuration())}, 1000);
+  return() => clearInterval(timer)
 },[])
+
   return (
     <ItemContainer className={(curr && pedido && pedido.id && curr.id === pedido.id) ? 'active' : undefined}
       pedido={{
@@ -147,9 +143,6 @@ useEffect(() => {
         corhora: CorHora,
         corvalor: CorValor,
         corimpr: CorImpr,
-      }}
-      onTouchStart={() => {
-        // setShowLista(false)
       }}
       onClick={() => {
         setCurr(pedido)
@@ -184,8 +177,8 @@ useEffect(() => {
   );
 }
 
-export const ItemContainer = styled.li`
-  width: 100%;
+const ItemContainer = styled.li`
+  width: 100% ;
   list-style: none;
   display: flex;
   align-items: center;
@@ -196,6 +189,7 @@ export const ItemContainer = styled.li`
   padding: 0 5px;
   cursor: pointer;
   overflow: hidden;
+  border-radius: 5px;
 
   &.active{
     background-color: ${cores.cinzaDark};
@@ -253,11 +247,6 @@ export const ItemContainer = styled.li`
       justify-content: stretch;
       gap: 3px;
 
-      @media (max-width: 760px){
-        margin-top: 5px;
-        padding: 0 10px;
-        gap: 10px;
-      }
       span {
         flex-grow: 2;
         justify-content: center;
@@ -313,22 +302,19 @@ export const ItemContainer = styled.li`
 
   &:not(:last-child) {
     margin-bottom: 6px;
-    @media (max-width: 760px){
-      margin-bottom: 10px;
-    }
   }
 
-  /* @media (max-width: 760px){
-    .esquerda{
-      width: 100% ;
-      ${(props) => !props.curr}{
-        display: none;
-      }
-    }
-  } */
-
   @media (max-width: 760px) {
-    height: 70px;
+    height: 80px;
+    &:not(:last-child) {
+      margin-bottom: 10px;
+    }
+
+    .info-secundarias {
+        margin-top: 5px;
+        padding: 0 10px;
+        gap: 10px;
+      }
 
     img {
       width: 40px;
@@ -359,6 +345,7 @@ export const ItemContainer = styled.li`
       }
     }
   }
+
 `;
 
 

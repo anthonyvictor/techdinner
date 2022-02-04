@@ -1,9 +1,6 @@
 import { Container } from './style';
 import React, {useRef, useState } from "react";
 import { formatPhoneNumber, formatNumber } from '../../util/Format'
-import { copiar } from '../../util/misc';
-import CopyView from '../CopyView';
-import { useAsk } from '../../context/asksContext';
 import { useContextMenu } from '../../context/contextMenuContext';
 import * as apis from '../../apis' 
 import * as msg from '../../util/Mensagens'
@@ -80,8 +77,7 @@ function Tagger(props) {
             enabled: true, visible: true},
 
             {title: 'Copiar', 
-            click:() => copiar(e), 
-            touch:() => setShowCopyView(true), 
+            text: e,
             enabled: true, visible: true},
 
             {title: 'Excluir', 
@@ -124,8 +120,6 @@ function Tagger(props) {
         }
     }
 
-    const [showCopyView, setShowCopyView] = useState(false)
-
   return (
   <Container className="Tagger" contextMenu='menuc'>
     <div>
@@ -153,7 +147,6 @@ function Tagger(props) {
         ))}
     </ul>
 
-  {/* {showCopyView && <CopyView txt={currItem.innerHTML} />} */}
 
         
     

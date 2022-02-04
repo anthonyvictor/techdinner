@@ -5,7 +5,7 @@ import * as cores from "../../../util/cores";
 // import Mapa from "../../../components/Mapa";
 
 import PictureBox from "../../../components/PictureBox";
-import { formatEndereco, formatPhoneNumber, formatReal } from "../../../util/Format";
+import * as Format from "../../../util/Format";
 import { isNEU } from "../../../util/misc";
 import { useCadCli } from "../../../context/cadClientesContext";
 import { NotImplementedError } from "../../../exceptions/notImplementedError";
@@ -20,10 +20,8 @@ import { useContextMenu } from "../../../context/contextMenuContext";
 export default function Cadastro() {
   const [contato, setContato] = useState('')
   const [tag, setTag] = useState('')
-  const {curr, setCurr, limpar} = useCadCli();
-
-  const {contextMenu} = useContextMenu()
-
+  const {curr, setCurr, limpar} = useCadCli()
+  
   const {ask} = useAsk()
 
   const {clientes} = useClientes()
@@ -73,7 +71,7 @@ export default function Cadastro() {
   }
 
   function checarCttExiste(txt){
-    const jatem = clientes.filter(e => e.contato.some(x => formatPhoneNumber(x) === formatPhoneNumber(txt)))
+    const jatem = clientes.filter(e => e.contato.some(x => Format.formatPhoneNumber(x) === Format.formatPhoneNumber(txt)))
     if(jatem.length > 0){
       alert(`Este número está vinculado a: (${jatem[0].id}) ${jatem[0].nome}`)
       return false
@@ -135,7 +133,7 @@ export default function Cadastro() {
           <div id="logradouro-container" className="txt">
             <label htmlFor="logradouro">Logradouro:</label>
             <label id="logradouro">
-              {formatEndereco(curr.endereco, { withTaxa: false, withLocal: false })}
+              {Format.formatEndereco(curr.endereco, false, false)}
             </label>
             <button
               type="button"
@@ -202,7 +200,7 @@ export default function Cadastro() {
             />
           </div>
 
-          <label id="taxa">{`Taxa: ${formatReal(curr.endereco.taxa ? curr.endereco.taxa : 0)}`}</label>
+          {curr.endereco && <label id="taxa">{`Taxa: ${Format.formatReal(curr.endereco.taxa ? curr.endereco.taxa : 0)}`}</label>}
 
         </div>
 
@@ -230,6 +228,7 @@ const Principal = styled.form`
   gap: 5px;
   overflow-y: auto;
   position: relative;
+  width: 100% ;
 
   @keyframes aparecer{
     from{opacity: 0}
@@ -407,10 +406,11 @@ const Principal = styled.form`
 
   #bottom-container {
     display: flex;
-    max-height: 70px;
+    height: 60px;
     gap: 30px;
     padding: 6px;
     flex-grow: 1;
+    flex-shrink: 0;
     button {
       font-size: 20px;
       cursor: pointer;
@@ -429,7 +429,7 @@ const Principal = styled.form`
 `;
 
 const Estilo = styled(Principal)`
-  @media (max-width: 400px) {
+  @media (max-width: 550px) {
     display: block;
     
     
@@ -444,7 +444,7 @@ const Estilo = styled(Principal)`
     height: 120px;
 
     .picturebox-container{
-      width: 120px;
+      width: 110px;
       height: 100% ;
       flex-grow: 0;
       flex-shrink: 0;
@@ -457,24 +457,7 @@ const Estilo = styled(Principal)`
       justify-content: center;
       gap: 15px;
 
-      .txt {
-        display: flex;
-        user-select: none;
-
-        gap: 5px;
-
-        * {
-          font-size: 16px;
-        }
-
-        input {
-          flex-grow: 2;
-        }
-      }
-
-      label {
-        user-select: none;
-      }
+      
 
       .nome-section {
         height: 50px;
@@ -574,8 +557,27 @@ const Estilo = styled(Principal)`
         font-size: 16px;
       }
     } */
-    #bottom-container {
-      height: 90px;
-    }
+
+
+
+    .txt {
+        display: flex;
+        user-select: none;
+        gap: 5px;
+      
+        * {
+          font-size: 16px;
+        }
+
+        input {
+          flex-grow: 2;
+          width: 100%;
+        }
+      }
+
+      label {
+        user-select: none;
+      }
+
   }
 `;

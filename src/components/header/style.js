@@ -17,6 +17,10 @@ export default styled.div`
     padding: 0px 20px 0px 20px;
     justify-content: space-between;
 
+    @media print{
+        display: none;
+    }
+
     h2{
         user-select: none;
         pointer-events: none;
@@ -39,7 +43,7 @@ export default styled.div`
         
     }
 
-    @media(max-width: 400px){
+    @media(max-width: 550px){
         flex-direction: row-reverse;
         .hamb{
             display: block;

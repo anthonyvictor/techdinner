@@ -10,23 +10,27 @@ export const brancoEscuro = '#d2dae2'
 export const brancoDark = '#c6c9cc'
 
 
-export const amarelo = '#ffdd59'
-export const amareloEscuro = '#ffa801'
-export const amareloDark = '#9e7e00'
+export const amarelo = '#ffd726'
+export const amareloEscuro = '#ffd60a'
+export const amareloDark = '#fcb100'
+
+export const laranja = '#fc8803'
+export const laranjaEscuro = '#d17102'
+export const laranjaDark = '#b04804'
 
 export const vermelho = '#ff3f34'
 export const vermelhoEscuro = '#ff0e00'
 export const vermelhoDark = '#570803'
 
 export const verde = '#05c46b'
-export const verdeEscuro = '#035c32'
+export const verdeEscuro = '#067d45'
 export const verdeDark = '#01240d'
 
 export const azul = '#0fbcf9'
-export const azulEscuro = '#575fcf'
-export const azulDark = '#3c40c6'
+export const azulEscuro = '#2e61bf'
+export const azulDark = '#0d3c91'
 
-export const roxo = '#D980FA'
+export const roxo = '#ad1be3'
 export const roxoEscuro = '#833471'
 export const roxoDark = '#6F1E51'
 

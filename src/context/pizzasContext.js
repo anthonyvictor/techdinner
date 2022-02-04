@@ -4,9 +4,9 @@ const PizzasContext = createContext()
 
 function PizzasProvider({children}) {
     const [tipos, setTipos] = useState([
-        {id: 1, nome: 'Tradicional', cor: '#233791'},
-        {id: 2, nome: 'Especial', cor: '#239132'},
-        {id: 3, nome: 'Gourmet', cor: '#91238e'}
+        {id: 1, nome: 'Tradicional', cor: '#239132', numero: 1},
+        {id: 2, nome: 'Especial', cor: '#233791', numero: 2},
+        {id: 3, nome: 'Gourmet', cor: '#91238e', numero: 3}
     ])
 
     const [ingredientes, setIngredientes] = useState([
@@ -45,9 +45,37 @@ function PizzasProvider({children}) {
         ingredientes[5], ingredientes[6]]},
 
         {id: 14, nome: 'Camarao', numero: 25,
-        tipo: tipos[2], ativo: true, visivel: false,
+        tipo: tipos[2], ativo: true, visivel: true,
         ingredientes: [ingredientes[0],ingredientes[1],ingredientes[2], 
+        ingredientes[3],ingredientes[4], ingredientes[6]]},
+
+        {id: 15, nome: '3 Queijos', numero: 7,
+        tipo: tipos[1], ativo: true, visivel: true,
+        ingredientes: [ingredientes[2], 
         ingredientes[3],ingredientes[4], ingredientes[5], ingredientes[6]]},
+
+        {id: 16, nome: 'Sertaneja', numero: 26,
+        tipo: tipos[2], ativo: true, visivel: true,
+        ingredientes: [ingredientes[0],ingredientes[1],
+        ingredientes[4], ingredientes[5], ingredientes[6]]},
+
+        {id: 17, nome: 'Sardinha', numero: 31,
+        tipo: tipos[2], ativo: true, visivel: true,
+        ingredientes: [ingredientes[0],ingredientes[1], 
+        ingredientes[3],ingredientes[4], ingredientes[5]]},
+
+        {id: 18, nome: 'Bife', numero: 27,
+        tipo: tipos[2], ativo: true, visivel: true,
+        ingredientes: [ingredientes[1],ingredientes[2], 
+        ingredientes[3], ingredientes[5], ingredientes[6]]},
+
+        {id: 19, nome: 'Delicia do Chef', numero: 20,
+        tipo: tipos[1], ativo: true, visivel: true,
+        ingredientes: [ingredientes[2], ingredientes[6]]},
+
+        {id: 21, nome: 'Ponte Preta', numero: 22,
+        tipo: tipos[2], ativo: true, visivel: true,
+        ingredientes: [ingredientes[0],ingredientes[2], ingredientes[4]]},
     ])
 
     const [tamanhos, setTamanhos] = useState([
