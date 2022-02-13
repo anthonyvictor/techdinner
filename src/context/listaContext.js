@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useEffect, useState} from 'react';
+import React, {createContext, useContext, useCallback, useEffect, useState} from 'react';
 import * as misc from '../util/misc'
 
 const ListaContext = createContext()
@@ -10,11 +10,14 @@ function ListaProvider(props) {
     const [selectedDataArray, setSelectedDataArray] = useState(props.selectedDataArray ?? [])
     const setResponseArray = props.setResponseArray ?? (() => {})
     const [hoveredData, setHoveredData] = useState(null)
+    const [lockHover, setLockHover] = useState(false)
     const {itemDoubleClick, itemRightClick} = props
     const allowMultiSelect = props.allowMultiSelect ?? false
+    const allowSelect = props.allowSelect ?? false
     const allowKeyPressObserver = props.allowKeysObserver ?? true
     
     const specialKeys = ['ArrowDown', 'ArrowUp', 'Enter']
+    const alphaNum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('')
     const [specialKeyPressed, setSpecialKeyPressed] = useState(null)
 
         useEffect(() => {
@@ -28,13 +31,32 @@ function ListaProvider(props) {
             }
         }, [])//eslint-disable-line
 
-        function onPressValidator(event){
+
+        useEffect(() => {
+                setLockHover(true)
+        }, [fullDataArray])
+
+        const onPressValidator = useCallback((event) => {
             if(event.type === 'keydown'){
-              onPress(event.key, event.key)
+
+            if(props.searchRef){
+                if (
+                    [...alphaNum, 'BACKSPACE'].some(e => e === event.key.toUpperCase()) &&
+                    document.activeElement !== props.searchRef.current && !focusBusy()
+                ) {
+                    props.searchRef.current.focus()
+                } else {
+                    onPress(event.key, event.key)
+                }
+            }else{
+                onPress(event.key, event.key)
+            }
+
+
             }else if(event.type === 'keyup'){
               onPress(event.key, null)
             }
-          }
+          },[])
 
         function onPress (key, value){
             specialKeys.some(e => e === key) && setSpecialKeyPressed(value)
@@ -67,6 +89,9 @@ function ListaProvider(props) {
               }
             }else if(event.type === 'dblclick'){
                 itemDoubleClick(data)
+            }else if(event.type === 'click' && allowSelect){
+                setSelectedDataArray([data])
+                setResponseArray([data])
             }
           }
 
@@ -78,7 +103,7 @@ function ListaProvider(props) {
         function getIndex(data){
             return data && fullDataArray.map(e => e.id).indexOf(data.id)
         }
-
+const itemDoubleClickCondition = (props.itemDoubleClickCondition ?? (() => true))
         useEffect(() => {
             if (specialKeyPressed && fullDataArray.length > 0 && !focusBusy()) {
 
@@ -90,13 +115,24 @@ function ListaProvider(props) {
                 const enter = {is: specialKeyPressed === 'Enter' && (hoveredData || fullDataArray.length === 1)}
                 
                 if(enter.is){
-                    itemDoubleClick(hoveredData ?? fullDataArray[0])
+                    // let current = fullDataArray[0]
+                    // if(fullDataArray.length > 1){
+                    //     current = hoveredData ? hoveredData : fullDataArray[0]
+                    // }
+
+                    const current = hoveredData ? hoveredData : fullDataArray[0]
+                    itemDoubleClickCondition(current) && itemDoubleClick(current)
                 }else {
-                    console.log(down.val)
                     setHoveredData(up.is ? up.val : down.val)
                 }
             }
         }, [specialKeyPressed]) //eslint-disable-line
+
+        useEffect(() => {
+            if(!lockHover){
+                setHoveredData(null)
+            }
+        },[lockHover])
 
         useEffect(() => {
             (fullDataArray.length > 1 || fullDataArray.length === 0) && setHoveredData(null)
@@ -115,6 +151,8 @@ function ListaProvider(props) {
             hoveredData, setHoveredData,
 
             onConfirm, onItemClick, onRightClick,
+
+            lockHover, setLockHover,
 
             grid: props.grid
             }} >

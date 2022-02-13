@@ -1,33 +1,40 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import Axios from "axios";
 
 const EnderecosContext = createContext();
 
 function EnderecosProvider(props) {
-  const [enderecos, setEnderecos] = useState([
-    {
-      id: 1,
-      logradouro: 'Avenida Penetração Norte-Sul',
-      cep: "40195745",
-      bairro: 'Fortaleza',
-      taxa: 2
-    },
-    {
-      id: 2,
-      logradouro: 'Travessa Maravilha Tristeza',
-      cep: "40195735",
-      bairro: 'Ondina',
-      taxa: 3
-    },
-    {
-      id: 3,
-      logradouro: 'Ladeira dos Enfartados',
-      cep: "40195745",
-      bairro: 'Bairro Duro',
-      taxa: 5
-    }
-  ]);
+  const [enderecos, setEnderecos] = useState([])
+  const [locais, setLocais] = useState([])
+  const [bairros, setBairros] = useState([])
+  const [atualizar, setAtualizar] = useState(0)
+
+  useEffect(() => {            
+    let montado = true
+    async function getAll(){
+        Axios.get(`${process.env.REACT_APP_API_URL}/enderecos`).then(r=>
+            {if(montado) {
+              setBairros(r.data.bairros)
+              setEnderecos(r.data.enderecos)
+              setLocais(r.data.locais)
+            } }
+        )
+    }   
+    getAll()
+    return () => {montado = false}
+},[atualizar, ])     
+
+const refresh = () => {
+    setAtualizar(prev => prev + 1)
+}
+
   return (
-    <EnderecosContext.Provider value={{ enderecos, setEnderecos }}>
+    <EnderecosContext.Provider value={{ 
+      enderecos, setEnderecos,
+      locais, setLocais,
+      bairros, setBairros, refresh
+    
+    }}>
       {props.children}
     </EnderecosContext.Provider>
   );

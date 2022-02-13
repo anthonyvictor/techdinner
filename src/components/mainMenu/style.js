@@ -97,7 +97,7 @@ export const Sidebar = styled.div `
         img{
             box-sizing: border-box;
             padding: 10px;
-            object-fit:contain;
+            object-fit: contain;
             height: 100%;
             width: 100%;
             overflow: hidden;
@@ -218,7 +218,7 @@ export const Sidebar = styled.div `
             }
 
             img{
-                padding: 30px;
+                padding: 10px;
             }
        }
        
@@ -256,6 +256,13 @@ export const Sidebar = styled.div `
 
             .meio .botao {justify-content: center;}
             
+        }
+    }
+    @media(max-width: 400px){
+        .topo{
+            img{
+                padding: 30px;
+            }
         }
     }
 `;

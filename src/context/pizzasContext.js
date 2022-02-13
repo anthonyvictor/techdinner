@@ -10,20 +10,22 @@ function PizzasProvider({children}) {
     ])
 
     const [ingredientes, setIngredientes] = useState([
-        {id: 1, nome: 'Calabresa'}, {id: 2, nome: 'Frango'}, {id: 3, nome: 'Requeijao'}, 
-        {id: 4, nome: 'Mussarela'}, {id: 5, nome: 'Oregano'}, {id: 6, nome: 'Presunto'}, 
-        {id: 7, nome: 'Cheddar'}
+        {id: 1, nome: 'Calabresa'}, {id: 2, nome: 'Frango'}, 
+        {id: 3, nome: 'Requeijao'}, {id: 4, nome: 'Mussarela'}, 
+        {id: 5, nome: 'Oregano'}, {id: 6, nome: 'Presunto'}, 
+        {id: 7, nome: 'Cheddar'}, {id: 8, nome: 'Cebola'}
     ])
 
     const [sabores, setSabores] = useState([
         {id: 1, nome: 'Frango', numero: 1,
-        tipo: tipos[0], ativo: true, visivel: true,
+        tipo: tipos[0], ativo: false, visivel: true,
         ingredientes: [ingredientes[1], ingredientes[2], 
         ingredientes[3], ingredientes[4]]},
 
         {id: 2, nome: 'Calabresa', numero: 2,
-        tipo: tipos[0], ativo: true, visivel: false,
-        ingredientes: [ingredientes[0], ingredientes[1], ingredientes[2]]},
+        tipo: tipos[0], ativo: true, visivel: true,
+        ingredientes: [ingredientes[0], ingredientes[1], 
+        ingredientes[2]]},
 
         {id: 6, nome: 'Mussarela', numero: 3,
         tipo: tipos[0], ativo: true, visivel: true,
@@ -87,13 +89,19 @@ function PizzasProvider({children}) {
     const [valores, setValores] = useState([
         {id: 1, tamanho: tamanhos[0], tipo: tipos[0], valor: 35},
         {id: 2, tamanho: tamanhos[1], tipo: tipos[0], valor: 25},
+        {id: 7, tamanho: tamanhos[1], tipo: tipos[2], valor: 50},
+        {id: 8, tamanho: tamanhos[2], tipo: tipos[2], valor: 55},
         {id: 3, tamanho: tamanhos[0], tipo: tipos[1], valor: 30},
         {id: 4, tamanho: tamanhos[1], tipo: tipos[1], valor: 28},
         {id: 5, tamanho: tamanhos[2], tipo: tipos[0], valor: 23},
         {id: 6, tamanho: tamanhos[2], tipo: tipos[1], valor: 33}
     ])
 
-    
+    const [bordas, setBordas] = useState([
+        {id: 1, tamanho:tamanhos[0], valor: 3},
+        {id: 2, tamanho:tamanhos[1], valor: 5},
+        {id: 3, tamanho:tamanhos[2], valor: 6}
+    ])
 
   return (
       <PizzasContext.Provider value={{
@@ -101,7 +109,8 @@ function PizzasProvider({children}) {
           tamanhos, setTamanhos,
           ingredientes, setIngredientes,
           tipos, setTipos,
-          valores, setValores
+          valores, setValores,
+          bordas, setBordas
         }}>
             {children}
         </PizzasContext.Provider>

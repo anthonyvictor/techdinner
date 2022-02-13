@@ -113,7 +113,7 @@ const Container = styled.div`
 
     .context-menu-container{
         width: min(80vw, 400px);
-        min-height: 200px;
+        min-height: 100px;
         max-height: 80vh;
         display: flex;
         align-items: center;
@@ -125,6 +125,7 @@ const Container = styled.div`
         animation: aparecer .2s linear;
         gap: 5px;
         user-select: none;
+        justify-content: center;
 
         .titulo{
             display: block;

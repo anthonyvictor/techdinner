@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { SearchBar } from '../../../components/SearchBar';
-import { useBairros } from '../../../context/bairrosContext';
+import { useEnderecos } from '../../../context/enderecosContext';
 import { useCadEndereco } from '../../../context/cadEnderecosContext';
 import * as misc from '../../../util/misc'
 import * as Format from "../../../util/Format";
@@ -12,7 +12,7 @@ import { Lista } from '../../../components/Lista';
 
 function Bairros() {
   
-  const {bairros} = useBairros()
+  const {bairros} = useEnderecos()
   const {currBai, setCurrBai, limparBai} = useCadEndereco()
   const [search, setSearch] = useState('')
   const [lista, setLista] = useState('')

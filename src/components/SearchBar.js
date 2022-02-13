@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
-import { isNEU } from "../util/misc";
+import { isMobile, isNEU } from "../util/misc";
 
 export const SearchBar = (props) => {
 
@@ -27,7 +27,7 @@ export const SearchBar = (props) => {
         value={props.value}
         onChange={(e) => props.setValue(e.target.value)}
         onKeyDown={(e) => keyDown(e)}
-        autoFocus={true}
+        autoFocus={!isMobile()}
       />
 
       {!isNEU(props.filter) && 

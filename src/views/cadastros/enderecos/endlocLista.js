@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { SearchBar } from "../../../components/SearchBar";
 import { useEnderecos } from "../../../context/enderecosContext";
-import { useLocais } from "../../../context/locaisContext";
 import * as Format from "../../../util/Format";
 import * as cores from '../../../util/cores'
 import * as misc from '../../../util/misc'
@@ -19,9 +18,8 @@ function EndLocLista(props) {
 
   function openFilter() {}
 
-  const { enderecos } = useEnderecos();
+  const { enderecos, locais, bairros } = useEnderecos();
   const [filtered, setFiltered] = useState([])
-  const { locais } = useLocais();
   const [lista, setLista] = useState();
   const {currEL, setCurrEL, setTipoEL, tiposEL} = useCadEndereco()
   const { tabs } = useTabControl()
@@ -95,20 +93,46 @@ function EndLocLista(props) {
   }
 
   useEffect(() => {
-    let temp = enderecos;
-    temp = [...enderecos, ...locais.map(e => {return{...e, id: -e.id}})]  
-    setFiltered(temp.filter(e => misc.filtro(e, search)))
-  }, [search]) // eslint-disable-line
+    let temp1 = enderecos.map(e => {return{...e, 
+      bairro: bairros.filter(b => b.id === e.bairro.id)[0]
+    }})
+    
+    let temp2 = locais.map(e => {return{...e,
+       ...temp1.filter(en => en.cep === e.cep)[0], 
+       id: -e.id
+    }})
+
+    let temp = [...buildTemp(temp1, 10), ...buildTemp(temp2, 5)]
+
+    function buildTemp(t, max){
+      return t.filter(e => misc.filtro(e, search))
+      .sort((a,b) => a.bairro.taxa < b.bairro.taxa 
+      ? -1 : a.bairro.taxa > b.bairro.taxa ? 1 : 0)
+      .slice(0, max)
+    }
+    
+    setFiltered(temp)
+
+  }, [search, enderecos, locais, bairros]) // eslint-disable-line
 
   useEffect(() => {
     if (filtered) {
       setLista(
-        filtered.sort((a,b) => a.taxa === b.taxa ? 0 : a.taxa > b.taxa ? 1 : -1).map((e, i) => (
+        filtered.map((e) => (
           <li key={e.id}>
-            <h3 className="inicio">{Format.formatReal(e.taxa)}</h3>
-            <label className="centro">
-              {Format.formatEndereco(e, false, true)}
-            </label>
+            <h3 className="inicio">{Format.formatReal(e.bairro.taxa)}</h3>
+            <div className="centro">
+              <strong>
+                {Format.formatEndereco({local: e.local, numero: e.numero, referencia: e.referencia}, false, true, false)}
+              </strong>
+              <label>
+                {Format.formatEndereco(e, false, false, false)}
+              </label>
+              <div className="bottom">
+              <p>Cep: {Format.formatCEP(e.cep)}</p>
+            </div>
+            </div>
+            
           </li>
         ))
       );
@@ -135,8 +159,48 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: stretch;
 
+  .lista-component-li{
+      .inicio{
+        font-size: 16px;
+      }
+      .centro{
+        font-size: 15px;
+        strong,label{
+          display: block;
+        }
+        strong{font-size: 12px}
+        .bottom{
+          p{
+          font-size: 12px;
+          font-style: italic;
+        }
+        }
+       
+      }
+    }
+
+  @media (max-width: 550px){
+    .lista-component-li{
+      .inicio{
+        font-size: 14px;
+      }
+      .centro{
+        font-size: 13px;
+        strong,label{
+          display: block;
+        }
+        .bottom{
+          p{
+          font-size: 12px;
+          font-style: italic;
+        }
+        }
+       
+      }
+    }
+  }
   
-  #endloc-lista{
+  /* #endloc-lista{
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -154,6 +218,13 @@ const Container = styled.div`
         flex-grow: 2;
         flex-shrink: 2;
         font-weight: 600;
+      }
+
+      @media (max-width: 550px){
+        .centro{
+          font-size: 8px!important;
+          background-color: red;
+        }
       }
 
       button{
@@ -175,6 +246,6 @@ const Container = styled.div`
         background-color: ${cores.cinzaEscuro};
       }
     }
-  }
+  } */
 
 `;

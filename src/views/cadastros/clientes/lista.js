@@ -18,14 +18,15 @@ import {Lista} from '../../../components/Lista'
 
 import { NotImplementedError } from "../../../exceptions/notImplementedError";
 import { useContextMenu } from "../../../context/contextMenuContext";
+import axios from "axios";
 
 
 
 export default function ListaCli(props) {
   const {setCurrentRoute} = useRotas()
-  const {curr, setCurr, lista, setLista} = useCadCli();
+  const {curr, setCurr, lista, setLista, images, setImages} = useCadCli();
   const [search, setSearch] = useState("");
-  const { clientes } = useClientes();
+  const { clientes, setClientes } = useClientes();
   const {contextMenu, fechar} = useContextMenu()
   const [imageView, setImageView] = useState(null);
   const [filtered, setFiltered] = useState([])
@@ -66,7 +67,8 @@ export default function ListaCli(props) {
       {title: 'Ver imagem', 
       click:() => verImagem(cliente), 
       touch:() => verImagemMobile(cliente), 
-      enabled: misc.isNEU(cliente.imagem), visible: true}
+      enabled: !misc.isNEU(images.filter(i => i.id === cliente.id)[0]?.imagem), 
+      visible: true}
     ])
   }
   function itemClick(e){
@@ -84,7 +86,6 @@ export default function ListaCli(props) {
   }
 
   function openContextCopiar(cliente) {
-    console.log('abrir')
     contextMenu([
       {title: 'iD', 
       text: cliente.id,
@@ -151,7 +152,21 @@ export default function ListaCli(props) {
         "Deseja REALMENTE excluir este cliente? Seus dados serão PERMANENTEMENTE apagados."
       )
     ) {
-      throw new NotImplementedError();
+      const payload ={
+        id: cliente.id
+      }
+      axios({
+        url:`${process.env.REACT_APP_API_URL}/clientes/excluir`,
+        method: 'delete',
+        data: payload
+
+      })
+      .then(()=>{
+        setClientes(prev => prev.filter(e=> e.id !== cliente.id))
+      })
+      .catch(e=>{
+        alert(`Erro: ${e}`)
+      })
     }
   }
 
@@ -173,99 +188,143 @@ export default function ListaCli(props) {
     );
   }
 
-  function isPhoneEqual(a){
-    return a.contatos.some(c => misc.equals(format.formatPhoneNumber(c), format.formatPhoneNumber(search)))
-  }
+  // function isPhoneEqual(a){
+  //   return a.contatos.some(c => misc.equals(format.formatPhoneNumber(c), format.formatPhoneNumber(search)))
+  // }
+  const nomeTags = (e) => [e.nome, ...e.tags.map(tag => `${e.nome} ${tag} ${e.nome}`)].join(' ')
+  
+  function ordem(a,b,maxID){
+  
+    const ult = (e) => 
+    e.ultPedido ? Number(e.ultPedido.split('/')
+    .reverse().join('') ?? 0) : 0 
+    const i = (e) => e.includes(pTexto) 
 
-  function ordem(a,b){
-    // if(a.id === search && b.id !== search) return 1
-    // if(a.id !== search && b.id === search) return -1
+    const _nomeExato = () => 
+    pTexto.length > 0 ?
+    a.nome === pTexto && b.nome !== pTexto  ? -1
+    : b.nome === pTexto && a.nome !== pTexto ? 1 : null
+    : null
 
-    // // if(isPhoneEqual(a) && !isPhoneEqual(b)) return 1
-    // // if(!isPhoneEqual(a) && isPhoneEqual(b)) return -1
-
-    // if(!misc.isNEU(a.ultPedido) && misc.isNEU(b.ultPedido)) return -1
-    // if(misc.isNEU(a.ultPedido) && !misc.isNEU(b.ultPedido)) return 1
-
-
-    // if(a.nome === search && b.nome !== search) return 1
-    // if(a.nome !== search && b.nome === search) return -1
-
-    // const da = new Date(a.ultPedido).getTime()
-    // const db = new Date(b.ultPedido).getTime()
-    // const d = new Date()
-
-
-    // console.log('pedido a:',Date.parse(a.ultPedido),'   pedido b:',b.ultPedido, a> b)
-    // // Date.parse(a.ultPedido) > Date.parse(b.ultPedido)
-    // if(Date.parse(a.ultPedido) > Date.parse(b.ultPedido)) return 1
-    // if(Date.parse(a.ultPedido) < Date.parse(b.ultPedido)) return -1
-
-    // if(a.valorGasto > b.valorGasto) return 1
-    // if(a.valorGasto < b.valorGasto) return -1
-
-
+    const _nomeTags = () => 
+    pTexto.length > 3 ?
+    i(nomeTags(a)) && !i(nomeTags(b)) ? -1
+    : !i(nomeTags(a)) && i(nomeTags(b)) ? 1 : null
+    : null
     
-    if(a.id > b.id) return 1
-    if(a.id < b.id) return -1
+    const _novo = () => 
+    pTexto.length > 3 ?
+    (a.pedidos === 0 && Number(maxID) - Number(a.id) < 51) ? -1
+    : (b.pedidos === 0 && Number(maxID) - Number(b.id) < 51) ? 1 : null
+    : null
 
+    const _pedidos = () => 
+    pTexto.length > 3 ?
+    a.pedidos > b.pedidos ? -1 
+    : b.pedidos < a.pedidos ? 1 : null
+    : null
+
+    const _ultPed = () => 
+    pTexto.length > 3 ?
+    ult(a) > ult(b) ? -1 
+    : ult(a) < ult(b) ? 1 : null
+    : null
+
+    const _id = () => 
+    pTexto.length < 4 ?
+    a.id > b.id ? -1
+    : b.id > a.id ? 1 : null
+    : null
+
+    let order = 
+    _nomeExato() ?? _nomeTags() ?? 
+    _novo() ?? _pedidos() ?? 
+    _ultPed() ?? _id() ?? 0
+
+    return order
   }
+const [pTexto, setPTexto] = useState('')
+
+function filtro(obj, searcString, pNumero, pPhone) {
+  if (searcString !== "") {
+  let txt = misc.joinObj(obj)     
+
+    let val = txt.toUpperCase().replace(/[^a-z0-9]/gi, "");
+
+    const p1 = val.includes(pTexto)
+
+    const p2 = val.includes(pNumero)
+
+    const p3 = !misc.isNEU(pPhone) && val.includes(pPhone)
+
+    const p4 = misc.removeConjuncoes(val).includes(misc.removeConjuncoes(pTexto))
+
+    return p1 || p2 || p3 || p4
+  } else {
+    return true;
+  }
+}
+
+useEffect(() => {
+  let pNumero = pTexto.replace(/[^0-9]/gi)
+  let pPhone = format.formatPhoneNumber(pNumero, false)
+
+  let step1 = [...clientes].filter(e => 
+    filtro({
+      id: e.id, 
+      nomeTags: nomeTags(e),
+      contato: e.contato,
+      endereco: e.endereco
+    }, 
+    pTexto, pNumero, pPhone))
+  let maxID = step1.length > 0 
+  ? step1.map(e => e.id).reduce((max, val) => max > val ? max : val)
+  : 0
+  let step2 = step1.sort((a,b)=>ordem(a,b,maxID))
+  let step3 = step2.slice(0, 10)
+  setFiltered(step3)      
+},[pTexto, clientes])
 
   useEffect(() => {
-    setFiltered(clientes.filter(e => misc.filtro({...e, imagem: ''}, search, true, true)))      
+    const timer = setTimeout(() => {
+      setPTexto(misc.removeAccents(search)
+    .toUpperCase().replace("  ", " ")
+    .replace("  ", " ").replace(/[^a-z0-9]/gi, ""))
+    }, 700);
+
+    return() => clearTimeout(timer)
   }, [search])//eslint-disable-line
 
   useEffect(() => {
     if(filtered){
-      setLista(
-        filtered.sort(ordem).map((cliente) => (
-          <li className="cli-li" key={cliente.id}>
-
-            <div className="inicio">
-              {cliente.imagem && <img src={cliente.imagem} alt="imagem" />}
-              <label className={`id${misc.isNEU(cliente.valorGasto) ? ' novo' : ''}`}>{cliente.id}</label>
-            </div>
-
-            <div className="centro">
-              <div className="info">
-                <label className="nome">{cliente.nome}</label>
-                <span className="contato">, {cliente.contato.map(e => format.formatPhoneNumber(e)).join(", ")}</span>
-                <span className="tags">
-                  {!misc.isNEU(cliente.tags) && ", " + cliente.tags.join(", ")}
-                </span>
-
-                <p className="endereco">
-                  {format.formatEndereco(cliente.endereco, false, true)}
-                </p>
-
-                <div className="bottom-info">
-                  {cliente.endereco?.taxa > 0 && (
-                    <span>
-                      Taxa: {format.formatReal(cliente.endereco.taxa)}
-                    </span>
-                  )}
-
-                  {!misc.isNEU(cliente.pedidos) && cliente.pedidos > 0 && (
-                    <span>Pedidos: {cliente.pedidos}</span>
-                  )}
-
-                  {!misc.isNEU(cliente.valorGasto) &&
-                    cliente.valorGasto > 0 && (
-                      <span>{format.formatReal(cliente.valorGasto)}</span>
-                    )}
-
-                  {!misc.isNEU(cliente.ultPedido) && (
-                    <span>Últ. pedido: {cliente.ultPedido}</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          </li>
-        ))
-      );
+       function fillImages(){
+      
+        const payload = {
+          ids: [...filtered.map(e=> e.id)]
+        }
+        if(lista){//let imagens = 
+          axios({
+            url: `${process.env.REACT_APP_API_URL}/clientes/imagens`, 
+            method: 'post',
+            data: payload
+          }).then(e => {
+            setImages(prev => [
+              ...prev,
+              ...e.data.filter(img => prev.map(p => p.id).includes(img.id) === false )
+            ])
+          })
+            
+        }
+      }
+  
+      const timer = setTimeout(() => {fillImages()}, 1500);
+      
+      setLista(true);
+      return () => clearTimeout(timer);
+    }else{
+      setLista(false)
     }
   }, [filtered])//eslint-disable-line
-
 
   return (
     <Estilo>
@@ -273,7 +332,58 @@ export default function ListaCli(props) {
 
       <ListaProvider fullDataArray={filtered} itemDoubleClick={itemClick} itemRightClick={openContext} >
         <Lista >
-          {lista}
+          {lista && 
+            filtered.map((cliente) => (
+              <li className="cli-li" key={cliente.id}>
+    
+                <div className="inicio">
+                  {
+                    images.filter(i => i.id === cliente.id).length > 0 &&
+                    <img src={format.convertImageToBase64(
+                      images.filter(i => i.id === cliente.id)[0].imagem
+                      )} alt="imagem" />
+                  }
+                  {/* <Imagem cliente={cliente} />                  */}
+                  <label className={`id${misc.isNEU(cliente.valorGasto) ? ' novo' : ''}`}>{cliente.id}</label>
+                </div>
+    
+                <div className="centro">
+                  <div className="info">
+                    <label className="nome">{cliente.nome}</label>
+                    <span className="contato">, {cliente.contato.map(e => format.formatPhoneNumber(e)).join(", ")}</span>
+                    <span className="tags">
+                      {!misc.isNEU(cliente.tags) && ", " + cliente.tags.join(", ")}
+                    </span>
+    
+                    <p className="endereco">
+                      {format.formatEndereco(cliente.endereco, false, true)}
+                    </p>
+    
+                    <div className="bottom-info">
+                      {cliente.endereco?.taxa > 0 && (
+                        <span>
+                          Taxa: {format.formatReal(cliente.endereco.taxa)}
+                        </span>
+                      )}
+    
+                      {!misc.isNEU(cliente.pedidos) && cliente.pedidos > 0 && (
+                        <span>Pedidos: {cliente.pedidos}</span>
+                      )}
+    
+                      {!misc.isNEU(cliente.valorGasto) &&
+                        cliente.valorGasto > 0 && (
+                          <span>{format.formatReal(cliente.valorGasto)}</span>
+                        )}
+    
+                      {!misc.isNEU(cliente.ultPedido) && (
+                        <span>Últ. pedido: {cliente.ultPedido}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </li>
+            ))
+          }
         </Lista>
       </ListaProvider>
       {imageView}

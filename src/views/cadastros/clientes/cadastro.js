@@ -2,32 +2,77 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Tagger from "../../../components/Tagger";
 import * as cores from "../../../util/cores";
-// import Mapa from "../../../components/Mapa";
-
 import PictureBox from "../../../components/PictureBox";
 import * as Format from "../../../util/Format";
-import { isNEU } from "../../../util/misc";
+import { isMobile, isNEU } from "../../../util/misc";
 import { useCadCli } from "../../../context/cadClientesContext";
 import { NotImplementedError } from "../../../exceptions/notImplementedError";
 import CadEnderecoProvider from "../../../context/cadEnderecosContext";
 import EndLocLista from "../enderecos/endlocLista";
 import EnderecosProvider, { useEnderecos } from "../../../context/enderecosContext";
-import LocaisProvider from "../../../context/locaisContext";
 import { useClientes } from "../../../context/clientesContext";
 import { useAsk } from "../../../context/asksContext";
 import { useContextMenu } from "../../../context/contextMenuContext";
+import * as apis from '../../../apis'
+import axios from "axios";
+
 
 export default function Cadastro() {
   const [contato, setContato] = useState('')
   const [tag, setTag] = useState('')
-  const {curr, setCurr, limpar} = useCadCli()
-  
+  const {curr, setCurr, limpar, images, setImages, imagem, setImagem} = useCadCli()
+  const [mapa, setMapa] = useState(null)
   const {ask} = useAsk()
+  const {clientes, refresh} = useClientes()
 
-  const {clientes} = useClientes()
+  
+    
 
-  function salvar() {
-    throw new NotImplementedError();
+  async function salvar() {
+    let ctt = [...curr.contato.map(c => Format.formatNumber(c))]
+    let tg = [...curr.tags]
+    if(isNEU(curr?.nome)){
+      alert('Insira o nome do cliente')
+    }else if(isNEU(curr.contato)){
+      alert('Adicione um número para contato')
+    }else{
+      if(contato.length > 7){
+        if(window.confirm(`Adicionar o número ${Format.formatPhoneNumber(contato)}?`)){
+          if(checarCttExiste(contato)){
+          ctt.push(Format.formatNumber( Format.formatPhoneNumber(contato, true) ))
+          }else{return}
+        }
+      }
+  
+      if(!isNEU(tag)){
+        if(window.confirm(`Adicionar a tag ${tag}?`)){
+          tg.push(tag)
+        }
+      }
+      let _img = null //await validateImage()
+      const payload = {
+        cliente: {...curr, 
+          nome: curr.nome.toUpperCase(),
+          imagem: _img, //Format.convertFileToBase64(imagem), 
+          contato: ctt,
+          tags: tg
+        }
+      }
+  
+      axios({
+        url: `${process.env.REACT_APP_API_URL}/clientes/salvar`,
+        method: 'post',
+        data: payload
+      }).then((e) => {
+        if(e.data.affectedRows > 0){
+          refresh()
+        }
+      }).catch(e => {
+        alert(`Erro: ${e}`)
+      })
+    }  
+    
+
   }
 
   const [listaEnd, setListaEnd] = useState(<></>);
@@ -42,14 +87,18 @@ export default function Cadastro() {
   useEffect(() => {
     !isNEU(listaEnd) && closeListaEnd(null)
     if(!isNEU(selecionado)){
-      ask({
-        title: 'Substituir antigas informações de local da entrega, e número pelas novas também?',
-        buttons: [
-          {title: 'SIM', click:() => setCurr({...curr, endereco: selecionado})},
-          {title: 'NÃO', click:() => setCurr({...curr, endereco: {...curr.endereco, logradouro: selecionado.logradouro, taxa: selecionado.taxa}})}
-        ],
-        allowCancel: true
-      })
+      if(([curr.endereco.numero,curr.endereco.local,curr.endereco.referencia].join('') !== '')){
+        ask({
+          title: 'Substituir antigas informações de local da entrega, e número pelas novas também?',
+          buttons: [
+            {title: 'SIM', click:() => setCurr({...curr, endereco: selecionado})},
+            {title: 'NÃO', click:() => setCurr({...curr, endereco: {...curr.endereco, logradouro: selecionado.logradouro, taxa: selecionado.taxa}})}
+          ],
+          allowCancel: true
+        })
+      }else{
+        setCurr({...curr, endereco: selecionado})
+      }
     }
   }, [selecionado]) //eslint-disable-line
 
@@ -59,11 +108,9 @@ export default function Cadastro() {
       onClick={(e) => closeListaEnd(e)}>
         <div className="endloc-lista">
           <EnderecosProvider>
-            <LocaisProvider>
               <CadEnderecoProvider>
                 <EndLocLista itemClick={setSelecionado} />
               </CadEnderecoProvider>
-            </LocaisProvider>
           </EnderecosProvider>
         </div>
       </div>
@@ -80,13 +127,68 @@ export default function Cadastro() {
     }
   }
 
+  useEffect(() => {
+
+ 
+    (curr && curr.id) && setImagem(images.filter(e => e.id === curr.id)[0]?.imagem)
+
+    if(!isNEU(curr?.endereco?.cep)){
+        {apis.enderecoToUrl(curr.endereco)
+          .then(url => setMapa(
+            <div className='mapa'>
+              <div className="mapouter">
+                <div className="gmap_canvas">
+                  <iframe title='fodase' id="gmap_canvas"
+                    src={`${url}&t=&z=16&ie=UTF8&iwloc=A&output=embed`} 
+                    frameBorder="0" 
+                    scrolling="no" 
+                    marginHeight="0" 
+                    marginWidth="0"
+                    align="middle">
+                  </iframe>
+                </div>
+              </div>
+            </div>
+        ))
+      .catch((e) => {
+        console.log(e)
+        setMapa(null)
+      })} 
+      }else{
+        setMapa(null)
+      }
+  },[curr])
+
+ function validateImage(){
+  let img = imagem
+ if(imagem){
+  if(typeof img === 'string' && img.includes('blob:')) {
+    //async
+    // img = await getFileFromUrl(img, 'imagem.jpg')
+    // console.log(typeof img, img)
+    // img = await Format.convertImageToBase64(img)
+  }
+  console.log(typeof img, img)
+  if(typeof img === 'object') img = Format.convertImageToBase64(img)
+ }
+  return img
+}
+
+async function getFileFromUrl(url, name, defaultType = 'image/jpeg'){
+  const response = await fetch(url);
+  const data = await response.blob();
+  return new File([data], name, {
+    type: data.type || defaultType,
+  });
+}
+
   return (
     <Estilo>
       {listaEnd}
       <div id="top-container">
         <div className="picturebox-container">
-          <PictureBox imagem={curr.imagem} nome={curr.nome}
-          setImagem={(e) => setCurr({...curr, imagem: e})}  />  
+          <PictureBox imagem={validateImage()} nome={curr.nome}
+          setImagem={(e) => setImagem(e)}  />  
         </div>
 
         <div className="id-nome">
@@ -97,7 +199,7 @@ export default function Cadastro() {
               id="nome"
               name="nome"
               type="text"
-              autoFocus
+              autoFocus={!isMobile()}
               value={curr.nome}
               onChange={(e) => setCurr({...curr, nome: e.target.value})}
               onBlur={(e) => {
@@ -114,8 +216,8 @@ export default function Cadastro() {
           label={"Contato"}
           state={contato}
           setState={setContato}
-          array={curr.contatos ? curr.contatos : []}
-          setArray={e => setCurr({...curr, contatos: e})}
+          array={curr.contato ? curr.contato : []}
+          setArray={e => setCurr({...curr, contato: e})}
           validate={checarCttExiste}
         />
 
@@ -150,6 +252,7 @@ export default function Cadastro() {
             <input
               id="numero"
               placeholder="1600"
+              disabled={isNEU(curr?.endereco?.cep)}
               value={isNEU(curr.endereco) ? "" : curr.endereco.numero ?? ''}
               onChange={(e) =>
                 setCurr({...curr, endereco: { ...curr.endereco, numero: e.target.value }})
@@ -163,6 +266,7 @@ export default function Cadastro() {
           <div id="local-container" className="txt">
             <label htmlFor="local">Local da entrega:</label>
             <textarea
+              disabled={isNEU(curr?.endereco?.cep)}
               rows={2}
               id="local"
               placeholder="Casa, Edifício, Apartamento, Condomínio, Hospital, Escola..."
@@ -174,7 +278,7 @@ export default function Cadastro() {
                 e.target.value = e.target.value.trim();
               }}
             />
-            <button
+            <button disabled
               type="button"
               onClick={(e) => {
                 throw new NotImplementedError();
@@ -187,6 +291,7 @@ export default function Cadastro() {
           <div id="referencia-container" className="txt">
             <label htmlFor="referencia">Ponto de referência:</label>
             <textarea
+              disabled={isNEU(curr?.endereco?.cep)}
               rows={2}
               id="referencia"
               placeholder="Ao lado de.. Em frente à.."
@@ -200,18 +305,23 @@ export default function Cadastro() {
             />
           </div>
 
-          {curr.endereco && <label id="taxa">{`Taxa: ${Format.formatReal(curr.endereco.taxa ? curr.endereco.taxa : 0)}`}</label>}
+          {curr.endereco && <label id="taxa">{`Taxa: ${Format.formatReal(curr.endereco?.bairro?.taxa ? curr.endereco.bairro.taxa : 0)}`}</label>}
 
         </div>
 
-        <div id="endereco-right">{/* <Mapa endereco={endereco} /> */}</div>
+        <div id="endereco-right">
+              {mapa}
+        </div>
       </section>
 
       <section id="bottom-container">
         <button id="salvar" type="button" onClick={() => salvar()}>
           Salvar
         </button>
-        <button id="limpar" type="button" onClick={() => limpar(true)}>
+        <button id="limpar" type="button" onClick={() => {
+          setImagem(null)
+          limpar(true)
+        }}>
           Limpar
         </button>
       </section>
@@ -332,10 +442,11 @@ const Principal = styled.form`
     border: 1px solid black;
     padding: 5px;
     display: flex;
+    flex-grow: 2;
     gap: 10px;
-    max-height: 220px;
+    min-height: 10px;
     box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
-
+    overflow: auto;
     width: 100%;
 
     #endereco-left {
@@ -377,15 +488,26 @@ const Principal = styled.form`
 
       #logradouro-container {
         width: 100%;
+        height: 40px;
         flex-basis: 90px;
         display: flex;
+        flex-grow: 0;
 
         #logradouro {
-          border-bottom: 1px solid black;
+          border: 1px solid gray;
+          height: 40px;
           max-width: 100%;
           flex-grow: 2;
           overflow-y: auto;
           user-select: text;
+          background-color: whitesmoke;
+          border-radius: 2px;
+          display: flex;
+          align-items: center;
+        }
+        button{
+          flex-grow: 0;
+          max-height: 40px;
         }
       }
 
@@ -399,17 +521,36 @@ const Principal = styled.form`
     }
 
     #endereco-right {
-      display: none;
       width: 400px;
-    }
+      display: flex;
+
+        .mapouter{
+        width: 100% ;
+        height: 100% ;
+        overflow: hidden;
+        border: 1px solid black;
+        border-radius: 10px;
+      }
+      .gmap_canvas {
+        height: 100%;
+        overflow:hidden;
+        background:none!important;
+      }
+      iframe{
+        height: 100% ;
+        width: 100% ;
+      }
+
+      }
+
   }
 
   #bottom-container {
     display: flex;
-    height: 60px;
+    min-height: 60px;
     gap: 30px;
     padding: 6px;
-    flex-grow: 1;
+    flex-grow: 0;
     flex-shrink: 0;
     button {
       font-size: 20px;
@@ -472,7 +613,7 @@ const Estilo = styled(Principal)`
       display: flex;
       position: absolute;
       width: 100%;
-      height: 100vh;
+      height: 100%;
 
       .endloc-lista{
         height: min(60%, 600px);

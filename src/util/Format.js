@@ -13,6 +13,7 @@ export function formatReal(valor) {
   }
 
   export function formatCEP(valor) {
+    valor = String(valor)
     if(valor.length === 8){
       return `${valor.slice(0,5)}-${valor.slice(5,8)}`
     }else{
@@ -64,13 +65,13 @@ export function formatReal(valor) {
   }
 
   export function formatEndereco(endereco, withTaxa = false, withLocal = true, withCep = true){
-    if(!misc.isNEU(endereco)){
+    if(!misc.isNEU(misc.joinObj(endereco))){
       if(typeof endereco === 'object' && !Array.isArray(endereco)){
-        let _taxa = withTaxa && withTaxa === true ? formatReal(endereco.taxa) : ''
+        let _taxa = withTaxa && withTaxa === true ? formatReal(endereco.bairro.taxa) : ''
         let _loc = withLocal && endereco.local ? endereco.local : '' 
-        let _log = endereco.logradouro
+        let _log = [endereco.logradouro, endereco.complemento].filter(Boolean).join(', ')
         let _num = withLocal && endereco.numero ? endereco.numero : '' 
-        let _bai = endereco.bairro
+        let _bai = endereco.bairro?.nome ?? ''
         let _ref = withLocal &&  endereco.referencia ? endereco.referencia : ''
         let _cep = withCep ? formatCEP(endereco.cep) : ''
           return [_taxa.toString(), _loc.toString(), _log.toString(), 
@@ -119,4 +120,37 @@ export const encodeBase64 = (data) => {
 }
 export const decodeBase64 = (data) => {
   return Buffer.from(data, 'base64').toString('ascii');
+}
+
+export const convertFileToBase64 = file => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file.rawFile);
+
+  reader.onloadend = () => resolve({
+      fileName: file.title,
+      base64: reader.result
+  });
+  reader.onerror = reject;
+});
+
+export function convertArrayToBase64(arr) {
+  //arr = new Uint8Array(arr) if it's an ArrayBuffer
+  return window.btoa(
+     arr.reduce((data, byte) => data + String.fromCharCode(byte), '')
+  );
+}
+
+export  function convertImageToBase64(imagem){
+  if(!misc.isNEU(imagem)){
+      if(typeof imagem === 'object'){
+      let i = `data:image/png;base64, ${convertArrayToBase64(imagem.data)}`   
+        //.toString('base64') //convertFileToBase64(imagem)
+        if(i && i.length > 0) return i
+      }else if(typeof imagem === 'blob'){
+        // let i = await convertFileToBase64(imagem)
+        // return i
+      }else if(typeof imagem === 'string'){
+        
+      }
+  }else{ return null }
 }

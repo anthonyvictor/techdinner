@@ -16,6 +16,7 @@ import Cadastro from '../cadastros/clientes/cadastro';
 import CadCliProvider from '../../context/cadClientesContext'
 import { useRotas } from '../../context/rotasContext';
 import ItemMaker from './itemMaker';
+import Pagamento from './pagamento';
 // import { useAsk } from '../../context/asksContext';
 
 function Pedido() {
@@ -50,6 +51,10 @@ function Pedido() {
 
       fecharSelectBox()
     }
+  }
+  function mudarObservacoes(){
+    const resp = window.prompt('Digite a observação do pedido', curr.observacoes)
+    alert('VAI MUDAR')
   }
   
   useEffect(() => {
@@ -161,7 +166,7 @@ async function confirmacao(tipo, resolve){
         if(_pizzas.length === 0){_pizzas = `*PIZZAS* 🍕`}
         _pizzas += `\n\n_Pizza ${i.pizza.tamanho.nome} (${
           i.pizza.sabores.length} sabor${
-            i.pizza.sabores.length > 1 && 's'})_`
+            i.pizza.sabores.length > 1 && 'es'})_`
         _pizzas += `\n${getSaboresDescritos(i.pizza.sabores,'\n')}`
         _pizzas += [_obs,_preco].join('')
       }else if(i.tipo === 1){
@@ -277,7 +282,6 @@ function whatsappMessage(phoneNumber){
   ]))
   promise.then(() => {
     if (phoneNumber !== "" && txt !== '') {
-      console.log(txt)
       apis.sendWhatsAppMessage(txt, phoneNumber);
     }
   })
@@ -301,41 +305,14 @@ function contatoClick(contato){
 }
 
 function getSaboresDescritos(sabores,quebra=', '){
-  const joinTipoAdd = (ingredientes) => ingredientes.map(i => i.tipoAdd).join('')
-  const getIngredientesDiferentes = (ingredientes) => ingredientes.filter(i => i.tipoAdd !== '').map(i => `${i.tipoAdd} ${i.nome}`).join(', ')
+  const joinTipoAdd = (ingredientes) => ingredientes.map(i => i.tipoAdd ? i.tipoAdd : '').join('')
+  const getIngredientesDiferentes = (ingredientes) => ingredientes.filter(i => i.tipoAdd && i.tipoAdd !== '').map(i => `${i.tipoAdd} ${i.nome}`).join(', ')
 
   let saboresDiferentes = sabores.filter(e => joinTipoAdd(e.ingredientes) !== '')
   let outrosSabores = sabores.filter(e => joinTipoAdd(e.ingredientes) === '')
   let r = saboresDiferentes.map(e => `${e.nome} (${getIngredientesDiferentes(e.ingredientes)})`).join(quebra)
   r = [r, outrosSabores.map(e => e.nome).join(quebra)].filter(e => e !== '').join(quebra)
   return r
-}
-
-function getDataPagamentoDescrito(data){
-    data  = misc.toDate(data)
-
-    let horas = data.toLocaleTimeString([], {timeStyle: 'short'})
-
-    let dataATUAL = new Date();
-
-    let ms = dataATUAL - data;
-
-    let m = ms / 1000 / 60;
-
-    let h = m / 60;
-
-    m = h % 1 * 60
-
-    let d = h / 24;
-
-    return (
-      d < 1 
-      ? `às ${horas}` 
-      : d < 2
-      ? `ontem às ${horas}` 
-      : `em ${data.toLocaleDateString()}`
-      ) 
-
 }
 
 const [clienteTab, setClienteTab] = useState(null)
@@ -357,7 +334,8 @@ function openSelectBoxCliente(tipo){
         <form className='container semcadastro'>
           <h4 className='titulo'>Informe o nome do cliente, lembrando que este método serve 
             apenas para identificar o pedido, e não é válido como cadastro!</h4>
-          <input ref={semCadastro} type={'text'} className='nome' required={true} autoFocus
+          <input ref={semCadastro} type={'text'} className='nome' required={true} 
+          autoFocus={!misc.isMobile()}
           defaultValue={(curr.cliente && curr.cliente.nome) ? curr.cliente.nome : ''} />
           <button type='submit' onClick={(e) => {
             e.preventDefault()
@@ -421,13 +399,21 @@ function openTopClienteMenu(){
     enabled: false, visible: (curr.cliente && !!curr.cliente.id)} 
 ])
 }
-function openPizzasMenu(){
+function openPizzasMenu(item){
   openSelectBox(
-    <ItemMaker tipo={0} />
+    <ItemMaker fechar={fecharSelectBox} tipo={0} item={item} />
   )
 }
-function openBebidasMenu(){}
-function openOutrosMenu(){}
+function openBebidasMenu(item){
+  openSelectBox(
+    <ItemMaker fechar={fecharSelectBox} tipo={1} item={item} />
+  )
+}
+function openOutrosMenu(item){
+  openSelectBox(
+    <ItemMaker fechar={fecharSelectBox} tipo={3} item={item} />
+  )
+}
 function openRecentesMenu(){}
 
 function openTopItensMenu(){
@@ -437,35 +423,60 @@ function openTopItensMenu(){
       <div className='top'>
        <FontAwesomeIcon icon={icons.faPizzaSlice} />
        </div>
-       <label>Pizzas</label>
+       <label style={{pointerEvents: 'none'}}>Pizzas</label>
      </button>
      <button style={{backgroundColor: '#e88b00'}} onClick={() => openBebidasMenu()}>
       <div className='top'>
        <FontAwesomeIcon icon={icons.faGlassCheers} />
        </div>
-       <label>Bebidas</label>
+       <label style={{pointerEvents: 'none'}}>Bebidas</label>
      </button>
      <button style={{backgroundColor: '#a1522d'}} onClick={() => openOutrosMenu()}>
       <div className='top'>
        <FontAwesomeIcon icon={icons.faIceCream} />
        </div>
-       <label>Outros</label>
+       <label style={{pointerEvents: 'none'}}>Outros</label>
      </button>
      <button className='disabled' style={{backgroundColor: '#0c6b00'}} onClick={() => openRecentesMenu()}>
       <div className='top'>
        <FontAwesomeIcon icon={icons.faHistory} />
        </div>
-       <label>Recentes</label>
+       <label style={{pointerEvents: 'none'}}>Recentes</label>
      </button>
      <button className='disabled' style={{backgroundColor: '#961a90'}} onClick={() => {}}>
        <div className='top'>
        <FontAwesomeIcon icon={icons.faPizzaSlice} />
        <FontAwesomeIcon icon={icons.faGlassCheers} />
        </div>
-       <label>Combos</label>
+       <label style={{pointerEvents: 'none'}}>Combos</label>
      </button>
     </div>
   )
+}
+
+function openTopPagamentoMenu(pagamento){
+  openSelectBox(
+    <Pagamento fechar={fecharSelectBox} pedido={curr} pagamento={pagamento} />
+  )
+}
+
+function editarItem(item){
+  switch(item.tipo){
+    case 0:
+      openPizzasMenu(item)
+      break
+    case 1:
+      openBebidasMenu(item)
+      break
+    case 3: 
+      openOutrosMenu(item)
+      break
+    case 5:
+      openRecentesMenu(item)
+      break
+    default:
+      alert('não implementado')
+  }
 }
 
 useEffect(() => {
@@ -674,7 +685,9 @@ useEffect(() => {
             <ul className='itens-ul'>
               {curr.itens && itensAgrupados
               .map(i => (              
-                <li key={i.id ? i.id : i.ids.join(',')}>
+                <li key={i.id ? i.id : i.ids.join(',')}
+                onDoubleClick={() => editarItem(i)}
+                >
                   <div className='inicio'>
                     <input type={'checkbox'} />
                     {i.tipo === 0 
@@ -726,7 +739,20 @@ useEffect(() => {
                     <label className='valor-item'>
                       {Format.formatReal(i.valor)}
                     </label>
-                    <button className='opcoes-item'>
+                    <button className='opcoes-item' 
+                    onClick={() => contextMenu([
+                      {title:'Editar',click:()=> editarItem(i)},
+                      {title:'Copiar...', click: () =>{
+                        const cp = (qtd) => {alert(`Copiar ${qtd}x`)}
+                        contextMenu([
+                          {title:'Acres. mais 1',click:() => cp(1)},
+                          {title:'Acres. mais 2',click:() => cp(2)},
+                          {title:'Acres. mais 3',click:() => cp(3)},
+                          {title:'Acres. mais 4',click:() => cp(4)},
+                        ])
+                      }},
+                      {title:'Excluir',click:()=>{alert('EXCLUIR')}},
+                    ])}>
                       <FontAwesomeIcon icon={icons.faEllipsisV} />
                     </button>
                   </div>
@@ -746,7 +772,7 @@ useEffect(() => {
         : curr.pagamentos && curr.pagamentos.length > 2 ? 'large' 
         : curr.pagamentos && curr.pagamentos.length > 0 ? 'big' : ''}`}>
           <div className='top pagamento'>
-            <button className='principal'>PAGAMENTO</button>
+            <button className='principal' onClick={() => openTopPagamentoMenu()}>PAGAMENTO</button>
             <button className='secondary' onClick={() => boxPagamento.current.classList.toggle('collapsed')}>_</button>
           </div>
           <div className='content'>
@@ -787,8 +813,8 @@ useEffect(() => {
                     <div className='centro'>
                         <div className='info-secundarias'>
                           <p>Cód.{e.id}</p>
-                          <p>{`Add ${getDataPagamentoDescrito(e.dataAdicionado)}`}</p>
-                          {e.dataRecebido && <p>{`Receb. ${getDataPagamentoDescrito(e.dataRecebido)}`}</p>}
+                          <p>{`Add ${pedidoUtil.getDataPagamentoDescrito(e.dataAdicionado)}`}</p>
+                          {e.dataRecebido && <p>{`Receb. ${pedidoUtil.getDataPagamentoDescrito(e.dataRecebido)}`}</p>}
                         </div>
                         <label className='titulo'>
                           {`${Format.formatReal(e.valorPago)} - ${
@@ -835,10 +861,12 @@ useEffect(() => {
 
       </div>
 
-      <div className={`observacoes-container${!curr.observacoes ? ' collapsed': ''}`}>
+      <button type='button' 
+      className={`observacoes-container${!curr.observacoes ? ' collapsed': ''}`}
+      onClick={() => mudarObservacoes()}>
         <label>Observações:</label>
-        <p type='button' className='observacoes'>{curr.observacoes ?? 'Adicionar observação.'}</p>
-      </div>
+        <p className='observacoes'>{curr.observacoes ?? 'Adicionar observação.'}</p>
+      </button>
 
       <div className='bottom-container'>
         
@@ -1111,6 +1139,7 @@ label,p{
             list-style: none;
             display: flex;
             li{
+              *{pointer-events: none;}
               flex-shrink: 0;
               flex-grow: 0;
               border: 1px solid black;
@@ -1455,6 +1484,7 @@ label,p{
   display: flex;
   flex-direction: column;
   padding: 3px;
+  border: none;
   border-top: 1px solid black;
   gap: 5px;
   height: 80px;
@@ -1471,6 +1501,7 @@ label,p{
   }
 
   *{
+    width: 100%;
     pointer-events: none;
     text-align:  center;
   }

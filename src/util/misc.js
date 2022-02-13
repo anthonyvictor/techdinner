@@ -156,9 +156,13 @@ export function equals(a,b){
  * @description Filtra os dados
  */
 export function filtro(obj, search, longNumber = false, phoneNumber = false) {
-  let txt = joinObj(obj)
   if (search !== "") {
-    let pesqTexto = removeAccents(search)
+  let txt = joinObj(obj)     
+
+  txt = removeConjuncoes(txt)
+  search = removeConjuncoes(search)
+ 
+  let pesqTexto = removeAccents(search)
       .toUpperCase()
       .replace("  ", " ")
       .replace("  ", " ")
@@ -185,8 +189,13 @@ export function filtro(obj, search, longNumber = false, phoneNumber = false) {
 }
 
 
+export function removeConjuncoes(txt){
+  let _txt = String(txt).replace(/\s*\b(DE|DA|DO|QUE|NA|NO|EM|\s+O|\s+E|\s+A|OU|UM|UMA)\b/,'') 
+  return _txt
+}
+
 export function isMobile(){
-  return window.screen.width <= 400
+  return window.screen.width <= 550
 }
 
 export function toDate(dateStr) {

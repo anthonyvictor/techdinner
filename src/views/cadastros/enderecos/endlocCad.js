@@ -1,18 +1,28 @@
 import React from "react";
 import styled from "styled-components";
 import { ToggleButton } from "../../../components/ToggleButton";
-import { useBairros } from "../../../context/bairrosContext";
+import { useEnderecos } from "../../../context/enderecosContext";
 import * as Format from "../../../util/Format";
 import * as cores from '../../../util/cores'
 import { useCadEndereco } from "../../../context/cadEnderecosContext";
-import { isNEU } from "../../../util/misc";
+import { isMobile, isNEU } from "../../../util/misc";
 
 function EndLocCad() {
-  const { bairros } = useBairros();
+  const { bairros } = useEnderecos();
 
   const { 
     currEL, setCurrEL, limparEL, tiposEL, tipoEL, setTipoEL
  } = useCadEndereco()
+
+
+ function ordem(a,b){
+  if(a.taxa > b.taxa) return 1
+  if(a.taxa < b.taxa) return -1
+  // if(a.localeCompare(b))
+  if(a.nome > b.nome) return 1
+  if(a.nome < b.nome) return -1
+}
+
 
   return (
     <Container>
@@ -35,7 +45,7 @@ function EndLocCad() {
           placeholder="00.000-000"
           value={currEL.cep}
           maxLength={9}
-          autoFocus
+          autoFocus={!isMobile()}
           onChange={(e) => {
             let val = e.target.value.replace(/[^0-9]/ig,'').trim()
             setCurrEL({...currEL, cep: Format.formatCEP(val)})
@@ -86,7 +96,9 @@ function EndLocCad() {
           onChange={(e) => setCurrEL({...currEL, bairro: e.target.value})}>
             <option key={0} disabled={true}>Selecione..</option>
             {bairros &&
-              bairros.map((b) => (
+              bairros
+              .sort(ordem)
+              .map((b) => (
                 <option key={b.id}
                 label={`${b.nome}, ${Format.formatReal(b.taxa)}`}>
                   {b.nome}</option>

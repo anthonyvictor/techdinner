@@ -180,6 +180,7 @@ const Container = styled.div`
         flex-direction: column;
         width: 40px;
         height: 100%;
+        justify-content: center;
 
         img {
           border-radius: 10%;

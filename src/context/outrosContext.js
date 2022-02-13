@@ -12,6 +12,13 @@ function OutrosProvider({children}) {
             visivel: true
         },
         {
+            id: 12, nome: 'Bauru',
+            imagem: 'https://assets.instabuy.com.br/ib.item.image.big/b-7c40e33864044f64909a922946ac3e80.jpeg',
+            valor: 4.5,
+            ativo: false,
+            visivel: true
+        },
+        {
             id: 2, nome: 'Kuat',
             imagem: 'https://deskontao.agilecdn.com.br/5533_1.jpg',
             valor: 6,
@@ -45,7 +52,36 @@ function OutrosProvider({children}) {
             valor: 4,
             ativo: true,
             visivel: true
+        },
+        {
+            id: 13, nome: 'Itaipava',
+            imagem: 'https://a-static.mlcdn.com.br/1500x1500/cerveja-itaipava-lata-350ml-pack-com-12-unidades/distribuidoravitalli/621p/83dd0222e2178ffbf51bdd8a3bf87c2a.jpg',
+            valor: 4,
+            ativo: true,
+            visivel: true
+        },
+        {
+            id: 14, nome: 'Itaipava',
+            imagem: 'https://a-static.mlcdn.com.br/1500x1500/cerveja-itaipava-lata-350ml-pack-com-12-unidades/distribuidoravitalli/621p/83dd0222e2178ffbf51bdd8a3bf87c2a.jpg',
+            valor: 4,
+            ativo: true,
+            visivel: true
+        },
+        {
+            id: 15, nome: 'Itaipava',
+            imagem: 'https://a-static.mlcdn.com.br/1500x1500/cerveja-itaipava-lata-350ml-pack-com-12-unidades/distribuidoravitalli/621p/83dd0222e2178ffbf51bdd8a3bf87c2a.jpg',
+            valor: 4,
+            ativo: true,
+            visivel: true
+        },
+        {
+            id: 16, nome: 'Itaipava',
+            imagem: 'https://a-static.mlcdn.com.br/1500x1500/cerveja-itaipava-lata-350ml-pack-com-12-unidades/distribuidoravitalli/621p/83dd0222e2178ffbf51bdd8a3bf87c2a.jpg',
+            valor: 4,
+            ativo: true,
+            visivel: true
         }
+
     ])
   return (
       <OutrosContext.Provider value={{outros, setOutros}} >

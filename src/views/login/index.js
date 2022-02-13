@@ -1,6 +1,7 @@
 import React from 'react';
 import { Container } from './style';
 import Logo from '../../images/logo-normal-black.svg'
+import { isMobile } from '../../util/misc';
 // import { useAuth } from '../../auth';
 
 function Login() {
@@ -13,7 +14,7 @@ function Login() {
               <form>
                     <div className='form-input'>
                         <label for='user'>Usuário</label>
-                        <input id='user' type='text' name='user' autoFocus/>
+                        <input id='user' type='text' name='user' autoFocus={!isMobile()} />
                     </div>
                     <div className='form-input'>
                         <label for='pass'>Senha</label>

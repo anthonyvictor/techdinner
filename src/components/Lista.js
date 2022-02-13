@@ -9,18 +9,19 @@ import * as cores from '../util/cores'
 import { useLista } from '../context/listaContext';
 
 export const Lista = (props) => {
-  const {allowMultiSelect, onConfirm, selectedDataArray, grid} = useLista()
+  const {allowMultiSelect, allowSelect, onConfirm, selectedDataArray, grid, setLockHover} = useLista()
   // mustRefresh &&
   function getIsSelected(id){
-    return allowMultiSelect ? selectedDataArray.some(e => misc.equals(e.id, id)) : false
+    return (allowMultiSelect || allowSelect) ? selectedDataArray.some(e => misc.equals(e.id, id)) : false
   }
   return (
     <Container className={'lista-component'} grid={grid}>
         
           {props.children && (props.children.length > 0) && 
-          <ul>
+          <ul
+          onMouseLeave={() => {/*setLockHover(false)*/}}>
           {props.children
-          .sort((a, b) => !(getIsSelected(a.key) ^ getIsSelected(b.key)) ? 0 : getIsSelected(a.key) ? -1 : 1)
+          .sort((a, b) => getIsSelected(a.key) ? 1 : getIsSelected(b.key) ? -1 : 0)
           .map(e => <Item key={e.key} MyKey={e.key}>{e.props.children}</Item>)}
           </ul>
           }
@@ -34,12 +35,12 @@ const Item = (props) => {
   const {MyKey, children} = props
   const {fullDataArray, selectedDataArray, allowMultiSelect, 
          hoveredData, setHoveredData,
-         onItemClick, onRightClick} = useLista()
+         onItemClick, onRightClick, lockHover, setLockHover} = useLista()
   const liRef = useRef()
   const [isSelected, setIsSelected] = useState(getIsSelected())
 
   function getIsSelected(){
-    return allowMultiSelect ? selectedDataArray.some(e => misc.equals(e.id, MyKey)) : false
+    return  selectedDataArray.some(e => misc.equals(e.id, MyKey)) 
   }
 
   function getData(){
@@ -63,8 +64,8 @@ const Item = (props) => {
             onDoubleClick={(e) => onItemClick(e, getData())} 
             onClick={(e) => onItemClick(e, getData())} 
             onContextMenu={(e) => onRightClick(e, getData())}
-            onMouseEnter={() => setHoveredData(getData())} 
-            onMouseLeave={() => setHoveredData(null)}>
+            onMouseEnter={() => !lockHover && setHoveredData(getData())} 
+            onMouseLeave={() => setLockHover(false)}>
 
                 {allowMultiSelect && <input className='ckb' type={'checkbox'} readOnly checked={isSelected} />}
 

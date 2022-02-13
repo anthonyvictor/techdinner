@@ -12,7 +12,8 @@ function BebidasProvider({children}) {
             tamanho: 1000,
             valor: 5,
             ativo: true,
-            visivel: false
+            visivel: true,
+            vendidos: 350
         },
         {
             id: 2, nome: 'Kuat',
@@ -22,7 +23,8 @@ function BebidasProvider({children}) {
             tamanho: 1000,
             valor: 6,
             ativo: false,
-            visivel: true
+            visivel: true,
+            vendidos: 89
         },
         {
             id: 3, nome: 'Fanta',
@@ -32,7 +34,8 @@ function BebidasProvider({children}) {
             tamanho: 2000,
             valor: 8.5,
             ativo: true,
-            visivel: true
+            visivel: true,
+            vendidos: 45
         },
         {
             id: 5, nome: 'Schin',
@@ -42,7 +45,8 @@ function BebidasProvider({children}) {
             tamanho: 2000,
             valor: 5,
             ativo: true,
-            visivel: true
+            visivel: true,
+            vendidos: 57
         },
         {
             id: 6, nome: 'Del Valle',
@@ -52,7 +56,8 @@ function BebidasProvider({children}) {
             tamanho: 350,
             valor: 5,
             ativo: true,
-            visivel: true
+            visivel: true,
+            vendidos: 15
         },
         {
             id: 10, nome: 'Itaipava',
@@ -62,7 +67,8 @@ function BebidasProvider({children}) {
             tamanho: 350,
             valor: 4,
             ativo: true,
-            visivel: true
+            visivel: true,
+            vendidos: 100
         }
     ])
   return (

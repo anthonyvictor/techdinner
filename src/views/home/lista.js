@@ -3,7 +3,7 @@ import { usePedidos } from "../../context/pedidosContext";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as icons from "@fortawesome/free-solid-svg-icons";
-import { formatReal } from "../../util/Format";
+import { convertFileToBase64, formatReal } from "../../util/Format";
 import * as cores from "../../util/cores";
 import { useHome } from "../../context/homeContext";
 import FloatButton from "../../components/FloatButton";
@@ -44,6 +44,9 @@ function Item({pedido}) {
 
   const {curr, setCurr} = useHome() 
   const [duracao, setDuracao] = useState(getDuration())
+  const [imagem] = useState((pedido.cliente && pedido.cliente.imagem && pedido.cliente.imagem.length > 0) 
+  ? pedido.cliente.imagem
+  : null)
 
 function getDuration() {
     let dataATUAL = new Date();
@@ -148,8 +151,8 @@ useEffect(() => {
         setCurr(pedido)
       }}
     >
-      {pedido.cliente.imagem 
-      ? <img src={pedido.cliente.imagem} alt="Imagem do cliente" />
+      {imagem 
+      ? <img src={imagem} alt="Imagem do cliente" />
       : pedido.cliente.nome 
       ? <FontAwesomeIcon className="icon" icon={icons.faUser} />
       : <FontAwesomeIcon className="icon" icon={icons.faTimes} /> }

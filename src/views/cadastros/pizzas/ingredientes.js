@@ -97,23 +97,22 @@ function Ingredientes(props) {
 
         </div>
         
-        <form className={props.allowMultiSelect ? 'dir hidden' : 'dir'}
-        >
-        <label>{curr && !misc.isNEU(curr.id) ? `iD: ${curr.id}` : 'Novo!' }</label>
-        
-        <section>
-          <label htmlFor='descricao'>Descrição:</label>
-          <input id='descricao'
-          value={curr && curr.nome ? curr.nome : ''}
-          onChange={e => setCurr({...curr, nome: e.target.value})}
-          onBlur={e => e.target.value = e.target.value.trim()}
-          />
-        </section>
+        <form className={props.allowMultiSelect ? 'dir hidden' : 'dir'}>
+          <label>{curr && !misc.isNEU(curr.id) ? `iD: ${curr.id}` : 'Novo!' }</label>
+          
+          <section>
+            <label htmlFor='descricao'>Descrição:</label>
+            <input id='descricao'
+            value={curr && curr.nome ? curr.nome : ''}
+            onChange={e => setCurr({...curr, nome: e.target.value})}
+            onBlur={e => e.target.value = e.target.value.trim()}
+            />
+          </section>
 
-        <div className="botoes">
-          <button type="button" id='salvar'>Salvar</button>
-          <button type="button" id="limpar" onClick={() => limpar(true)}>Limpar</button>
-        </div>
+          <div className="botoes">
+            <button type="button" id='salvar'>Salvar</button>
+            <button type="button" id="limpar" onClick={() => limpar(true)}>Limpar</button>
+          </div>
         </form>
     </Container>
     )

@@ -12,8 +12,6 @@ import TabControlProvider from "../../../context/tabControlContext";
 //COMPONENTS
 import { TabControl } from "../../../components/TabControl";
 import EnderecosProvider from "../../../context/enderecosContext";
-import LocaisProvider from "../../../context/locaisContext";
-import BairrosProvider from "../../../context/bairrosContext";
 
 function Enderecos(props) {
   const tabs = [
@@ -24,15 +22,11 @@ function Enderecos(props) {
 
   return (
     <TabControlProvider tabs={tabs} tabInicial={props.tabInicial}>
-      <BairrosProvider>
         <EnderecosProvider>
-          <LocaisProvider>
             <CadEnderecoProvider>
               <TabControl />
             </CadEnderecoProvider>
-          </LocaisProvider>
         </EnderecosProvider>
-      </BairrosProvider>
     </TabControlProvider>
   );
 }

@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ImageViewer from "./ImageViewer";
 import * as cores from '../util/cores'
 import { isNEU, loadImage } from "../util/misc";
+import * as Format from '../util/Format'
 
 function PictureBox(props) {
 
@@ -65,6 +66,7 @@ function PictureBox(props) {
     }
 
     const renderImageElement = () => {
+      console.log(props.imagem)
       return <img src={props.imagem} alt="Imagem" />
     }
 
@@ -75,7 +77,7 @@ function PictureBox(props) {
       onDragOver={handleDragOver} onDrop={handleOnDrop}
       onTouchEnd={openOrLoadImage}>
         {showDragArea && renderDropAreaElement()}
-        {!isNEU(props.imagem) && renderImageElement()} 
+        {props.imagem && renderImageElement()} 
       </div>
       
 

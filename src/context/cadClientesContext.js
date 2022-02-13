@@ -21,8 +21,10 @@ function CadCliProvider(props) {
         ultPedido: '',
         valorGasto: null
   }
-  const [lista, setLista] = useState(<></>)
+  const [lista, setLista] = useState(false)
   const [curr, setCurr] = useState(props.cliente ?? Empty)
+  const [images, setImages] = useState([])
+  const [imagem, setImagem] = useState(null)
 
   function limpar(confirm) {
     const res = confirm && window.confirm("Limpar formulário?")
@@ -33,7 +35,8 @@ function CadCliProvider(props) {
 
   return (
     <CadCliContext.Provider value={{
-     curr, setCurr, limpar, lista, setLista
+     curr, setCurr, limpar, lista, setLista, 
+     images, setImages, imagem, setImagem
     }}>
       {props.children}
     </CadCliContext.Provider>

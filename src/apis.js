@@ -52,7 +52,7 @@ export function enderecoToUrl(endereco){
       let logradouro = endereco.logradouro.replace(/\s\(+.+\)+/,'')
       let cidade = local.MyCity()
       let estado = local.MyStateCode()
-      let cep = endereco.cep.replace(/[-.]/,'')
+      let cep = String(endereco.cep).replace(/[-.]/,'')
       let numero = endereco.numero ?? ''
       let all = [logradouro, numero, cidade, estado, cep]
       .filter(txt => !misc.isNEU(txt))
@@ -65,3 +65,5 @@ export function enderecoToUrl(endereco){
     }
   })
 }
+
+
