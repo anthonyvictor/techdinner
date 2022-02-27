@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { SearchBar } from '../../components/SearchBar';
 import { useBebidas } from '../../context/bebidasContext';
-import { useContextMenu } from '../../context/contextMenuContext';
+import { useContextMenu } from '../../components/ContextMenu';
 import ListaProvider from '../../context/listaContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import * as icons from '@fortawesome/free-solid-svg-icons'

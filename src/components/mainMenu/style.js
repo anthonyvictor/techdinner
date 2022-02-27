@@ -206,7 +206,7 @@ export const Sidebar = styled.div `
 
     }
 
-    @media(max-width: 550px){
+    @media(max-width: 760px){
         transform: translateY(-200%);
         position: absolute;
         width: 100%;
@@ -218,7 +218,7 @@ export const Sidebar = styled.div `
             }
 
             img{
-                padding: 10px;
+                padding: 30px;
             }
        }
        
@@ -256,13 +256,6 @@ export const Sidebar = styled.div `
 
             .meio .botao {justify-content: center;}
             
-        }
-    }
-    @media(max-width: 400px){
-        .topo{
-            img{
-                padding: 30px;
-            }
         }
     }
 `;

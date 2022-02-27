@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
-import { useContextMenu } from '../../context/contextMenuContext';
+import { useContextMenu } from '../../components/ContextMenu';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import * as icons from '@fortawesome/free-solid-svg-icons'
 import * as Format from '../../util/Format'

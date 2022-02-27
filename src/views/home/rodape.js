@@ -18,7 +18,12 @@ export default function Rodape() {
   }
 
   function getPago() {
-    return pedidos.reduce((a, b) => a + b.valorPago, 0)
+    let pags = pedidos
+    .map(e => e.pagamentos).flat()
+    let totalPago = pags
+    .map(e => e.valorPago)
+    .reduce((a, b) => a + b, 0)
+    return totalPago	
   }
 
   return (

@@ -6,12 +6,11 @@ import * as Format from "../../../util/Format";
 import * as cores from '../../../util/cores'
 import * as misc from '../../../util/misc'
 import { useCadEndereco } from "../../../context/cadEnderecosContext";
-import { useTabControl } from "../../../context/tabControlContext";
 import { useRotas } from "../../../context/rotasContext";
 import * as apis from '../../../apis'
 import ListaProvider from "../../../context/listaContext";
 import { Lista } from "../../../components/Lista";
-import { useContextMenu } from "../../../context/contextMenuContext";
+import { useContextMenu } from "../../../components/ContextMenu";
 function EndLocLista(props) {
   
   const [search, setSearch] = useState("");
@@ -22,29 +21,30 @@ function EndLocLista(props) {
   const [filtered, setFiltered] = useState([])
   const [lista, setLista] = useState();
   const {currEL, setCurrEL, setTipoEL, tiposEL} = useCadEndereco()
-  const { tabs } = useTabControl()
   const { setCurrentRoute } = useRotas()
 
   const {contextMenu} = useContextMenu()
 
   function editar(e){
-    let preenchido = !misc.isNEU(misc.joinObj(currEL))
+    if(props.tabs){
+      let preenchido = !misc.isNEU(misc.joinObj(currEL))
 
-    const getEmpty = (obj) => {return obj ? obj : ''}
-
-    if (
-      currEL.id && currEL.id === e.id && 
-      (misc.isNEU(getEmpty(currEL.local)) === misc.isNEU(getEmpty(e.local)))
-      ) {
-      setCurrentRoute(tabs[1].link)
-    } else if ((preenchido && window.confirm("Deseja cancelar a edição atual?")) || !preenchido) {
-      setCurrEL(e)
-      
-      misc.isNEU(getEmpty(e.local)) 
-      ? setTipoEL(tiposEL[0])
-      : setTipoEL(tiposEL[1])
-
-      setCurrentRoute(tabs[1].link)
+      const getEmpty = (obj) => {return obj ? obj : ''}
+  
+      if (
+        currEL.id && currEL.id === e.id && 
+        (misc.isNEU(getEmpty(currEL.local)) === misc.isNEU(getEmpty(e.local)))
+        ) {
+        setCurrentRoute(props.tabs[1].link)
+      } else if ((preenchido && window.confirm("Deseja cancelar a edição atual?")) || !preenchido) {
+        setCurrEL(e)
+        
+        misc.isNEU(getEmpty(e.local)) 
+        ? setTipoEL(tiposEL[0])
+        : setTipoEL(tiposEL[1])
+  
+        setCurrentRoute(props.tabs[1].link)
+      }
     }
   }
 
@@ -181,6 +181,7 @@ const Container = styled.div`
 
   @media (max-width: 550px){
     .lista-component-li{
+      user-select: none;
       .inicio{
         font-size: 14px;
       }

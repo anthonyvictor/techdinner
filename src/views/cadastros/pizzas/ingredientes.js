@@ -7,7 +7,7 @@ import * as misc from '../../../util/misc'
 import * as cores from '../../../util/cores'
 import { useCadPizzas } from '../../../context/cadPizzasContext';
 import ListaProvider from '../../../context/listaContext';
-import { useContextMenu } from '../../../context/contextMenuContext';
+import { useContextMenu } from '../../../components/ContextMenu';
 
 
 function Ingredientes(props) {

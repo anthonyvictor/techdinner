@@ -10,8 +10,7 @@ import { SearchBar } from '../../../components/SearchBar';
 import { useOutros } from '../../../context/outrosContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGlassCheers, faIceCream } from "@fortawesome/free-solid-svg-icons";
-import ImageViewer from '../../../components/ImageViewer';
-import { useContextMenu } from '../../../context/contextMenuContext';
+import { useContextMenu } from '../../../components/ContextMenu';
 
 export const Outros = () => {
   const Empty = {
@@ -25,7 +24,6 @@ export const Outros = () => {
 
     const {outros} = useOutros()
     const [search, setSearch] = useState("");
-    const [imageView, setImageView] = useState(null);
     const [filtered, setFiltered] = useState([])
     const {contextMenu} = useContextMenu()
     const [curr, setCurr] = useState(null)
@@ -34,7 +32,7 @@ export const Outros = () => {
     
     useEffect(() => {
         setFiltered(outros.filter(e => misc.filtro({...e, imagem: ''}, search)))
-        }, [search]) //eslint-disable-line
+        }, [search,outros]) //eslint-disable-line
     
     useEffect(() => {
       if (filtered) {
@@ -47,7 +45,7 @@ export const Outros = () => {
 
                     <div className='img'>
                         {!misc.isNEU(e.imagem) 
-                        ? <img src={e.imagem} /> 
+                        ? <img src={format.convertImageToBase64(e.imagem)} /> 
                         : <FontAwesomeIcon className='icone' icon={faIceCream} />}
                     
                     </div>
@@ -145,9 +143,9 @@ export const Outros = () => {
 }
 
 const Container = styled.div`
-  background-color: ${cores.brancoEscuro};
+  background-color: ${cores.branco};
   width: 100%;
-  height: 100%;
+  height: 90%;
   display: flex;
 
   .esq {
@@ -181,6 +179,7 @@ const Container = styled.div`
         width: 40px;
         height: 100%;
         justify-content: center;
+        
 
         img {
           border-radius: 10%;
@@ -188,7 +187,8 @@ const Container = styled.div`
           flex-grow: 0;
           flex-shrink: 0;
           height: 40px;
-          object-fit: cover;
+          object-fit: scale-down;
+          background-color: white;
         }
 
         .icone{

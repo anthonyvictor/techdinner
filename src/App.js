@@ -13,7 +13,8 @@ import RotasProvider from "./context/rotasContext";
 import MainMenuProvider from "./context/mainMenuContext";
 import Globals from "./globals";
 import AskProvider from "./context/asksContext";
-import ContextMenuProvider from "./context/contextMenuContext";
+import ContextMenuProvider from "./components/ContextMenu";
+import ImageViewerProvider from './components/ImageViewer';
 
 function App() {
 
@@ -26,17 +27,19 @@ function App() {
         <BrowserRouter >
         <AskProvider>
           <ContextMenuProvider>
-            <RotasProvider>
-              <MainMenuProvider>
-                <MainMenu className="invisivel" />
-  
-                <div className="topo-base">
-                  <Header />
-                  <Rotas className="meio" />
-                  <Globals />
-                </div>
-              </MainMenuProvider>
-            </RotasProvider>
+            <ImageViewerProvider>
+              <RotasProvider>
+                <MainMenuProvider>
+                  <MainMenu className="invisivel" />
+    
+                  <div className="topo-base">
+                    <Header />
+                    <Rotas className="meio" />
+                    <Globals />
+                  </div>
+                </MainMenuProvider>
+              </RotasProvider>
+            </ImageViewerProvider>
           </ContextMenuProvider>
         </AskProvider>
         </BrowserRouter>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 import { SearchBar } from "../../../components/SearchBar";
-import ImageViewer from "../../../components/ImageViewer";
+import { useImageViewer } from "../../../components/ImageViewer";
 
 import * as apis from "../../../apis";
 import * as msg from "../../../util/Mensagens";
@@ -17,9 +17,8 @@ import ListaProvider from "../../../context/listaContext";
 import {Lista} from '../../../components/Lista'
 
 import { NotImplementedError } from "../../../exceptions/notImplementedError";
-import { useContextMenu } from "../../../context/contextMenuContext";
+import { useContextMenu } from "../../../components/ContextMenu";
 import axios from "axios";
-
 
 
 export default function ListaCli(props) {
@@ -27,9 +26,9 @@ export default function ListaCli(props) {
   const {curr, setCurr, lista, setLista, images, setImages} = useCadCli();
   const [search, setSearch] = useState("");
   const { clientes, setClientes } = useClientes();
-  const {contextMenu, fechar} = useContextMenu()
-  const [imageView, setImageView] = useState(null);
+  const {contextMenu} = useContextMenu()
   const [filtered, setFiltered] = useState([])
+  const { imageView } = useImageViewer()
   
 
   useEffect(() => {
@@ -65,8 +64,7 @@ export default function ListaCli(props) {
       enabled: true, visible: true},
 
       {title: 'Ver imagem', 
-      click:() => verImagem(cliente), 
-      touch:() => verImagemMobile(cliente), 
+      click:() => verImagem(cliente),
       enabled: !misc.isNEU(images.filter(i => i.id === cliente.id)[0]?.imagem), 
       visible: true}
     ])
@@ -174,18 +172,13 @@ export default function ListaCli(props) {
 
 
   function verImagem(cliente) {
-    window.open(cliente.imagem);
-  }
-  function verImagemMobile(cliente) {
-    setImageView(
-      <ImageViewer
-        imagem={cliente.imagem}
-        setShowImageViewer={() => {
-          setImageView(null);
-        }}
-        nome={cliente.nome}
-      />
-    );
+    
+    imageView({
+      title: cliente.nome,
+      image: format.convertImageToBase64(images.filter(i => i.id === cliente.id)[0].imagem),
+    })
+
+    //  window.open(format.convertImageToBase64(images.filter(i => i.id === cliente.id)[0].imagem));
   }
 
   // function isPhoneEqual(a){
@@ -386,7 +379,6 @@ useEffect(() => {
           }
         </Lista>
       </ListaProvider>
-      {imageView}
     </Estilo>
   );
 }
@@ -408,6 +400,7 @@ const Estilo = styled.div`
     min-width: 40px;
 
     .id{
+      user-select: none;
       &.novo{
         color: ${cores.verdeEscuro};
         font-size: 12px;
@@ -416,6 +409,7 @@ const Estilo = styled.div`
     }
 
     img {
+      user-select: none;
       border-radius: 50%;
       border: 2px solid black;
       width: 40px;
@@ -427,7 +421,7 @@ const Estilo = styled.div`
   }
 
   .centro{
-    
+    user-select: none;
     .info {
       flex-grow: 2;
       label {

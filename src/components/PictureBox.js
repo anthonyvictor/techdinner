@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { faSearch, faTimes} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ImageViewer from "./ImageViewer";
+import { useImageViewer } from "./ImageViewer";
 import * as cores from '../util/cores'
 import { isNEU, loadImage } from "../util/misc";
 import * as Format from '../util/Format'
@@ -13,16 +13,14 @@ function PictureBox(props) {
         props.setImagem('')
     }
 
-    const [showImageViewer, setShowImageViewer] = useState(false)
+    const { imageView } = useImageViewer()
 
-    function newImageViewer(){
-        return(
-        <ImageViewer 
-        imagem={props.imagem}
-        setImagem={props.setImagem}
-        setShowImageViewer={setShowImageViewer}
-        nome={props.nome}
-         />)
+    function openImageViewer(){
+      imageView({
+        title: props.nome,
+        image: props.imagem,
+        setImage: props.setImagem
+      })
     }
     const [showDragArea, setShowDragArea] = useState(false)
 
@@ -58,7 +56,7 @@ function PictureBox(props) {
     function openOrLoadImage(){
       isNEU(props.imagem) ? 
       loadImage(props.setImagem) :  
-      setShowImageViewer(true)
+      openImageViewer()
     }
 
     const renderDropAreaElement = () => {
@@ -94,8 +92,6 @@ function PictureBox(props) {
           <FontAwesomeIcon icon={faTimes} />
         </button>
       </div>
-
-      {showImageViewer && newImageViewer()}
 
     </Container>
   );

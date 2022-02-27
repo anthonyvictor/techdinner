@@ -12,12 +12,15 @@ import EndLocLista from "../enderecos/endlocLista";
 import EnderecosProvider, { useEnderecos } from "../../../context/enderecosContext";
 import { useClientes } from "../../../context/clientesContext";
 import { useAsk } from "../../../context/asksContext";
-import { useContextMenu } from "../../../context/contextMenuContext";
+import { useContextMenu } from "../../../components/ContextMenu";
 import * as apis from '../../../apis'
 import axios from "axios";
+import { useRotas } from "../../../context/rotasContext";
 
 
-export default function Cadastro() {
+
+export default function Cadastro(props) {
+  const {setCurrentRoute} = useRotas()
   const [contato, setContato] = useState('')
   const [tag, setTag] = useState('')
   const {curr, setCurr, limpar, images, setImages, imagem, setImagem} = useCadCli()
@@ -29,6 +32,7 @@ export default function Cadastro() {
     
 
   async function salvar() {
+    console.log('entrou------------------------------')
     let ctt = [...curr.contato.map(c => Format.formatNumber(c))]
     let tg = [...curr.tags]
     if(isNEU(curr?.nome)){
@@ -51,11 +55,13 @@ export default function Cadastro() {
       }
       let _img = null //await validateImage()
       const payload = {
-        cliente: {...curr, 
+        cliente: {
           nome: curr.nome.toUpperCase(),
           imagem: _img, //Format.convertFileToBase64(imagem), 
           contato: ctt,
-          tags: tg
+          tags: tg,
+          ...curr.endereco
+
         }
       }
   
@@ -64,15 +70,23 @@ export default function Cadastro() {
         method: 'post',
         data: payload
       }).then((e) => {
-        if(e.data.affectedRows > 0){
-          refresh()
-        }
+          refresh(e.data)
+          if(props.retorno){
+            props.retorno(e.data)
+          }else{
+            listar()
+          }  
       }).catch(e => {
         alert(`Erro: ${e}`)
       })
     }  
     
 
+  }
+
+  function listar() {
+    limpar()
+    setCurrentRoute(props.tabs[0])
   }
 
   const [listaEnd, setListaEnd] = useState(<></>);
@@ -130,7 +144,7 @@ export default function Cadastro() {
   useEffect(() => {
 
  
-    (curr && curr.id) && setImagem(images.filter(e => e.id === curr.id)[0]?.imagem)
+    (curr && curr.id) && setImagem(images.filter(e => e.id === curr.id)[0]?.imagem ?? curr.imagem)
 
     if(!isNEU(curr?.endereco?.cep)){
         {apis.enderecoToUrl(curr.endereco)
@@ -237,7 +251,7 @@ async function getFileFromUrl(url, name, defaultType = 'image/jpeg'){
             <label id="logradouro">
               {Format.formatEndereco(curr.endereco, false, false)}
             </label>
-            <button
+            <button className="logradouro-button"
               type="button"
               onClick={() => {
                 openListaEnd();
@@ -488,8 +502,7 @@ const Principal = styled.form`
 
       #logradouro-container {
         width: 100%;
-        height: 40px;
-        flex-basis: 90px;
+        flex-basis: minmax(max-content, 80px);
         display: flex;
         flex-grow: 0;
 
@@ -498,17 +511,23 @@ const Principal = styled.form`
           height: 40px;
           max-width: 100%;
           flex-grow: 2;
-          overflow-y: auto;
+          overflow-y: hidden;
+          overflow-x: auto;
           user-select: text;
           background-color: whitesmoke;
           border-radius: 2px;
           display: flex;
           align-items: center;
+          line-height: 100%;
         }
-        button{
+        .logradouro-button{
           flex-grow: 0;
-          max-height: 40px;
+          height: 100%;
         }
+      }
+
+      #numero-container{
+        flex-grow: 0;
       }
 
       #taxa{
@@ -665,11 +684,12 @@ const Estilo = styled(Principal)`
 
         #logradouro-container {
           width: 100%;
-          display: flex;
-
+          /* display: flex; */
+          height: 70px;
           #logradouro {
             max-width: 100%;
-            max-height: 100%;
+            height: 100%;
+            /* max-height: 100%; */
           }
         }
 

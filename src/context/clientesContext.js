@@ -20,8 +20,12 @@ export default function ClientesProvider({ children }) {
             return () => {montado = false}
         },[atualizar, ])     
 
-        const refresh = () => {
-            setAtualizar(prev => prev + 1)
+        const refresh = (cliente) => {
+            if(cliente){
+                setClientes(prev => [...prev.filter(c => c.id !== cliente.id), cliente])
+            }else{
+                setAtualizar(prev => prev + 1)
+            }
         }
     return(
         <ClientesContext.Provider value={{clientes, setClientes, refresh}}>

@@ -15,8 +15,8 @@ export function IcoTipo(tipo) {
 
 
   export function getDataPagamentoDescrito(data){
-    data  = misc.toDate(data)
-
+    // data  = misc.toDate(data)
+    data = new Date(data)
     let horas = data.toLocaleTimeString([], {timeStyle: 'short'})
 
     let dataATUAL = new Date();

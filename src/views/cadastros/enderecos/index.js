@@ -14,10 +14,13 @@ import { TabControl } from "../../../components/TabControl";
 import EnderecosProvider from "../../../context/enderecosContext";
 
 function Enderecos(props) {
+
+
+  const links = ["/cad/endloc/lista", "/cad/endloc/cad", "/cad/endloc/bairros"]
   const tabs = [
-    { link: "/cad/endloc/lista", titulo: "E/L Lista", elemento: <ELList /> },
-    { link: "/cad/endloc/cad", titulo: "E/L Cadastro", elemento: <ELCad /> },
-    { link: "/cad/endloc/bairros", titulo: "Bairros", elemento: <Bairros /> },
+    { link: links[0], titulo: "E/L Lista", elemento: <ELList tabs={links} /> },
+    { link: links[1], titulo: "E/L Cadastro", elemento: <ELCad /> },
+    { link: links[2], titulo: "Bairros", elemento: <Bairros /> },
   ];
 
   return (

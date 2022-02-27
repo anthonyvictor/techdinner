@@ -195,7 +195,7 @@ export function removeConjuncoes(txt){
 }
 
 export function isMobile(){
-  return window.screen.width <= 550
+  return window.screen.width <= 760
 }
 
 export function toDate(dateStr) {

@@ -94,7 +94,7 @@ export default function MainMenu(){
                 </div>
 
                 <div className="botao" name='conf' title="Configurações" 
-                onClick={changeRoute}>
+                onClick={e => openView(e)}>
                 <FontAwesomeIcon className='icone' icon={faCog}/>
                     <p>Configurações</p>
                 </div>

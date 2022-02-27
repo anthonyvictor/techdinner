@@ -45,7 +45,8 @@ function HomeProvider(props) {
 
   function openSelectBox(element) {
     setSelectBox(
-      <SelectBox className='absolute-black' onMouseDown={e => fecharSelectBox(e)}>
+      <SelectBox className='absolute-black' 
+      onMouseDown={e => fecharSelectBox(e)}>
         {element}
       </SelectBox>
     )

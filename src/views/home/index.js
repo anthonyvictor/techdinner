@@ -8,17 +8,14 @@ import styled from "styled-components";
 import * as cores from "../../util/cores";
 import Pedido from "./pedido";
 import ClientesProvider from "../../context/clientesContext";
-import EnderecosProvider from "../../context/enderecosContext";
 
 const Home = () => {
   return (
-    <EnderecosProvider>
         <PedidosProvider>
           <HomeProvider>
             <HomeElement />
           </HomeProvider>
         </PedidosProvider>
-    </EnderecosProvider>
   );
 };
 
@@ -45,12 +42,16 @@ const Container = styled.div`
   background-color: whitesmoke;
   overflow: hidden;
   height: 100%;
+  min-height: 100px;
 
   > .esquerda {
-    width: 300px;
+    width: 290px;
+    flex-shrink: 0;
     border-right: 1px solid ${cores.cinzaDark};
     padding: 0 5px;
     height: 100%;
+    min-height: 50px;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
   }

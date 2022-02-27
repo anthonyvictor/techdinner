@@ -1,6 +1,6 @@
 import React, {useRef, useState } from "react";
 import { formatPhoneNumber, formatNumber } from '../util/Format'
-import { useContextMenu } from '../context/contextMenuContext';
+import { useContextMenu } from './ContextMenu';
 import * as apis from '../apis' 
 import * as msg from '../util/Mensagens'
 import styled from "styled-components";

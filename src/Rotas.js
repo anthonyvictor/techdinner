@@ -12,6 +12,7 @@ import Pizzas from "./views/cadastros/pizzas";
 import { useRotas } from "./context/rotasContext";
 import Bebidas from "./views/cadastros/bebidas";
 import Outros from "./views/cadastros/outros";
+import Configuracoes from "./views/configuracoes";
 
 
 const Rotas = () => {
@@ -71,6 +72,11 @@ const Rotas = () => {
         element={<Home />}
       />
       
+      <Route
+        exact
+        path="/conf"
+        element={<Configuracoes />}
+      />
     </Routes>
   );
 };

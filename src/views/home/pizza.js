@@ -9,7 +9,7 @@ import * as icons from '@fortawesome/free-solid-svg-icons'
 import { usePizzas } from '../../context/pizzasContext'
 
 import { SearchBar } from '../../components/SearchBar'
-import { useContextMenu } from '../../context/contextMenuContext'
+import { useContextMenu } from '../../components/ContextMenu'
 
 export default function Pizza({ item }) {
     const { contextMenu } = useContextMenu()

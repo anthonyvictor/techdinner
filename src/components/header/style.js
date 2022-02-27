@@ -43,7 +43,7 @@ export default styled.div`
         
     }
 
-    @media(max-width: 550px){
+    @media(max-width: 760px){
         flex-direction: row-reverse;
         .hamb{
             display: block;

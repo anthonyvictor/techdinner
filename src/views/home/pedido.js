@@ -7,28 +7,30 @@ import * as icons from '@fortawesome/free-solid-svg-icons';
 import * as misc from '../../util/misc';
 import * as pedidoUtil from '../../util/pedidoUtil'
 import * as Format from '../../util/Format';
-import { useContextMenu } from '../../context/contextMenuContext';
+import { useContextMenu } from '../../components/ContextMenu';
 import * as apis from '../../apis'
 import * as msg from '../../util/Mensagens'
-import { useEnderecos } from '../../context/enderecosContext';
 import ListaCli from '../cadastros/clientes/lista'
 import Cadastro from '../cadastros/clientes/cadastro';
 import CadCliProvider from '../../context/cadClientesContext'
 import { useRotas } from '../../context/rotasContext';
 import ItemMaker from './itemMaker';
 import Pagamento from './pagamento';
+import axios from 'axios';
+import { usePedidos } from '../../context/pedidosContext';
+import { useImageViewer } from '../../components/ImageViewer';
+import ClientesProvider from '../../context/clientesContext';
 // import { useAsk } from '../../context/asksContext';
 
 function Pedido() {
-  const {curr, fechar, openSelectBox, fecharSelectBox} = useHome()
+  const {curr, setCurr, fechar, openSelectBox, fecharSelectBox} = useHome()
   const {contextMenu} = useContextMenu()
-  //const [isMobile] = useState(misc.isMobile())
+  const { refresh, getImagem } = usePedidos();
   const [mapa, setMapa] = useState(null)
   const [showMapa, setShowMapa] = useState(false)
-  const { enderecos } = useEnderecos()
   const [itensAgrupados, setItensAgupados] = useState([])
-  const {setCurrentRoute} = useRotas()
-  // const {ask} = useAsk()
+  const {setCurrentRoute, location} = useRotas()
+  const {imageView} = useImageViewer()
 
   const boxCliente = useRef()
   const boxEndereco = useRef()
@@ -97,13 +99,19 @@ function Pedido() {
   },[curr, showMapa])
 
 function getPedNum(){
-  return '1º Pedido'
+  return curr.numero + 'º pedido' // cliente?.pedidos ? `${curr.cliente.pedidos + 1}º pedido` : '1º pedido'
 }
 
-function getTaxaOriginal(){
-  if(curr && curr.endereco){
-    return enderecos.filter(e => e.cep === curr.endereco.cep).map(e => e.taxa)[0]
-  }else{return 0}
+function getAlertStyle(){
+  if(curr?.cliente?.pedidos === 0){
+    return {backgroundColor: 'green'}
+  }else if(curr?.cliente?.valorPendente > 0){
+    return {backgroundColor: 'red'}
+  }else if(curr?.cliente?.listaNegra){
+    return {backgroundColor: 'black'}
+  }else{
+    return {display: 'none'}
+  }
 }
 
 function getEntregadorPadrao(){
@@ -111,7 +119,7 @@ function getEntregadorPadrao(){
 }
 
 async function confirmacao(tipo, resolve){
-  if((curr.valor - curr.valorPago) < 0){
+  if((curr.valor - getValorPago()) < 0){
     alert('Há pagamentos que excedem o valor total do pedido!')  
     return ''
   }
@@ -144,7 +152,7 @@ async function confirmacao(tipo, resolve){
       break;
   }
 
-  if(_contato && !misc.isNEU(curr.cliente) && !misc.isNEU(curr.cliente.contato)){
+  if(_contato && !misc.isNEU(curr?.cliente) && !misc.isNEU(curr.cliente.contato)){
     _contato = `\n\n*NUMERO(S) PARA CONTATO:* 📲`
     _contato += `\n${curr.cliente.contato.map(e => Format.formatPhoneNumber(e)).join(', ')}`
   }
@@ -155,7 +163,7 @@ async function confirmacao(tipo, resolve){
     _endereco += `\n*Taxa de entrega: ${Format.formatReal(curr.endereco.taxa)}*`
   }
 
-  if(_itens && !misc.isNEU(curr.itens)){
+  if(_itens && !misc.isNEU(curr?.itens)){
     let _pizzas='',_bebidas='',_outros=''
     for(let i of curr.itens){
       let _obs = !misc.isNEU(i.observacoes) 
@@ -315,9 +323,23 @@ function getSaboresDescritos(sabores,quebra=', '){
   return r
 }
 
+function getValorPago(){
+  return curr.pagamentos.filter(e => e.status === 1).reduce((a,b) => a + b, 0) || 0
+}
+
 const [clienteTab, setClienteTab] = useState(null)
 const clienteLinks = ['/pedido/clientes/lista','/pedido/clientes/cad']
-const clienteElementos = [<ListaCli retorno={mudarCliente} tabs={clienteLinks} />, <Cadastro retorno={mudarCliente} tabs={clienteLinks} />] 
+const clienteElementos = [
+
+<ClientesProvider>
+  <ListaCli retorno={mudarCliente} tabs={clienteLinks} />
+</ClientesProvider>, 
+
+<ClientesProvider>
+  <Cadastro retorno={mudarCliente} tabs={clienteLinks} />
+</ClientesProvider>
+
+] 
 const semCadastro = useRef()
 function openSelectBoxCliente(tipo){
   switch (tipo){
@@ -336,7 +358,7 @@ function openSelectBoxCliente(tipo){
             apenas para identificar o pedido, e não é válido como cadastro!</h4>
           <input ref={semCadastro} type={'text'} className='nome' required={true} 
           autoFocus={!misc.isMobile()}
-          defaultValue={(curr.cliente && curr.cliente.nome) ? curr.cliente.nome : ''} />
+          defaultValue={curr?.cliente?.nome || ''} />
           <button type='submit' onClick={(e) => {
             e.preventDefault()
             if(semCadastro.current.value.length > 2){
@@ -350,14 +372,37 @@ function openSelectBoxCliente(tipo){
       break
   }
 }
-function mudarCliente(novoCliente){
+async function mudarCliente(novoCliente){
+  alert(novoCliente.nome)
   fecharSelectBox()
-  alert('mudou para: ' + novoCliente.nome)
+  let ped = {
+    id: curr.id,
+    tipo: curr.tipo,
+    cliente: { id: curr.cliente.id },
+  }
+  const payload = {
+    pedido: ped,
+    novoCliente: {
+      ...novoCliente,
+      nome: novoCliente.nome && String(novoCliente.nome).toUpperCase()
+    }
+  }
+
+  const response = await axios({
+    url: `${process.env.REACT_APP_API_URL}/pedidos/updatecliente`,
+    method: 'POST',
+    data: payload
+  })
+  setCurr(prev => {return{ ...prev, ...response.data }})
+  refresh()
+  
 }
 useEffect(() => {
-  clienteTab && (
+  if(clienteTab){
     openSelectBox(
-      <CadCliProvider cliente={curr.cliente}>
+      <CadCliProvider cliente={clienteTab?.type?.name === 'Cadastro' 
+      ? curr.cliente
+      : null}>
       <div className='container cliente'>
         {clienteTab}
       <div className='tabs-buttons'>
@@ -367,12 +412,12 @@ useEffect(() => {
       </div>
       </CadCliProvider>
     )
-  )
+  }
 },[clienteTab])
 
 function removerCliente(){
   if(window.confirm('Deseja remover o cliente deste pedido? Informações de endereço também serão removidas.')){
-
+    mudarCliente({id: null, nome: null})
   }
 }
 
@@ -384,11 +429,11 @@ function openTopClienteMenu(){
 
     {title: 'Editar', 
     click:() => openSelectBoxCliente('editar'), 
-    enabled: true, visible: (curr.cliente && !!curr.cliente.id)},
+    enabled: true, visible: !!curr?.cliente?.id},
 
     {title: 'Remover',
     click:() => removerCliente(), 
-    enabled: true, visible: !misc.isNEU(curr.cliente)},
+    enabled: true, visible: !misc.isNEU(curr?.cliente)},
 
     {title: 'Sem cadastro', 
     click:() => openSelectBoxCliente('semcadastro'), 
@@ -396,7 +441,7 @@ function openTopClienteMenu(){
 
     {title: 'Fidelidade', 
     click:() => openSelectBoxCliente('fidelidade'), 
-    enabled: false, visible: (curr.cliente && !!curr.cliente.id)} 
+    enabled: false, visible: !!curr?.cliente?.id} 
 ])
 }
 function openPizzasMenu(item){
@@ -480,12 +525,12 @@ function editarItem(item){
 }
 
 useEffect(() => {
-  if(curr && curr.itens){
-    const itens = [...curr.itens]
+  if(curr){
+    const _itens = [...curr.itens]
     let pizzas = []
     let bebidas = []
     let outros = []
-    for(let item of itens){
+    for(let item of _itens){
       if(item.tipo === 0){
           //pizza
           let achou = false
@@ -546,6 +591,23 @@ useEffect(() => {
   }else{setItensAgupados([])}
 }, [curr]) 
 
+
+function contextMenuItem(i){
+  contextMenu([
+    {title:'Editar', click:()=> editarItem(i)},
+    {title:'Copiar...', click: () =>{
+      const cp = (qtd) => {alert(`Copiar ${qtd}x`)}
+      contextMenu([
+        {title:'Acres. mais 1',click:() => cp(1)},
+        {title:'Acres. mais 2',click:() => cp(2)},
+        {title:'Acres. mais 3',click:() => cp(3)},
+        {title:'Acres. mais 4',click:() => cp(4)},
+      ])
+    }},
+    {title:'Excluir',click:()=>{alert('EXCLUIR')}},
+  ])
+}
+
   return curr
   ? (
     <Container pedido={curr}
@@ -555,9 +617,9 @@ useEffect(() => {
           {curr.id > 0 ? `Pedido #${curr.id}` : 'Pedido Novo!'}
         </div>
         <div className='data'>
-          {!misc.isMobile() && 'Data:'}
+          {!misc.isMobile() && 'Data: '}
           {curr.dataInic 
-          ? curr.dataInic.toLocaleDateString("pt-br") 
+          ? new Date(curr.dataInic).toLocaleDateString()
           : new Date().toLocaleDateString('pt-BR')}
         </div>
         <div className='tipo'>
@@ -598,32 +660,33 @@ useEffect(() => {
           </div>
           <div className='content'>
             <div className='img-id'>
-              {curr.cliente && curr.cliente.imagem
-              ? <img src={curr.cliente.imagem} alt='' />
-              : <FontAwesomeIcon className='icon' icon={icons.faUser} />}
-              {curr.cliente && curr.cliente.id
-              && <p>{curr.cliente.id}</p>}
+              {
+              curr.cliente?.imagem
+              ? <img src={curr.cliente.imagem} alt='' 
+                onClick={() => imageView({title: curr.cliente.nome, image: curr.cliente.imagem})}/>
+              : curr.cliente?.nome
+              ? <FontAwesomeIcon className='icon' icon={icons.faUser} />
+              : <FontAwesomeIcon className='icon' icon={icons.faTimes} />
+              }
+              {curr.cliente?.id && <p>{curr.cliente.id}</p>}
             </div>
             <div className='info'>
               <div className='top'>
-                {curr.cliente && curr.cliente.id
-                && <span className='alert'></span>}
-                <span className='nome'>{curr.cliente && curr.cliente.nome
-                ? curr.cliente.nome
-                : 'SEM CLIENTE!'}</span>
+                {curr.cliente?.id
+                && <span className='alert' style={getAlertStyle()}></span>}
+                <span className='nome'>{curr.cliente?.nome || 'SEM CLIENTE!'}</span>
               </div>
               <div className='middle'>
-                <label className='tags'>{curr.cliente && curr.cliente.tags
+                <label className='tags'>{curr.cliente?.tags?.length > 0
                 && curr.cliente.tags.join(', ')}</label>
-                {curr.cliente && curr.cliente.id
+                {curr?.cliente?.id
                 ? <label className='pedido'>{getPedNum()}</label>
                 : curr.cliente.nome
                 ? <label className='sem-cadastro'>Sem cadastro!!</label>
                 : <label className='sem-cadastro'>Altere o cliente para liberar ações do pedido.</label>}
               </div>
               <div className='contatos-container'>
-                <ul className='contatos'>
-                  {curr.cliente && curr.cliente.contato
+                <ul className='contatos'>{curr.cliente?.contato?.length > 0
                   && curr.cliente.contato.map(e => (
                     <li key={e}
                     onClick={() => contatoClick(e)}
@@ -650,12 +713,12 @@ useEffect(() => {
                       </p>
                   </div>
                     <div className='bottom'>
-                      <button className={curr.endereco.taxa !== getTaxaOriginal() ? 'alert' : undefined}
-                      title={curr.endereco.taxa !== getTaxaOriginal() ? 'Taxa atual diferente da original!' : ''}>
+                      <button className={curr.endereco.taxa !== curr.endereco.bairro.taxa ? 'alert' : undefined}
+                      title={curr.endereco.taxa !== curr.endereco.bairro.taxa ? 'Taxa atual diferente da original!' : ''}>
                         Taxa: {Format.formatReal(curr.endereco.taxa)}
                       </button>
                       <button className={curr.endereco.entregador.id !== getEntregadorPadrao()  ? 'alert' : undefined}
-                      title={curr.endereco.taxa !== getTaxaOriginal() ? 'Entregador diferente do padrão!' : ''}>
+                      title={curr.endereco.taxa !== curr.endereco.bairro.taxa ? 'Entregador diferente do padrão!' : ''}>
                         Entregador:{curr.endereco.entregador.nome}
                       </button>
                   </div>
@@ -676,7 +739,7 @@ useEffect(() => {
         <div ref={boxItens} className={`itens-container box
         ${curr.itens && itensAgrupados.length > 5 ? 'superlarge' 
         : curr.itens && itensAgrupados.length > 2 ? 'large' 
-        : curr.itens && itensAgrupados.length > 0 ? 'big' : ''}`}>
+        : curr.itens && itensAgrupados.length > 1 ? 'big' : ''}`}>
         <div className='top itens'>
             <button className='principal' onClick={() => openTopItensMenu()}>ITENS</button>
             <button className='secondary' onClick={() => boxItens.current.classList.toggle('collapsed')}>_</button>
@@ -687,6 +750,10 @@ useEffect(() => {
               .map(i => (              
                 <li key={i.id ? i.id : i.ids.join(',')}
                 onDoubleClick={() => editarItem(i)}
+                onContextMenu={(e) => {
+                  e.preventDefault()
+                  contextMenuItem(i)
+                }}
                 >
                   <div className='inicio'>
                     <input type={'checkbox'} />
@@ -694,15 +761,15 @@ useEffect(() => {
                     ? <FontAwesomeIcon icon={icons.faPizzaSlice} /> 
                     : i.tipo === 1 
                     ? i.bebida.imagem 
-                    ? <img src={i.bebida.imagem} /> 
+                    ? <img src={Format.convertImageToBase64(i.bebida.imagem)} /> 
                     : <FontAwesomeIcon icon={icons.faGlassCheers} />
                     : i.tipo === 2
                     ? i.hamburguer.imagem
-                    ? <img src={i.hamburguer.imagem} /> 
+                    ? <img src={Format.convertImageToBase64(i.hamburguer.imagem)} /> 
                     : <FontAwesomeIcon icon={icons.faHamburger} /> 
                     : i.tipo === 3
                     ? i.outro.imagem 
-                    ? <img src={i.outro.imagem} /> 
+                    ? <img src={Format.convertImageToBase64(i.outro.imagem)} /> 
                     : <FontAwesomeIcon icon={icons.faIceCream} /> 
                     : <FontAwesomeIcon icon={icons.faUtensils} /> }
                   </div>
@@ -740,19 +807,7 @@ useEffect(() => {
                       {Format.formatReal(i.valor)}
                     </label>
                     <button className='opcoes-item' 
-                    onClick={() => contextMenu([
-                      {title:'Editar',click:()=> editarItem(i)},
-                      {title:'Copiar...', click: () =>{
-                        const cp = (qtd) => {alert(`Copiar ${qtd}x`)}
-                        contextMenu([
-                          {title:'Acres. mais 1',click:() => cp(1)},
-                          {title:'Acres. mais 2',click:() => cp(2)},
-                          {title:'Acres. mais 3',click:() => cp(3)},
-                          {title:'Acres. mais 4',click:() => cp(4)},
-                        ])
-                      }},
-                      {title:'Excluir',click:()=>{alert('EXCLUIR')}},
-                    ])}>
+                    onClick={() => contextMenuItem(i)}>
                       <FontAwesomeIcon icon={icons.faEllipsisV} />
                     </button>
                   </div>
@@ -760,7 +815,7 @@ useEffect(() => {
               ))}
             </ul>
           </div>
-            {curr.itens && curr.itens.length > 0 &&
+            {curr?.itens?.length > 0 &&
             <label className='bottom'>
               Total de itens: {curr.itens.length} | {
               Format.formatReal(curr.itens.reduce((a, b) => a + b.valor, 0))}
@@ -768,9 +823,9 @@ useEffect(() => {
         </div>
 
         <div ref={boxPagamento} className={`pagamento-container box
-        ${curr.pagamentos && curr.pagamentos.length > 5 ? 'superlarge' 
-        : curr.pagamentos && curr.pagamentos.length > 2 ? 'large' 
-        : curr.pagamentos && curr.pagamentos.length > 0 ? 'big' : ''}`}>
+        ${curr?.pagamentos?.length > 5 ? 'superlarge' 
+        : curr?.pagamentos?.length > 2 ? 'large' 
+        : curr?.pagamentos?.length > 0 ? 'big' : ''}`}>
           <div className='top pagamento'>
             <button className='principal' onClick={() => openTopPagamentoMenu()}>PAGAMENTO</button>
             <button className='secondary' onClick={() => boxPagamento.current.classList.toggle('collapsed')}>_</button>
@@ -778,11 +833,11 @@ useEffect(() => {
           <div className='content'>
             <div className='valores'>
               <span>
-                <h3 className='pago'>{Format.formatReal(curr.valorPago)}</h3>
+                <h3 className='pago'>{Format.formatReal(getValorPago())}</h3>
                 <h6>Valor Pago</h6>
               </span>
               <span>
-              <h2 className='pendente'>{Format.formatReal(curr.valor - curr.valorPago)}</h2>
+              <h2 className='pendente'>{Format.formatReal(curr.valor - getValorPago())}</h2>
                 <h6>Valor Pendente</h6>
               </span>
               <span>
@@ -791,7 +846,7 @@ useEffect(() => {
               </span>
             </div>
             <ul className='pagamentos-ul'>
-                {curr.pagamentos && curr.pagamentos.map(e => 
+                {curr?.pagamentos?.map(e => 
                   <li key={e.id} className={e.status === 1 ? 'pago' : 'pendente'} >
                     <div className='inicio'>
                         {
@@ -814,7 +869,7 @@ useEffect(() => {
                         <div className='info-secundarias'>
                           <p>Cód.{e.id}</p>
                           <p>{`Add ${pedidoUtil.getDataPagamentoDescrito(e.dataAdicionado)}`}</p>
-                          {e.dataRecebido && <p>{`Receb. ${pedidoUtil.getDataPagamentoDescrito(e.dataRecebido)}`}</p>}
+                          {e.status === 1 && e.dataRecebido && <p>{`Receb. ${pedidoUtil.getDataPagamentoDescrito(e.dataRecebido)}`}</p>}
                         </div>
                         <label className='titulo'>
                           {`${Format.formatReal(e.valorPago)} - ${
@@ -831,7 +886,7 @@ useEffect(() => {
                             : e.tipo === 5
                             ? 'NÃO INFORMADO'
                             : 'DESCONHECIDO PELO SISTEMA'} ${
-                              e.status === 0
+                              e.status === 1
                               ? '(PAGO)'
                               : '(PENDENTE)'
                             }`
@@ -852,7 +907,7 @@ useEffect(() => {
                   )}
             </ul>
           </div>
-          {curr.pagamentos && curr.pagamentos.length > 0 &&
+          {curr?.pagamentos?.length > 0 &&
             <label className='bottom'>
               Total de pagamentos: {curr.pagamentos.length} | {
               Format.formatReal(curr.pagamentos.reduce((a, b) => a + b.valorPago, 0))}
@@ -861,8 +916,8 @@ useEffect(() => {
 
       </div>
 
-      <button type='button' 
-      className={`observacoes-container${!curr.observacoes ? ' collapsed': ''}`}
+      <button className={`observacoes-container${!curr.observacoes ? ' collapsed': ''}`}
+      type='button' 
       onClick={() => mudarObservacoes()}>
         <label>Observações:</label>
         <p className='observacoes'>{curr.observacoes ?? 'Adicionar observação.'}</p>
@@ -947,6 +1002,9 @@ label,p{
   .tipo{
     flex-grow: 3;
     align-items: center;
+    display: flex;
+    justify-content: center;
+
     .tipo-botao{
       border: none;
       background-color: transparent;
@@ -1085,6 +1143,7 @@ label,p{
           width: 70px ;
           height: 70px ;
           object-fit: cover;
+          cursor: pointer;
         }
         .icon{
           font-size: 60px;
@@ -1238,9 +1297,9 @@ label,p{
 
   .itens-container{
     display: flex; 
-    min-height: 90px;
+    min-height: 145px;
     &.big:not(.collapsed){
-      min-height: 180px;
+      min-height: 215px;
     }
     &.large:not(.collapsed){
       min-height: 290px;

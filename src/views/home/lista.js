@@ -3,32 +3,135 @@ import { usePedidos } from "../../context/pedidosContext";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as icons from "@fortawesome/free-solid-svg-icons";
-import { convertFileToBase64, formatReal } from "../../util/Format";
+import { convertFileToBase64, convertImageToBase64, formatReal } from "../../util/Format";
 import * as cores from "../../util/cores";
 import { useHome } from "../../context/homeContext";
 import FloatButton from "../../components/FloatButton";
 import * as pedidoUtil from '../../util/pedidoUtil'
+import { isNEU } from "../../util/misc";
 
 export default function Lista() {
-  const { pedidos } = usePedidos();
+  const { pedidos, semTipo, caixa, entrega, aplicativo, arquivados } = usePedidos();
+
   return (
         <ListaContainer>
           <FloatButton clique={()=> {}} />
-          {pedidos ? pedidos.map(pedido => 
-            (<Item key={pedido.id} pedido={pedido} />)
-          ):(<div></div>)}
+          {window.localStorage.getItem('exibicaoPedidos') === 'all' 
+          ? (  
+                <ul className={`list`}>
+                  {pedidos.sort(ordem).map(pedido => (<Item key={pedido.id} pedido={pedido} />))}
+                </ul>
+          )
+          : (
+            <>
+              <ListGroup arr={semTipo} title='Desconhecido' />
+              <ListGroup arr={caixa} title='Caixa' />
+              <ListGroup arr={entrega} title='Entrega' />
+              <ListGroup arr={aplicativo} title='Aplicativo' />
+              <ListGroup arr={arquivados} title='Arquivados' aberto={false} />
+            </>
+          )}
+          
+          
         </ListaContainer>
   );
 }
 
-const ListaContainer = styled.ul`
+function ordem(a,b){
+  if(a.dataInic > b.dataInic) return -1
+  if(a.dataInic < b.dataInic) return 1
+  if(a.dataInic === b.dataInic) return 0
+}
+
+function ListGroup({arr, title, aberto}){
+  const [opened, setOpened] = useState(aberto !== undefined ? aberto : true)
+    if(arr.length > 0 ){
+      return (
+        <ListGroupContainer opened={opened} className={`group ${title.toLowerCase()}`}>
+          <button className="group-head"
+          onClick={() => setOpened(prev => !prev)}>
+            {title} - {arr.length} pedidos
+            {opened 
+            ? <FontAwesomeIcon icon={icons.faAngleDown} />
+            : <FontAwesomeIcon icon={icons.faAngleLeft} />}
+          </button>
+          <ul className={`group-list ${opened}`}>
+            {arr.sort(ordem).map(pedido => (<Item key={pedido.id} pedido={pedido} />))}
+          </ul>
+        </ListGroupContainer>
+      )
+    }else{
+      return <></>
+    }
+}
+
+const ListGroupContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 2;
+    ${(props) => !(props.opened)}{
+      min-height: 85px;
+    }
+    @media (max-width: 760px){
+      ${(props) => !(props.opened)}{
+        min-height: 140px;
+      }
+    }
+    .group-head{
+      text-align: left;
+      background-color: ${cores.branco};
+      border: none;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      vertical-align: center;
+      justify-content: space-between;
+      cursor: pointer;
+
+      @media (hover: hover) and (pointer: fine) {
+        &:hover {
+          font-weight: 600;
+        }
+      }
+
+    }
+    .group-list{
+      overflow-y: auto;
+      flex-grow: 2;
+      
+      &.false{display: none;}
+    }
+
+    @media (max-width: 760px){
+      /* .group-head{
+        font-size: 25px;
+      } */
+      .group-list{
+        padding: 5px;
+      }
+    }
+
+    @media (max-width: 550px){
+      .group-head{
+        font-size: 25px;
+      }
+      .group-list{
+        padding: 5px;
+      }
+    }
+
+`
+
+const ListaContainer = styled.div`
   overflow-y: auto;
-  /* width: 100%;
-  height: 100% ;//calc(100vh - 140px);  */
   padding: 5px 0;
   border: none;
   flex-grow: 2;
-
+  display:flex;
+  flex-direction: column; 
+  gap: 5px;
+  height: 100%;
 
   @media (max-width: 760px){
     padding: 10px 10px;
@@ -43,15 +146,13 @@ const ListaContainer = styled.ul`
 function Item({pedido}) {
 
   const {curr, setCurr} = useHome() 
+  const {getImagem}= usePedidos()
   const [duracao, setDuracao] = useState(getDuration())
-  const [imagem] = useState((pedido.cliente && pedido.cliente.imagem && pedido.cliente.imagem.length > 0) 
-  ? pedido.cliente.imagem
-  : null)
 
-function getDuration() {
+  function getDuration() {
     let dataATUAL = new Date();
 
-    let ms = dataATUAL - pedido.dataInic;
+    let ms = dataATUAL - new Date(pedido.dataInic);
 
     let m = ms / 1000 / 60;
 
@@ -105,7 +206,10 @@ function getDuration() {
   }
 
   function CorValor() {
-    let diff = pedido.valor - pedido.valorPago;
+    let totalPago = pedido.pagamentos
+    .map(e => e.valorPago)
+    .reduce((a, b) => a + b, 0)
+    let diff = pedido.valor - isNaN(totalPago) ? 0 : totalPago
 
     if (diff === pedido.valor) {
       return "#bf0f06";
@@ -151,9 +255,9 @@ useEffect(() => {
         setCurr(pedido)
       }}
     >
-      {imagem 
-      ? <img src={imagem} alt="Imagem do cliente" />
-      : pedido.cliente.nome 
+      {getImagem(pedido?.cliente?.id) 
+      ? <img src={getImagem(pedido.cliente.id)} alt="Imagem do cliente" />
+      : pedido.cliente.nome
       ? <FontAwesomeIcon className="icon" icon={icons.faUser} />
       : <FontAwesomeIcon className="icon" icon={icons.faTimes} /> }
       <div className="informacoes">
@@ -259,6 +363,7 @@ const ItemContainer = styled.li`
         display: flex;
         align-items: center;
         border: 0.1px solid black;
+        border-radius: 10px;
         background-color: white;
       }
 

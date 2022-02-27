@@ -12,7 +12,7 @@
 // import * as cores from "../util/cores";
 // import { loadImage, sleep } from "../util/misc";
 // import { saveAs } from "file-saver";
-// import { useContextMenu } from "./contextMenuContext";
+// import { useContextMenu } from "./ContextMenu";
 
 // const ImageViewerContext = createContext()
 

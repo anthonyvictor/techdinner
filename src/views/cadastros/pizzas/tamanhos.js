@@ -8,7 +8,7 @@ import { Lista } from '../../../components/Lista';
 import * as cores from '../../../util/cores'
 import { useCadPizzas } from '../../../context/cadPizzasContext';
 import { SearchBar } from '../../../components/SearchBar';
-import { useContextMenu } from '../../../context/contextMenuContext';
+import { useContextMenu } from '../../../components/ContextMenu';
 
 function Tamanhos() {
   const {tamanhos, tipos, valores} = usePizzas()
@@ -30,8 +30,27 @@ function Tamanhos() {
   useEffect(() => {
     if (filtered) {
       setLista(
-        filtered.map((e) => (
+        filtered
+        .sort((a,b) => {
+          let s = 0
+          s = a.ativo === b.ativo ? 0 : a.ativo ? -1 : 1
+          if(s === 0) {
+            const valorMaisBaixo = (t) => valores
+            .filter(v => v.tamanho.id === t.id)
+            .map(v => v.valor).reduce((min, val) => min < val ? min : val)
+            
+            const vmbA = valorMaisBaixo(a)
+            const vmbB = valorMaisBaixo(b)
+
+            if(vmbA < vmbB) s = -1
+            if(vmbA > vmbB) s = 1
+            if(vmbA === vmbB) s = 0
+          }
+          return s
+        })
+        .map((e) => (
           <li className='item-li' key={e.id}>
+            
             <label className={`item-ativo ${e.ativo ? 'true' : 'false'}`} 
             title={e.ativo
               ? 'Este item está ativo para novos pedidos.'
@@ -45,10 +64,16 @@ function Tamanhos() {
                     ? 'Visível' : 'Invisível'}</strong>}
                 </section>
                 <ul className='valores-container'>
-                    {valores.filter(v => v.tamanho.id === e.id).map(v =>
+                    {valores.filter(v => v.tamanho.id === e.id)
+                    .map(v => {return{
+                      ...v, 
+                      tamanho: tamanhos.filter(t => t.id === v.tamanho.id)[0],
+                      tipo: tipos.filter(t => t.id === v.tipo.id)[0]
+                    }})
+                    .map(v =>
                       <ColoredLi key={v.id} cor={v.tipo.cor}>
-                        <span className='tipo-span'>{Format.formatAbrev(v.tipo.nome)}: </span>
-                        <span>{Format.formatReal(v.valor)}</span>
+                        <strong className='tipo-span'>{Format.formatAbrev(v.tipo.nome)}: </strong>
+                        <strong>{Format.formatReal(v.valor)}</strong>
                       </ColoredLi>
                     )}
                 </ul>
@@ -243,6 +268,9 @@ const Container = styled.div`
           list-style: none;
           display: flex;
           flex-direction: row;
+          overflow-x: auto;
+          width: 100%;
+          pointer-events: all
         }
       }
     }
@@ -294,24 +322,6 @@ const Container = styled.div`
       #limpar {
         flex-grow: 1;
         background-color: ${cores.vermelho};
-      }
-    }
-
-    .descricao-numero-container {
-      flex-direction: row;
-      gap: 15px;
-
-      .descricao-container {
-        flex-grow: 0;
-        flex-shrink: 3;
-        width: 100%;
-        max-width: 100%;
-      }
-
-      .numero-container {
-        flex-grow: 0;
-        flex-shrink: 3;
-        width: 60px;
       }
     }
 
@@ -399,6 +409,7 @@ const Container = styled.div`
 
   .item-ativo {
     width: 20px;
+    flex-shrink: 0;
     height: 20px;
     border-radius: 50%;
     display: inline-block;
@@ -421,35 +432,23 @@ const Container = styled.div`
     .dir {
       overflow-y: auto;
       width: 100%;
-      .descricao-numero-container {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-
-        .descricao-container {
-          flex-grow: 2;
-        }
-
-        .numero-container {
-          flex-grow: 2;
-          width: 100%;
-        }
-      }
-
-      .ingredientes-container {
-        min-height: 250px;
-      }
     }
   }
 `;
 
 const ColoredLi = styled.li`
-  padding: 2px !important;
+  /* padding: 2px !important; */
   background-color: transparent !important;
+  font-style: italic;
+  /* min-width: 110px; */
   *{
     font-size: 12px !important;
   }
   .tipo-span {
     color: ${(props) => props.cor};
+  }
+  &:not(:last-child):after{
+    content: '|';
+    margin: 2px;
   }
 `;

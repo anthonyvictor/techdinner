@@ -10,8 +10,7 @@ import { SearchBar } from '../../../components/SearchBar';
 import { useBebidas } from '../../../context/bebidasContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGlassCheers } from "@fortawesome/free-solid-svg-icons";
-import ImageViewer from '../../../components/ImageViewer';
-import { useContextMenu } from '../../../context/contextMenuContext';
+import { useContextMenu } from '../../../components/ContextMenu';
 
 export const Bebidas = () => {
   const Empty = {
@@ -27,7 +26,6 @@ export const Bebidas = () => {
 
     const {bebidas} = useBebidas()
     const [search, setSearch] = useState("");
-    const [imageView, setImageView] = useState(null);
     const [filtered, setFiltered] = useState([])
     const {contextMenu} = useContextMenu()
     const [curr, setCurr] = useState(null)
@@ -36,7 +34,7 @@ export const Bebidas = () => {
     
     useEffect(() => {
         setFiltered(bebidas.filter(e => misc.filtro({...e, imagem: ''}, search)))
-        }, [search]) //eslint-disable-line
+        }, [search, bebidas]) //eslint-disable-line
     
         useEffect(() => {
           if (filtered) {
@@ -50,7 +48,7 @@ export const Bebidas = () => {
 
                         <div className='img'>
                             {!misc.isNEU(e.imagem) 
-                            ? <img src={e.imagem} /> 
+                            ? <img src={format.convertImageToBase64(e.imagem)} /> 
                             : <FontAwesomeIcon className='icone' icon={faGlassCheers} />}
                         
                         </div>
@@ -225,7 +223,7 @@ export const Bebidas = () => {
 }
 
 const Container = styled.div`
-  background-color: ${cores.brancoEscuro};
+  background-color: ${cores.branco};
   width: 100%;
   height: 100%;
   display: flex;
@@ -236,9 +234,13 @@ const Container = styled.div`
     flex-grow: 2;
     display: flex;
     flex-direction: column;
-
+    height: 90%;
+ul{
+  height: 100%;
+}
     .lista-component-li {
       user-select: none;
+      min-height: 60px;
       .item-ativo {
         width: 20px;
         height: 20px;
@@ -267,8 +269,9 @@ const Container = styled.div`
           border: 2px solid black;
           flex-grow: 0;
           flex-shrink: 0;
-          height: 40px;
-          object-fit: cover;
+          height: 50px;
+          object-fit: scale-down;
+          background-color: white;
         }
 
         .icone{
@@ -402,5 +405,10 @@ const Container = styled.div`
 
   @media (max-width: 550px){
     flex-direction: column;
+    display: block;
+    overflow-y: auto;
+    .esq{
+      height: 50%;
+    }
   }
 `;

@@ -11,6 +11,7 @@ function EnderecosProvider(props) {
 
   useEffect(() => {            
     let montado = true
+    console.log('enderecos')
     async function getAll(){
         Axios.get(`${process.env.REACT_APP_API_URL}/enderecos`).then(r=>
             {if(montado) {

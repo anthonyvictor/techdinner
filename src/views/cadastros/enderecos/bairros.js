@@ -6,7 +6,7 @@ import { useCadEndereco } from '../../../context/cadEnderecosContext';
 import * as misc from '../../../util/misc'
 import * as Format from "../../../util/Format";
 import * as cores from '../../../util/cores'
-import { useContextMenu } from '../../../context/contextMenuContext';
+import { useContextMenu } from '../../../components/ContextMenu';
 import ListaProvider from '../../../context/listaContext';
 import { Lista } from '../../../components/Lista';
 

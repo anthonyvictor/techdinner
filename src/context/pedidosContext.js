@@ -1,323 +1,102 @@
+import axios from "axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import ClientesProvider, { useClientes } from "./clientesContext";
+import * as Format from '../util/Format'
+import Axios from "axios";
 
 const PedidoContext = createContext();
 
 export default function PedidosProvider({children}){
   return (
-    <ClientesProvider>
       <PedidosProvider2>
         {children}
       </PedidosProvider2>
-    </ClientesProvider>
   )
 }
 
 function PedidosProvider2({ children }) {
-  const {clientes} = useClientes()
   const [pedidos, setPedidos] = useState([]);
+  const [caixa, setCaixa] = useState([])
+  const [entrega, setEntrega] = useState([])
+  const [aplicativo, setAplicativo] = useState([]) 
+  const [arquivados, setArquivados] = useState([]) 
+  const [semTipo, setSemTipo] = useState([])
 
-  useEffect(() => {
-    if(clientes && clientes.length > 0){
-      setPedidos([
-        {
-          id: 98,
-          cliente: clientes[1],
-          tipo: "ENTREGA",
-          endereco: {
-            id: 1,
-            logradouro: 'Avenida Oceanica', 
-            cep: "40170010",
-            bairro: 'Ondina',
-            taxa: 4,
-            local: 'Hotel Pier Sul',
-            numero: '3001',
-            entregador: {id: 1, nome: 'JOSIAS'} 
-          },
-          itens: [
-            {id: 52552, tipo: 0, descricao: '(4) MEDIA', 
-              valor: 25, observacoes: 'SEM AZEITONAS', 
-              pizza: {id: 105545, 
-                tamanho: {id: 4, nome: 'MEDIA'},
-                sabores: [
-                  {
-                     id:1,
-                     nome:"FRANGO",
-                     tipo: {id: 1, nome: 'Tradicional'},
-                     ingredientes:[
-                       {id: 1, nome: 'Calabresa', tipoAdd:'Pouco'}, 
-                       {id: 2, nome: 'Frango'}, 
-                       {id: 3, nome: 'Requeijao', tipoAdd:'Sem'},
-                       {id: 4, nome: 'Mussarela'},    
-                       {id: 5, nome: 'Oregano', tipoAdd:'Com'}            
-                      ]
-                  },
-                  {
-                     id:2,
-                     nome:"CALABRESA",
-                     tipo: {id: 1, nome: 'Tradicional'},
-                     ingredientes:[
-                      {id: 1, nome: 'Calabresa'}, 
-                      {id: 8, nome: 'Cebola', tipoAdd:'Com'}, 
-                      {id: 2, nome: 'Frango'},
-                      {id: 3, nome: 'Requeijao'}
-                      ]
-                  }
-                ]
-              }
-            },
-    
-            {id: 52553, tipo: 1, descricao: '(1) PEPSI', 
-              valor: 7.5, observacoes: 'MANDAR 3 COPOS', 
-              bebida: {
-                id: 1, nome: 'PEPSI',
-                imagem: 'https://apoioentrega.vteximg.com.br/arquivos/ids/458697/1903.jpg',
-                tipo: 'Refrigerante',
-                tamanho: 2000
-              }
-            },
-    
-            {id: 52557, tipo: 1, descricao: '(1) PEPSI', 
-              valor: 7.5, observacoes: 'MANDAR 3 COPOS', 
-              bebida: {
-                id: 1, nome: 'PEPSI',
-                imagem: 'https://apoioentrega.vteximg.com.br/arquivos/ids/458697/1903.jpg',
-                tipo: 'Refrigerante',
-                sabor: 'Limao',
-                tamanho: 2000
-              }
-            },
-    
-            {id: 52554, tipo: 0, descricao: '(5) GRANDE', 
-              valor: 35, 
-              pizza: {id: 105546, 
-                tamanho: {id: 5, nome: 'GRANDE'},
-                sabores: [
-                  {
-                     id:1,
-                     nome:"FRANGO",
-                     tipo: {id: 1, nome: 'Tradicional'},
-                     ingredientes:[
-                       {id: 1, nome: 'Calabresa', tipoAdd:''}, 
-                       {id: 2, nome: 'Frango', tipoAdd:''}, 
-                       {id: 3, nome: 'Requeijao', tipoAdd:''}
-                      ]
-                  },
-                  {
-                     id:"25",
-                     nome:"DELICIA DA BAHIA",
-                     tipo: {id: 1, nome: 'Tradicional'},
-                     ingredientes:[
-                      {id: 1, nome: 'Calabresa', tipoAdd:''}, 
-                      {id: 9, nome: 'Mussarela', tipoAdd:''}, 
-                      {id: 8, nome: 'Oregano', tipoAdd:'Bastante'}, 
-                      {id: 3, nome: 'Requeijao', tipoAdd:''}            
-                      ]
-                  },
-                  {
-                    id:"28",
-                    nome:"ROMEU E JULIETA",
-                    ingredientes:[
-                     {id: 13, nome: 'Goiabada', tipoAdd:''}, 
-                     {id: 9, nome: 'Mussarela', tipoAdd:''}
-                    ]
-                 }
-                ]
-              }
-            }
-    
-          ],
-          pagamentos: [
-            {id: 545334, tipo: 0, valorPago: 10, valorRecebido: 20, 
-            dataAdicionado: '25/11/2021 20:23:00', dataRecebido: '25/11/2021 20:25:00', status: 1},
-            
-            {id: 545335, tipo: 1, valorPago: 5, 
-              dataAdicionado: '25/11/2021 19:25:00', status: 0},
-    
-            {id: 545336, tipo: 2, valorPago: 5, 
-            dataAdicionado: '25/11/2021 19:27:00', dataRecebido: '25/11/2021 19:27:00', status: 1},   
-    
-            {id: 545388, tipo: 0, valorPago: 5, 
-              dataAdicionado: '25/11/2021 19:27:00', dataRecebido: '25/11/2021 19:27:00', status: 0},   
-    
-            {id: 545389, tipo: 1, valorPago: 5, 
-              dataAdicionado: '25/11/2021 19:27:00', dataRecebido: '25/11/2021 19:27:00', status: 0},   
-    
-            {id: 545390, tipo: 2, valorPago: 5, 
-              dataAdicionado: '25/11/2021 19:27:00', dataRecebido: '25/11/2021 19:27:00', status: 1},   
-          ],
-          dataInic: new Date(2021, 11, 10, 0, 31, 30),
-          valor: 79,
-          valorPago: 0,
-          impr: 1,
-          observacoes: 'MANDAR CONDIMENTOS PQ DA ULTIMA VEZ VEIO SEM E SE VIER DNV VAI DEIXAR DE PEDIR'
-        },
-        {
-          id: 850,
-          cliente: {},//clientes[5],
-          tipo: "CAIXA",
-          itens: [
-            {id: 52558, tipo: 0, descricao: '(8) FAMILIA', 
-              valor: 45, 
-              pizza: {id: 105568, 
-                tamanho: {id: 8, nome: 'FAMILIA'},
-                sabores: [
-                  {
-                     id:"67",
-                     nome:"FRANGO",
-                     ingredientes:[
-                       {id: 1, nome: 'Calabresa', tipoAdd:''}, 
-                       {id: 2, nome: 'Frango', tipoAdd:''}, 
-                       {id: 3, nome: 'Requeijao', tipoAdd:''}
-                      ]
-                  },
-                  {
-                     id:"25",
-                     nome:"DELICIA DA BAHIA",
-                     ingredientes:[
-                      {id: 1, nome: 'Calabresa', tipoAdd:''}, 
-                      {id: 9, nome: 'Mussarela', tipoAdd:''}, 
-                      {id: 8, nome: 'Oregano', tipoAdd:'Bastante'}, 
-                      {id: 3, nome: 'Requeijao', tipoAdd:''}            
-                      ]
-                  },
-                  {
-                    id:"28",
-                    nome:"ROMEU E JULIETA",
-                    ingredientes:[
-                     {id: 13, nome: 'Goiabada', tipoAdd:''}, 
-                     {id: 9, nome: 'Mussarela', tipoAdd:''}
-                    ]
-                 }
-                ]
-              }
-            },
-    
-            {id: 52559, tipo: 0, descricao: '(8) FAMILIA', 
-              valor: 45, 
-              pizza: {id: 105569, 
-                tamanho: {id: 8, nome: 'FAMILIA'},
-                sabores: [
-                  {
-                     id:"67",
-                     nome:"FRANGO",
-                     ingredientes:[
-                       {id: 1, nome: 'Calabresa', tipoAdd:''}, 
-                       {id: 2, nome: 'Frango', tipoAdd:''}, 
-                       {id: 3, nome: 'Requeijao', tipoAdd:''}
-                      ]
-                  },
-                  {
-                     id:"25",
-                     nome:"DELICIA DA BAHIA",
-                     ingredientes:[
-                      {id: 1, nome: 'Calabresa', tipoAdd:''}, 
-                      {id: 9, nome: 'Mussarela', tipoAdd:''}, 
-                      {id: 8, nome: 'Oregano', tipoAdd:'Bastante'}, 
-                      {id: 3, nome: 'Requeijao', tipoAdd:''}            
-                      ]
-                  },
-                  {
-                    id:"28",
-                    nome:"ROMEU E JULIETA",
-                    ingredientes:[
-                     {id: 13, nome: 'Goiabada', tipoAdd:''}, 
-                     {id: 9, nome: 'Mussarela', tipoAdd:''}
-                    ]
-                 }
-                ]
-              }
-            }
-          ],
-          dataInic: new Date(2021, 11, 10, 0, 10, 30),
-          valor: 20,
-          valorPago: 10,
-          impr: 1
-        },
-        {
-          id: 540,
-          cliente: clientes[3],
-          tipo: "APLICATIVO",
-          dataInic: new Date(2021, 11, 9, 22, 0, 30),
-          valor: 65.72,
-          valorPago: 65.72,
-          impr: 0
-        },
-        {
-          id: 1015,
-          cliente: {nome: 'ORELHA'},//clientes[3],
-          tipo: "CAIXA",
-          dataInic: new Date(2021, 11, 10, 0, 1, 30),
-          valor: 10,
-          valorPago: 0,
-          impr: 0
-        },
-        {
-          id: 1016,
-          cliente: clientes[4],
-          tipo: "ENTREGA",
-          endereco: {
-            id: 550,
-            logradouro: 'Avenida Vasco da Gama', 
-            cep: "40195745",
-            bairro: 'Rio Vermelho',
-            taxa: 7,
-            numero: '1660',
-            entregador: {id: 1, nome: 'JOSIAS'}
-          },
-          itens: [
-            {id: 52568, tipo: 3, descricao: '(1) BAURU', 
-              valor: 5, observacoes: 'FRANGO', 
-              outro: {
-                id: 1, nome: 'BAURU',
-                imagem: 'https://apoioentrega.vteximg.com.br/arquivos/ids/458697/1903.jpg'
-              }
-            },
-            {id: 52569, tipo: 3, descricao: '(1) BAURU', 
-              valor: 5, observacoes: 'FRANGO', 
-              outro: {
-                id: 1, nome: 'BAURU',
-                imagem: 'https://apoioentrega.vteximg.com.br/arquivos/ids/458697/1903.jpg'
-              }
-            },
-            {id: 52570, tipo: 3, descricao: '(1) BAURU', 
-              valor: 5, observacoes: 'FRANGO', 
-              outro: {
-                id: 1, nome: 'BAURU',
-                imagem: 'https://apoioentrega.vteximg.com.br/arquivos/ids/458697/1903.jpg'
-              }
-            },
-            {id: 52571, tipo: 3, descricao: '(1) BAURU', 
-              valor: 5, observacoes: 'FRANGO', 
-              outro: {
-                id: 1, nome: 'BAURU',
-                imagem: 'https://apoioentrega.vteximg.com.br/arquivos/ids/458697/1903.jpg'
-              }
-            }
-          ],
-          pagamentos : [
-            {id: 545337, tipo: 5, valorPago: 10, dataAdicionado: '01/02/2022 23:27:00'}
-          ],
-          dataInic: new Date(2021, 11, 10, 0, 1, 30),
-          valor: 10,
-          valorPago: 0,
-          impr: 0
-        },
-        {
-          id: 1017,
-          cliente: clientes[2],
-          tipo: "CAIXA",
-          dataInic: new Date(2021, 11, 10, 0, 1, 30),
-          valor: 10,
-          valorPago: 0,
-          impr: 0
-        }
-      ])
+  const [atualizar, setAtualizar] = useState(0)
+  const [clientesImagens, setClientesImagens] = useState([])
+
+  function getImagem(id){
+    if(id && clientesImagens.filter(i => i.id === id)[0]){
+     return Format.convertImageToBase64(clientesImagens.filter(i => i.id === id)[0].imagem)
     }
-  }, [clientes])
+    return null
+  }
+    // useEffect(() => {
+    //   if(clientesImagens){
+    //     setPedidos(_pedidos => _pedidos.map(p => {
+    //       console.log(clientesImagens.filter(i => i.id === p.cliente.id)[0])
+    //       return{
+    //       ...p,
+    //       cliente: {
+    //         ...p.cliente,
+    //         imagem: (p.cliente?.id && clientesImagens.filter(i => i.id === p.cliente.id).length > 0) 
+    //         ? (p.cliente?.id && Format.convertImageToBase64(clientesImagens.filter(i => i.id === p.cliente.id)[0].imagem)) 
+    //         : null
+    //       }
+    //     }}))
+    //   }
+    // }, [clientesImagens])
+  
+  useEffect(() => {
+      let montado = true
+      async function getAll(){
+          Axios.get(`${process.env.REACT_APP_API_URL}/pedidos`).then(r=>
+              {if(montado) {
+                let _pedidos = r.data
+                setPedidos(_pedidos)
+                if(_pedidos.length > 0){
+                  const payload = {
+                    ids: [...new Set(_pedidos.map(ped => ped.cliente?.id).filter(x => x > 0))]
+                  }
+                  axios({
+                    url: `${process.env.REACT_APP_API_URL}/clientes/imagens`, 
+                    method: 'post',
+                    data: payload
+                  }).then(e => {
+                    if(montado){
+                      setClientesImagens(e.data)
+                    }
+                  })
+                }
+                let a = [
+                  _pedidos.filter(p => p.tipo === 'CAIXA'),
+                  _pedidos.filter(p => p.tipo === 'ENTREGA'),
+                  _pedidos.filter(p => p.tipo === 'APLICATIVO'),
+                  _pedidos.filter(p => !!p.arq)
+                ]
+                setSemTipo(_pedidos.filter(p => a.flat().map(a => a.id).includes(p.id) === false))
+                setCaixa(a[0])
+                setEntrega(a[1])
+                setAplicativo(a[2])
+                setArquivados(a[3])
+              } 
+            }
+          )
+      }   
+      getAll()
+      return () => {montado = false}
+  }, [atualizar,])
+
+  function refresh(){
+    setAtualizar(prev => prev + 1)
+  }
 
   return (
-    <PedidoContext.Provider value={{ pedidos, setPedidos }}>
+    <PedidoContext.Provider value={{ 
+      pedidos, setPedidos, 
+      refresh, getImagem,
+      semTipo, caixa, entrega,
+      aplicativo, arquivados
+    }}>
       {children}
     </PedidoContext.Provider>
   );

@@ -9,7 +9,7 @@ import { Lista } from '../../../components/Lista';
 import CadPizzasProvider, { useCadPizzas } from '../../../context/cadPizzasContext';
 import Ingredientes from './ingredientes';
 import ListaProvider from '../../../context/listaContext';
-import { useContextMenu } from '../../../context/contextMenuContext';
+import { useContextMenu } from '../../../components/ContextMenu';
 
 function Sabores() {
     const {sabores, tipos, ingredientes} = usePizzas()
@@ -24,13 +24,26 @@ function Sabores() {
     const [filtered, setFiltered] = useState([]) //sabores.filter(e => misc.filtro(e, search))
 
     useEffect(() => {
-        setFiltered(sabores.filter(e => misc.filtro(e, search)))
-    }, [search]) //eslint-disable-line
-    const orderTipo = (a,b) => a.numero > b.numero ? 1 : a.numero === b.numero ? -1 : 0 
+        setFiltered(sabores
+          .filter(e => misc.filtro(e, search))
+          .map(e => {
+            return {
+            ...e, 
+            tipo: tipos.filter(t => t.id === e.tipo.id)[0],
+            ingredientes: ingredientes.filter(i => e.ingredientes.map(x => x.id).includes(String(i.id)))
+          }})
+          )
+    }, [search, sabores]) //eslint-disable-line
+
+    const orderTipo = (a,b) => {
+      return a.numero > b.numero ? 1 : a.numero === b.numero ? 0 : -1 
+    }
     useEffect(() => {
       if (filtered) {
         setLista(
-          filtered.sort(orderTipo).map((e) => (
+          filtered.map(s => {
+            return {...s}
+          }).sort(orderTipo).map((e) => (
             <li key={e.id}>
               <label 
               className={`item-ativo ${e.ativo ? 'true' : 'false'}`} 
@@ -47,7 +60,7 @@ function Sabores() {
                         ? 'Visível' : 'Invisível'}</strong>}
                   </section>
                   
-                  <p>{e.ingredientes.map(e => e.nome).join(', ')}</p>
+                  <p className='ingredientes'>{e.ingredientes.map(e => e.nome).join(', ')}</p>
               </div>
             </li>
           ))
@@ -281,6 +294,9 @@ position: relative;
             font-weight: 600;
         }
       }
+      .ingredientes{
+        font-style: italic;
+      }
     }
   }
 
@@ -291,6 +307,7 @@ position: relative;
     display: inline-block;
     pointer-events: all !important;
     border: 2px solid black;
+    flex-shrink: 0;
 
     &.true {
       background-color: ${cores.verde};
