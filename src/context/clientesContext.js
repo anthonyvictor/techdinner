@@ -13,7 +13,8 @@ export default function ClientesProvider({ children }) {
             let montado = true
             async function getAll(){
                 Axios.get(`${process.env.REACT_APP_API_URL}/clientes`).then(r=>
-                    {if(montado) setClientes(r.data.map(e=> {return {...e, imagem: (e.imagem ? Format.convertImageToBase64(e.imagem) : null)}})) }
+                    {if(montado) setClientes(r.data.map(e=> {
+                        return {...e, imagem: (e.imagem ? Format.convertImageToBase64(e.imagem) : null)}})) }
                 )
             }   
             getAll()

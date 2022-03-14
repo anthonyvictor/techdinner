@@ -6,16 +6,12 @@ import PictureBox from "../../../components/PictureBox";
 import * as Format from "../../../util/Format";
 import { isMobile, isNEU } from "../../../util/misc";
 import { useCadCli } from "../../../context/cadClientesContext";
-import { NotImplementedError } from "../../../exceptions/notImplementedError";
-import CadEnderecoProvider from "../../../context/cadEnderecosContext";
-import EndLocLista from "../enderecos/endlocLista";
-import EnderecosProvider, { useEnderecos } from "../../../context/enderecosContext";
 import { useClientes } from "../../../context/clientesContext";
-import { useAsk } from "../../../context/asksContext";
 import { useContextMenu } from "../../../components/ContextMenu";
 import * as apis from '../../../apis'
 import axios from "axios";
 import { useRotas } from "../../../context/rotasContext";
+import Endereco from "./endereco";
 
 
 
@@ -24,15 +20,9 @@ export default function Cadastro(props) {
   const [contato, setContato] = useState('')
   const [tag, setTag] = useState('')
   const {curr, setCurr, limpar, images, setImages, imagem, setImagem} = useCadCli()
-  const [mapa, setMapa] = useState(null)
-  const {ask} = useAsk()
   const {clientes, refresh} = useClientes()
 
-  
-    
-
   async function salvar() {
-    console.log('entrou------------------------------')
     let ctt = [...curr.contato.map(c => Format.formatNumber(c))]
     let tg = [...curr.tags]
     if(isNEU(curr?.nome)){
@@ -56,11 +46,11 @@ export default function Cadastro(props) {
       let _img = null //await validateImage()
       const payload = {
         cliente: {
+          ...curr,
           nome: curr.nome.toUpperCase(),
           imagem: _img, //Format.convertFileToBase64(imagem), 
           contato: ctt,
           tags: tg,
-          ...curr.endereco
 
         }
       }
@@ -89,48 +79,6 @@ export default function Cadastro(props) {
     setCurrentRoute(props.tabs[0])
   }
 
-  const [listaEnd, setListaEnd] = useState(<></>);
-  function closeListaEnd(e){
-    if(!e || e.currentTarget === e.target){
-      setListaEnd(<></>)
-    }
-  }
-
-  const [selecionado, setSelecionado] = useState({})
-
-  useEffect(() => {
-    !isNEU(listaEnd) && closeListaEnd(null)
-    if(!isNEU(selecionado)){
-      if(([curr.endereco.numero,curr.endereco.local,curr.endereco.referencia].join('') !== '')){
-        ask({
-          title: 'Substituir antigas informações de local da entrega, e número pelas novas também?',
-          buttons: [
-            {title: 'SIM', click:() => setCurr({...curr, endereco: selecionado})},
-            {title: 'NÃO', click:() => setCurr({...curr, endereco: {...curr.endereco, logradouro: selecionado.logradouro, taxa: selecionado.taxa}})}
-          ],
-          allowCancel: true
-        })
-      }else{
-        setCurr({...curr, endereco: selecionado})
-      }
-    }
-  }, [selecionado]) //eslint-disable-line
-
-  function openListaEnd() {
-    setListaEnd(
-      <div className="endloc-container"
-      onClick={(e) => closeListaEnd(e)}>
-        <div className="endloc-lista">
-          <EnderecosProvider>
-              <CadEnderecoProvider>
-                <EndLocLista itemClick={setSelecionado} />
-              </CadEnderecoProvider>
-          </EnderecosProvider>
-        </div>
-      </div>
-    );
-  }
-
   function checarCttExiste(txt){
     const jatem = clientes.filter(e => e.contato.some(x => Format.formatPhoneNumber(x) === Format.formatPhoneNumber(txt)))
     if(jatem.length > 0){
@@ -142,35 +90,7 @@ export default function Cadastro(props) {
   }
 
   useEffect(() => {
-
- 
     (curr && curr.id) && setImagem(images.filter(e => e.id === curr.id)[0]?.imagem ?? curr.imagem)
-
-    if(!isNEU(curr?.endereco?.cep)){
-        {apis.enderecoToUrl(curr.endereco)
-          .then(url => setMapa(
-            <div className='mapa'>
-              <div className="mapouter">
-                <div className="gmap_canvas">
-                  <iframe title='fodase' id="gmap_canvas"
-                    src={`${url}&t=&z=16&ie=UTF8&iwloc=A&output=embed`} 
-                    frameBorder="0" 
-                    scrolling="no" 
-                    marginHeight="0" 
-                    marginWidth="0"
-                    align="middle">
-                  </iframe>
-                </div>
-              </div>
-            </div>
-        ))
-      .catch((e) => {
-        console.log(e)
-        setMapa(null)
-      })} 
-      }else{
-        setMapa(null)
-      }
   },[curr])
 
  function validateImage(){
@@ -197,8 +117,7 @@ async function getFileFromUrl(url, name, defaultType = 'image/jpeg'){
 }
 
   return (
-    <Estilo>
-      {listaEnd}
+    <Estilo className="cadastro-clientes">
       <div id="top-container">
         <div className="picturebox-container">
           <PictureBox imagem={validateImage()} nome={curr.nome}
@@ -244,95 +163,15 @@ async function getFileFromUrl(url, name, defaultType = 'image/jpeg'){
         />
       </div>
 
-      <section id="endereco-container">
-        <div id="endereco-left">
-          <div id="logradouro-container" className="txt">
-            <label htmlFor="logradouro">Logradouro:</label>
-            <label id="logradouro">
-              {Format.formatEndereco(curr.endereco, false, false)}
-            </label>
-            <button className="logradouro-button"
-              type="button"
-              onClick={() => {
-                openListaEnd();
-              }}
-            >
-              Alterar
-            </button>
-          </div>
-
-          <div id="numero-container" className="txt">
-            <label htmlFor="numero">Número:</label>
-            <input
-              id="numero"
-              placeholder="1600"
-              disabled={isNEU(curr?.endereco?.cep)}
-              value={isNEU(curr.endereco) ? "" : curr.endereco.numero ?? ''}
-              onChange={(e) =>
-                setCurr({...curr, endereco: { ...curr.endereco, numero: e.target.value }})
-              }
-              onBlur={(e) => {
-                e.target.value = e.target.value.trim();
-              }}
-            />
-          </div>
-
-          <div id="local-container" className="txt">
-            <label htmlFor="local">Local da entrega:</label>
-            <textarea
-              disabled={isNEU(curr?.endereco?.cep)}
-              rows={2}
-              id="local"
-              placeholder="Casa, Edifício, Apartamento, Condomínio, Hospital, Escola..."
-              value={isNEU(curr.endereco) ? "" : curr.endereco.local ?? ''}
-              onChange={(e) =>
-                setCurr({...curr, endereco: { ...curr.endereco, local: e.target.value }})
-              }
-              onBlur={(e) => {
-                e.target.value = e.target.value.trim();
-              }}
-            />
-            <button disabled
-              type="button"
-              onClick={(e) => {
-                throw new NotImplementedError();
-              }}
-            >
-              Salvar
-            </button>
-          </div>
-
-          <div id="referencia-container" className="txt">
-            <label htmlFor="referencia">Ponto de referência:</label>
-            <textarea
-              disabled={isNEU(curr?.endereco?.cep)}
-              rows={2}
-              id="referencia"
-              placeholder="Ao lado de.. Em frente à.."
-              value={isNEU(curr.endereco) ? "" : curr.endereco.referencia ?? ''}
-              onChange={(e) =>
-                setCurr({ ...curr, endereco: {...curr.endereco, referencia: e.target.value }})
-              }
-              onBlur={(e) => {
-                e.target.value = e.target.value.trim();
-              }}
-            />
-          </div>
-
-          {curr.endereco && <label id="taxa">{`Taxa: ${Format.formatReal(curr.endereco?.bairro?.taxa ? curr.endereco.bairro.taxa : 0)}`}</label>}
-
-        </div>
-
-        <div id="endereco-right">
-              {mapa}
-        </div>
-      </section>
+      <Endereco endereco={curr.endereco} setEndereco={(obj) => setCurr({...curr, endereco: { ...curr.endereco, ...obj }})} />
 
       <section id="bottom-container">
-        <button id="salvar" type="button" onClick={() => salvar()}>
+        <button id="salvar" type="button" 
+        onClick={() => salvar()}>
           Salvar
         </button>
-        <button id="limpar" type="button" onClick={() => {
+        <button id="limpar" type="button" 
+        onClick={() => {
           setImagem(null)
           limpar(true)
         }}>
@@ -357,36 +196,6 @@ const Principal = styled.form`
   @keyframes aparecer{
     from{opacity: 0}
     to{opacity: 1}
-  }
-
-  .endloc-container {
-    position: absolute;
-    z-index: 999;
-    background-color: rgba(0, 0, 0, 0.8);
-    width: 100% ;
-    height: 100% ;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    animation: aparecer .3s ease-out;
-
-    .endloc-lista {
-      height: 80%;
-      width: min(600px, 90%);
-      flex-grow: 0;
-      flex-shrink: 0;
-      background-color: ${cores.branco};
-      padding: 5px;
-      border: 2px solid black;
-      display: flex;
-      flex-direction: column;
-      justify-content: stretch;
-      > div{
-        position: relative;
-        height: 100%;
-      }
-    }
   }
 
   #top-container {
@@ -452,118 +261,6 @@ const Principal = styled.form`
     }
   }
 
-  #endereco-container {
-    border: 1px solid black;
-    padding: 5px;
-    display: flex;
-    flex-grow: 2;
-    gap: 10px;
-    min-height: 10px;
-    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
-    overflow: auto;
-    width: 100%;
-
-    #endereco-left {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-
-      * {
-        font-size: 16px;
-      }
-
-      div {
-        flex-grow: 2;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        label {
-          display: block;
-          width: 100px;
-          min-width: 100px;
-        }
-        input,
-        textarea {
-          flex-grow: 2;
-          flex-shrink: 2;
-          height: 100%;
-          padding: 5px 0;
-          font-family: sans-serif;
-          resize: none;
-        }
-        button {
-          width: 70px;
-          height: 100%;
-          cursor: pointer;
-        }
-      }
-
-      #logradouro-container {
-        width: 100%;
-        flex-basis: minmax(max-content, 80px);
-        display: flex;
-        flex-grow: 0;
-
-        #logradouro {
-          border: 1px solid gray;
-          height: 40px;
-          max-width: 100%;
-          flex-grow: 2;
-          overflow-y: hidden;
-          overflow-x: auto;
-          user-select: text;
-          background-color: whitesmoke;
-          border-radius: 2px;
-          display: flex;
-          align-items: center;
-          line-height: 100%;
-        }
-        .logradouro-button{
-          flex-grow: 0;
-          height: 100%;
-        }
-      }
-
-      #numero-container{
-        flex-grow: 0;
-      }
-
-      #taxa{
-        display: block;
-        width: 100% ;
-        text-align: center;
-        font-size: 20px;
-        font-weight: 600;
-      }
-    }
-
-    #endereco-right {
-      width: 400px;
-      display: flex;
-
-        .mapouter{
-        width: 100% ;
-        height: 100% ;
-        overflow: hidden;
-        border: 1px solid black;
-        border-radius: 10px;
-      }
-      .gmap_canvas {
-        height: 100%;
-        overflow:hidden;
-        background:none!important;
-      }
-      iframe{
-        height: 100% ;
-        width: 100% ;
-      }
-
-      }
-
-  }
-
   #bottom-container {
     display: flex;
     min-height: 60px;
@@ -627,18 +324,6 @@ const Estilo = styled(Principal)`
       }
     }
   }
-
-    .endloc-container{
-      display: flex;
-      position: absolute;
-      width: 100%;
-      height: 100%;
-
-      .endloc-lista{
-        height: min(60%, 600px);
-      }
-
-    }
 
 
     & > :not(:last-child) {

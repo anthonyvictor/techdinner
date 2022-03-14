@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import PedidosProvider from "../../context/pedidosContext";
 import Lista from "./lista";
 import Rodape from "./rodape";
@@ -7,7 +7,6 @@ import HomeProvider, { useHome } from "../../context/homeContext";
 import styled from "styled-components";
 import * as cores from "../../util/cores";
 import Pedido from "./pedido";
-import ClientesProvider from "../../context/clientesContext";
 
 const Home = () => {
   return (

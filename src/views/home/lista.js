@@ -12,7 +12,6 @@ import { isNEU } from "../../util/misc";
 
 export default function Lista() {
   const { pedidos, semTipo, caixa, entrega, aplicativo, arquivados } = usePedidos();
-
   return (
         <ListaContainer>
           <FloatButton clique={()=> {}} />
@@ -98,7 +97,8 @@ const ListGroupContainer = styled.div`
     }
     .group-list{
       overflow-y: auto;
-      flex-grow: 2;
+      flex-grow: 6;
+      flex-shrink: 1;
       
       &.false{display: none;}
     }
@@ -209,8 +209,7 @@ function Item({pedido}) {
     let totalPago = pedido.pagamentos
     .map(e => e.valorPago)
     .reduce((a, b) => a + b, 0)
-    let diff = pedido.valor - isNaN(totalPago) ? 0 : totalPago
-
+    let diff = pedido.valor - totalPago
     if (diff === pedido.valor) {
       return "#bf0f06";
     } else if (diff > 0) {

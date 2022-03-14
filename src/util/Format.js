@@ -74,9 +74,9 @@ export function formatReal(valor) {
         let _bai = endereco.bairro?.nome ?? ''
         let _ref = withLocal &&  endereco.referencia ? endereco.referencia : ''
         let _cep = withCep ? formatCEP(endereco.cep) : ''
-          return [_taxa.toString(), _loc.toString(), _log.toString(), 
+          return misc.join([_taxa.toString(), _loc.toString(), _log.toString(), 
             _num.toString(), _bai.toString(), _ref.toString(), 
-            _cep].filter(x => x !== '').join(', ') 
+            _cep], ', ') 
       }else{
         return endereco
       }
@@ -92,7 +92,7 @@ export function formatReal(valor) {
       let sabor = obj.sabor ? obj.sabor : ''
       let tamanho = formatLitro(obj.tamanho)
 
-      return [tipo, nome, sabor, tamanho].filter(e => e !== '').join(' ')
+      return misc.join([tipo, nome, sabor, tamanho], ' ')
       
     }else{
       return ''

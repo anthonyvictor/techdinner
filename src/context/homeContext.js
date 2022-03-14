@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useRotas } from './rotasContext'
 import * as cores from '../util/cores'
+import axios from 'axios'
 
 const HomeContext = createContext()
 
@@ -10,6 +11,16 @@ function HomeProvider(props) {
   const [tabs, setTabs] = useState([])
   const { setCurrentRoute } = useRotas()
   const [selectBox, setSelectBox] = useState(null)
+  const [entregadorPadrao, setEntregadorPadrao] = useState(null)
+
+  useEffect(() => {
+    let montado = true
+    axios({
+      url: `${process.env.REACT_APP_API_URL}/entregadores/padrao`,
+      method: 'GET'
+    }).then(e => montado && setEntregadorPadrao(e.data))
+    return () => {montado = false}
+  }, [])
 
   useEffect(() => {
     // console.log('VERIFICA SE JÁ TEM ALGUMA TAB COM O CLICADO SE N TIVER ELE ADICIONA',curr)
@@ -64,6 +75,8 @@ function HomeProvider(props) {
         fechar,
         openSelectBox,
         fecharSelectBox,
+        entregadorPadrao,
+
       }}
     >
       {props.children}
@@ -87,6 +100,7 @@ const SelectBox = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    *{user-select: none;}
 
     > .container {
       animation: aparecer 0.2s linear;
@@ -98,6 +112,50 @@ const SelectBox = styled.div`
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      gap: 2px;
+      
+      &.entregador{
+        width: min(400px, 80%);
+        height: 150px;
+        h1{
+          margin: auto 0;
+
+        }
+        select{
+          width: 100%;
+          font-size: 18px;
+          padding: 5px 0;
+        }
+        button{
+          width: 100%;
+          height: 50px;
+        }
+      }
+
+      &.endereco{
+        width: 80%;
+        height: 80%;
+        > section{
+          flex-direction: column;
+          align-items: center;
+          border: none;
+          box-shadow: none;
+
+          #endereco-right {
+            width: 100%;
+            height: 100%;
+            *{width: 100%;}
+          }
+        }
+        > button{
+            width: 80%;
+            height: 50px;
+            background-color: ${cores.verde};
+            font-size: 18px;
+            cursor: pointer;
+            border: 2px solid black;
+          }
+      }
 
       &.tipo {
         width: 220px;
@@ -121,6 +179,7 @@ const SelectBox = styled.div`
             align-items: center;
             justify-content: center;
             border-radius: 10px;
+            border: 1px solid black;
             cursor: pointer;
 
             &:hover {
@@ -131,6 +190,11 @@ const SelectBox = styled.div`
             }
             &.entrega {
               background-color: ${cores.azul};
+            }
+            &.disabled {
+              pointer-events: none;
+              color: gray;
+              cursor: default;
             }
           }
         }
@@ -147,6 +211,10 @@ const SelectBox = styled.div`
         overflow: hidden;
         gap: 5px;
         /* *{flex-shrink: 2!important} */
+
+        .lista-clientes, .cadastro-clientes{
+          flex-grow: 2;
+        }
 
         .tabs-buttons {
           display: flex;
@@ -245,5 +313,17 @@ const SelectBox = styled.div`
           grid-column: 1 / span 2;
         }
       }
+
+      .rodape{
+            width: 100% ;
+            padding: 10px;
+            border-top: 1px solid gray;
+            text-align: center;
+            font-size: 10px;
+            color: gray;
+            padding: 0 10px;
+        }
+      
     }
+    
 `

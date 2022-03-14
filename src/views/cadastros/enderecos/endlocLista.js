@@ -93,6 +93,8 @@ function EndLocLista(props) {
   }
 
   useEffect(() => {
+    const searchStringNumero = search.replace(/[^0-9]/)
+    const searchString = formatString(search)
     let temp1 = enderecos.map(e => {return{...e, 
       bairro: bairros.filter(b => b.id === e.bairro.id)[0]
     }})
@@ -105,7 +107,7 @@ function EndLocLista(props) {
     let temp = [...buildTemp(temp1, 10), ...buildTemp(temp2, 5)]
 
     function buildTemp(t, max){
-      return t.filter(e => misc.filtro(e, search))
+      return t.filter(e => filtro(e, searchString, searchStringNumero))
       .sort((a,b) => a.bairro.taxa < b.bairro.taxa 
       ? -1 : a.bairro.taxa > b.bairro.taxa ? 1 : 0)
       .slice(0, max)
@@ -114,6 +116,24 @@ function EndLocLista(props) {
     setFiltered(temp)
 
   }, [search, enderecos, locais, bairros]) // eslint-disable-line
+
+  const formatString = (a) => a.toUpperCase().replace(/[^a-zA-Z0-9, ]/gi, "")
+
+  function filtro(obj, searchString, searchStringNumero) {
+    if (search !== "") {
+      let objString = formatString(misc.joinObj(obj))
+      let objStringNumero = objString.replace(/[^,0-9]/)
+
+      const p1 = objString.includes(searchString)
+  
+      const p2 = objStringNumero.includes(searchStringNumero)
+  
+      const p3 = misc.removeConjuncoes(objString).includes(misc.removeConjuncoes(searchString))
+  
+      return p1 || p2 || (!p1 && p3)
+    }
+      return true;
+  }
 
   useEffect(() => {
     if (filtered) {
@@ -160,6 +180,7 @@ const Container = styled.div`
   justify-content: stretch;
 
   .lista-component-li{
+    user-select: none;
       .inicio{
         font-size: 16px;
       }
@@ -181,7 +202,6 @@ const Container = styled.div`
 
   @media (max-width: 550px){
     .lista-component-li{
-      user-select: none;
       .inicio{
         font-size: 14px;
       }

@@ -132,13 +132,13 @@ export default function ListaCli(props) {
 
   function editar(cliente) {
     let preenchido = !misc.isNEU(misc.joinObj(curr))
-
+    const change = () => {props.changeTab ? props.changeTab() : setCurrentRoute(props.tabs[1])}
     if (curr && curr.id === cliente.id) {
-      setCurrentRoute(props.tabs[1])
+      change()
     } else if ((preenchido && window.confirm("Deseja cancelar a edição atual?")) ||
       !preenchido) {
       setCurr(cliente)
-      setCurrentRoute(props.tabs[1])
+      change()
     }
   }
 
@@ -212,9 +212,9 @@ export default function ListaCli(props) {
     : null
 
     const _pedidos = () => 
-    pTexto.length > 3 ?
+    pTexto.length >= 3 ?
     a.pedidos > b.pedidos ? -1 
-    : b.pedidos < a.pedidos ? 1 : null
+    : a.pedidos < b.pedidos ? 1 : null
     : null
 
     const _ultPed = () => 
@@ -226,7 +226,7 @@ export default function ListaCli(props) {
     const _id = () => 
     pTexto.length < 4 ?
     a.id > b.id ? -1
-    : b.id > a.id ? 1 : null
+    : a.id < b.id ? 1 : null
     : null
 
     let order = 
@@ -320,7 +320,7 @@ useEffect(() => {
   }, [filtered])//eslint-disable-line
 
   return (
-    <Estilo>
+    <Estilo className="lista-clientes">
       <SearchBar value={search} setValue={setSearch} filter={openFilter} />
 
       <ListaProvider fullDataArray={filtered} itemDoubleClick={itemClick} itemRightClick={openContext} >

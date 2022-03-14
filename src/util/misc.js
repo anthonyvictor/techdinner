@@ -118,6 +118,10 @@ export function joinObj(obj){
   return txt
 }
 
+export function join(arr, separator){
+  return arr.map(e => String(e)).filter(e => e !== '').join(separator)
+}
+
 export const isVogal = (chr) => {
   return ['a', 'e', 'i', 'o', 'u'].includes(chr.toLowerCase());
 }
@@ -190,7 +194,7 @@ export function filtro(obj, search, longNumber = false, phoneNumber = false) {
 
 
 export function removeConjuncoes(txt){
-  let _txt = String(txt).replace(/\s*\b(DE|DA|DO|QUE|NA|NO|EM|\s+O|\s+E|\s+A|OU|UM|UMA)\b/,'') 
+  let _txt = String(txt).replace(/\s*\b(DE|DA|DO|QUE|NA|NO|EM|\s+O|\s+E|\s+A|OU|UM|UMA)\b(?!$)/,'') 
   return _txt
 }
 
@@ -202,4 +206,11 @@ export function toDate(dateStr) {
   let dmy = dateStr.split(' ')[0].split("/");
   let hms = dateStr.split(' ')[1].split(":");
   return new Date(dmy[2], dmy[1] - 1, dmy[0], hms[0] ?? 0, hms[1] ?? 0, hms[2] ?? 0);
+}
+
+export function focusBusy() {
+  let focusedElement = document.activeElement
+  let isInput = focusedElement.nodeName.toLowerCase() === 'input'
+  let isNotSearch = focusedElement.getAttribute('type') !== 'search'
+  return isInput && isNotSearch
 }

@@ -1,32 +1,32 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
-import { SearchBar } from '../../components/SearchBar';
-import { useContextMenu } from '../../components/ContextMenu';
-import ListaProvider from '../../context/listaContext';
-import { useOutros } from '../../context/outrosContext'
+import { SearchBar } from '../../../components/SearchBar';
+import { useBebidas } from '../../../context/bebidasContext';
+import { useContextMenu } from '../../../components/ContextMenu';
+import ListaProvider from '../../../context/listaContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import * as icons from '@fortawesome/free-solid-svg-icons'
-import * as Format from '../../util/Format'
-import * as misc from '../../util/misc'
-import * as cores from '../../util/cores'
-import { Lista } from '../../components/Lista';
+import * as Format from '../../../util/Format'
+import * as misc from '../../../util/misc'
+import * as cores from '../../../util/cores'
+import { Lista } from '../../../components/Lista';
 
-export default function Outro({item}) {
+export default function Bebida({item}) {
   const [search, setSearch] = useState('')
   const [filtered, setFiltered] = useState([])
   const [lista, setLista] = useState(null)
-  const { outros } = useOutros()
+  const {bebidas} = useBebidas()
   const {contextMenu} = useContextMenu()
   const [valor, setValor] = useState((item && item.valor) ? item.valor : 0)
   const [observacoes, setObservacoes] = useState(item && item.observacoes ? item.observacoes : '')
   const [lock, setLock] = useState(false)
   const [qtd, setQtd] = useState(1)
   const searchRef = useRef()
-  const [selected, setSelected] = useState(item ? [item.outro] : [])
+  const [selected, setSelected] = useState(item ? [item.bebida] : [])
 
   useEffect(() => {
     setFiltered(
-      outros
+      bebidas
       .filter(e => misc.filtro({...e, imagem: ''}, search) 
       && (e.visivel === true || item && item.id === e.id))
       .sort((a,b) => a.vendidos > b.vendidos ? 1 : -1)
@@ -42,16 +42,30 @@ export default function Outro({item}) {
 
     useEffect(() => {
       let l = filtered.map((e) => 
-        <li key={e.id}
-        className={selected && selected.id === e.id ? 'selected' : undefined}>
-          <div className='img'>
-              {!misc.isNEU(e.imagem)  
-              ? <img src={e.imagem} /> 
-              : <FontAwesomeIcon className='icone' icon={icons.faIceCream} />}
+      <li key={e.id} >
+          <div className='inicio'>
+
+              <div className='img'>
+                  {!misc.isNEU(e.imagem) 
+                  ? <img src={e.imagem} /> 
+                  : <FontAwesomeIcon className='icone' icon={icons.faGlassCheers} />}
+              
+              </div>
+
           </div>
-          <label className='nome'>{e.nome}</label>
-          <label className='valor'>{Format.formatReal(e.valor)}</label>
-        </li>
+
+          <div className='centro'>
+              <label className='nome'>
+                {[e.nome, e.sabor ? e.sabor : '', Format.formatLitro(e.tamanho)]
+                .filter(e => e !== '')
+                .join(' ')}
+              </label>
+              <div className='bottom'>
+                  <span>Preço: {Format.formatReal(e.valor)}</span>
+                  <span> | Categoria: {e.tipo}</span>
+              </div>
+          </div>
+      </li>
       )
         setLista(l)
     }, [filtered])//eslint-disable-line
@@ -67,13 +81,11 @@ export default function Outro({item}) {
   return (
       <Container className='container'>
         <SearchBar _ref={searchRef} value={search} setValue={setSearch} />
-        <ListaProvider fullDataArray={filtered}
-         searchRef={searchRef}
-         selectedDataArray={selected}
+        <ListaProvider fullDataArray={filtered} grid={true} searchRef={searchRef}
+        selectedDataArray={selected}
         setResponseArray={setSelected} 
         allowSelect={true}
-         grid={true}
-         itemDoubleClick={itemClick}
+        itemDoubleClick={itemClick}
          itemRightClick={openContext}
          itemDoubleClickCondition={(e) => {
           return e.ativo
@@ -131,79 +143,52 @@ const Container = styled.div`
   flex-direction: column;
 
   .lista-component{
-    ul{
-      height: 100%;
-      width: 100%;
-      gap: 8px;
-      display: grid;
-      padding: 0 0 8px 0;
-      /* grid-auto-columns: 50%; */
-      /* grid-auto-rows: 150px; */
-      /* grid-auto-flow: row; */
-      /* overflow: hidden; */
-      /* grid-template-columns: repeat(auto-fit, minmax(120px, 30%)); */
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      .lista-component-li {
-        user-select: none;
-        width: 100%;
-        max-width: 120px;
-        height: 150px;
+    display: flex;
+    flex-direction: column;
+
+    .lista-component-li {
+      user-select: none;
+      min-width: 10px;
+
+      .img {
         display: flex;
         flex-direction: column;
+        width: 40px;
+        height: 100%;
         justify-content: center;
-        align-items: center;
-        border-radius: 10%;
 
-        /* &.selected{
-          background-color: yellow;
-        } */
-
-          .img {
-          
-          display: flex;
-          height: 80px;
-          width: 70px;
-          justify-content: center;
-          min-height: 10px;
-
-          img {
-            border-radius: 10%;
-            border: 2px solid black;
-            flex-grow: 0;
-            height: 100%;
-            width: 100%;
-            object-fit: cover;
-          }
-
-          .icone{
-              font-size: 50px;
-              margin: auto; 
-              width: 100% ;
-          }
+        img {
+          border-radius: 10%;
+          border: 2px solid black;
+          flex-grow: 0;
+          flex-shrink: 0;
+          height: 40px;
+          object-fit: cover;
         }
 
-        .nome{
-            font-size: 13px;
-            font-weight: 600;
-        }
-        .valor{
-            font-size: 17px;
-            font-weight: 600;
-        }
-        .bottom{
-            *{font-size: 13px;}
-        }
-        }
-
-        .botao{
-          display: none;
+        .icone{
+            font-size: 30px;
+            margin: auto; 
+            width: 100% ;
         }
       }
+
+      .centro{
+          .nome{
+              font-size: 17px;
+              font-weight: 600;
+          }
+          .bottom{
+              *{font-size: 13px;}
+          }
+      }
     }
+  }
 
 
   >.bottom {
         flex-shrink: 0;
+        /* height: 80px; */
         border-top: 1px solid black;
         width: 100%;
         display: flex;
@@ -255,35 +240,37 @@ const Container = styled.div`
               width: 100%;
             }
           }
+
           @media (max-width: 550px){
-          flex-direction: column;
+            flex-direction: column;
             height: 80px;
             gap: 2px;
             padding-top: 5px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             grid-template-rows: 1fr 1fr;
-            
-          .valor, .qtd{
-            grid-row: 2;
-            width: 100%;
-            flex-grow: 2;
-            justify-content: center;
-            button{
-              width: 60px;
-            }
-            input{
+
+            >.valor, .qtd{
+              grid-row: 2;
+              width: 100%;
               flex-grow: 2;
+              justify-content: center;
+              button{
+                width: 60px;
+              }
+              input{
+                flex-grow: 2;
+              }
+            }
+            .observacoes{
+              grid-column: 1 / span 2;
+              width: 100%; 
+              button{
+                width: 80px;
+              }
             }
           }
-          .observacoes{
-            grid-column: 1 / span 2;
-            width: 100%; 
-            button{
-              width: 80px;
-            }
-          }
-        }
+
         }
         .avancar {
             min-height: 40px;

@@ -1,35 +1,36 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
-import * as cores from '../../util/cores'
-import { useHome } from '../../context/homeContext';
+import * as cores from '../../../util/cores'
+import { useHome } from '../../../context/homeContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as icons from '@fortawesome/free-solid-svg-icons';
-import * as misc from '../../util/misc';
-import * as pedidoUtil from '../../util/pedidoUtil'
-import * as Format from '../../util/Format';
-import { useContextMenu } from '../../components/ContextMenu';
-import * as apis from '../../apis'
-import * as msg from '../../util/Mensagens'
-import ListaCli from '../cadastros/clientes/lista'
-import Cadastro from '../cadastros/clientes/cadastro';
-import CadCliProvider from '../../context/cadClientesContext'
-import { useRotas } from '../../context/rotasContext';
-import ItemMaker from './itemMaker';
+import * as misc from '../../../util/misc';
+import * as pedidoUtil from '../../../util/pedidoUtil'
+import * as Format from '../../../util/Format';
+import { useContextMenu } from '../../../components/ContextMenu';
+import * as apis from '../../../apis'
+import * as msg from '../../../util/Mensagens'
+import ListaCli from '../../cadastros/clientes/lista'
+import Cadastro from '../../cadastros/clientes/cadastro';
+import CadCliProvider from '../../../context/cadClientesContext'
+import { useRotas } from '../../../context/rotasContext';
+import ItemMaker from './itens/itemMaker';
 import Pagamento from './pagamento';
 import axios from 'axios';
-import { usePedidos } from '../../context/pedidosContext';
-import { useImageViewer } from '../../components/ImageViewer';
-import ClientesProvider from '../../context/clientesContext';
-// import { useAsk } from '../../context/asksContext';
+import { usePedidos } from '../../../context/pedidosContext';
+import { useImageViewer } from '../../../components/ImageViewer';
+import ClientesProvider from '../../../context/clientesContext';
+import Endereco from '../../cadastros/clientes/endereco';
+import EntregadoresProvider, { useEntregadores } from '../../../context/entregadoresContext';
 
 function Pedido() {
-  const {curr, setCurr, fechar, openSelectBox, fecharSelectBox} = useHome()
+  const {curr, setCurr, fechar, openSelectBox, fecharSelectBox, entregadorPadrao} = useHome()
   const {contextMenu} = useContextMenu()
   const { refresh, getImagem } = usePedidos();
   const [mapa, setMapa] = useState(null)
   const [showMapa, setShowMapa] = useState(false)
   const [itensAgrupados, setItensAgupados] = useState([])
-  const {setCurrentRoute, location} = useRotas()
+  const {setCurrentRoute} = useRotas()
   const {imageView} = useImageViewer()
 
   const boxCliente = useRef()
@@ -43,24 +44,41 @@ function Pedido() {
         <div className='container tipo'>
           <h4>Selecione o tipo:</h4>
           <ul className='tipo-lista'>
-            <li className='caixa' key={0} onClick={() => mudarTipo(0)}>CAIXA</li>
-            <li className='entrega' key={1} onClick={() => mudarTipo(1)}>ENTREGA</li>
+            <li className={`caixa${curr.tipo === 'CAIXA' ? ' disabled' : ''}`} key={0} onClick={() => mudarTipo(0)}>CAIXA</li>
+            <li className={`entrega${((!(Number(curr?.cliente?.id) > 0)) || curr.tipo === 'ENTREGA') ? ' disabled' : ''}`} key={1} onClick={() => mudarTipo(1)}>ENTREGA</li>
           </ul>
+          <p className="rodape">TechDinner - Sistema de pedidos</p>
         </div>
     )
-    function mudarTipo(tipo){
-      if(tipo === 3){alert('aplicativo')}
-
+    async function mudarTipo(tipo){
       fecharSelectBox()
+      let ped = {
+        id: curr.id,
+        tipo: curr.tipo,
+        cliente: { id: curr.cliente.id },
+      }
+      const payload = {
+        pedido: ped,
+        novoTipo: tipo
+      }
+    
+      const response = await axios({
+        url: `${process.env.REACT_APP_API_URL}/pedidos/update/tipo`,
+        method: 'POST',
+        data: payload
+      })
+      setCurr(prev => {return{ ...response.data, cliente: prev.cliente }})//...prev,
+      refresh()
     }
   }
+
+  
   function mudarObservacoes(){
     const resp = window.prompt('Digite a observação do pedido', curr.observacoes)
-    alert('VAI MUDAR')
+
   }
   
   useEffect(() => {
-    fecharSelectBox()
     if(curr && curr.endereco){
       if(showMapa){
         {apis.enderecoToUrl(curr.endereco)
@@ -72,7 +90,7 @@ function Pedido() {
               </button>
               <div className="mapouter">
                 <div className="gmap_canvas">
-                  <iframe title='fodase' id="gmap_canvas"
+                  <iframe title='mapa' id="gmap_canvas"
                     src={`${url}&t=&z=16&ie=UTF8&iwloc=A&output=embed`} 
                     frameBorder="0" 
                     scrolling="no" 
@@ -98,9 +116,9 @@ function Pedido() {
     }
   },[curr, showMapa])
 
-function getPedNum(){
-  return curr.numero + 'º pedido' // cliente?.pedidos ? `${curr.cliente.pedidos + 1}º pedido` : '1º pedido'
-}
+const numeroPedido = useMemo(() => 
+   curr?.numero + 'º pedido'
+, [curr?.numero])
 
 function getAlertStyle(){
   if(curr?.cliente?.pedidos === 0){
@@ -112,10 +130,6 @@ function getAlertStyle(){
   }else{
     return {display: 'none'}
   }
-}
-
-function getEntregadorPadrao(){
- return 'PADRÃO'
 }
 
 async function confirmacao(tipo, resolve){
@@ -180,9 +194,15 @@ async function confirmacao(tipo, resolve){
       }else if(i.tipo === 1){
         //bebida
         if(_bebidas.length === 0){_bebidas = `*BEBIDAS* 🥤`}
-        _bebidas += `\n\n_${[i.bebida.nome, i.bebida.sabor ?? '', 
-        Format.formatLitro(i.bebida.tamanho)]
-        .filter(e => e !== '').join(' ')}_`
+        _bebidas += `\n\n_${
+          misc.join(
+            [
+              i.bebida.nome, i.bebida.sabor ?? '', 
+              Format.formatLitro(i.bebida.tamanho)
+            ], 
+            ' '
+          )
+      }_`
         _bebidas += [_obs,_preco].join('')
       }else if(i.tipo === 2){
         //hamburguer
@@ -194,8 +214,7 @@ async function confirmacao(tipo, resolve){
         _outros += [_obs,_preco].join('')
       }
     }
-    _itens = '\n\n' + [_pizzas,_bebidas,_outros]
-    .filter(e => e !== '').join('\n\n')
+    _itens = '\n\n' + misc.join([_pizzas,_bebidas,_outros], '\n\n')
   }
 
   if(_pagamento){
@@ -319,7 +338,7 @@ function getSaboresDescritos(sabores,quebra=', '){
   let saboresDiferentes = sabores.filter(e => joinTipoAdd(e.ingredientes) !== '')
   let outrosSabores = sabores.filter(e => joinTipoAdd(e.ingredientes) === '')
   let r = saboresDiferentes.map(e => `${e.nome} (${getIngredientesDiferentes(e.ingredientes)})`).join(quebra)
-  r = [r, outrosSabores.map(e => e.nome).join(quebra)].filter(e => e !== '').join(quebra)
+  r = misc.join([r, outrosSabores.map(e => e.nome).join(quebra)], quebra)
   return r
 }
 
@@ -332,11 +351,15 @@ const clienteLinks = ['/pedido/clientes/lista','/pedido/clientes/cad']
 const clienteElementos = [
 
 <ClientesProvider>
-  <ListaCli retorno={mudarCliente} tabs={clienteLinks} />
+  <CadCliProvider>
+    <ListaCli retorno={mudarCliente} tabs={clienteLinks} changeTab={() => setClienteTab(clienteElementos[1])} />
+  </CadCliProvider>
 </ClientesProvider>, 
 
 <ClientesProvider>
-  <Cadastro retorno={mudarCliente} tabs={clienteLinks} />
+  <CadCliProvider cliente={curr?.cliente}>
+    <Cadastro retorno={mudarCliente} tabs={clienteLinks} />
+  </CadCliProvider>
 </ClientesProvider>
 
 ] 
@@ -373,7 +396,6 @@ function openSelectBoxCliente(tipo){
   }
 }
 async function mudarCliente(novoCliente){
-  alert(novoCliente.nome)
   fecharSelectBox()
   let ped = {
     id: curr.id,
@@ -389,11 +411,11 @@ async function mudarCliente(novoCliente){
   }
 
   const response = await axios({
-    url: `${process.env.REACT_APP_API_URL}/pedidos/updatecliente`,
+    url: `${process.env.REACT_APP_API_URL}/pedidos/update/cliente`,
     method: 'POST',
     data: payload
   })
-  setCurr(prev => {return{ ...prev, ...response.data }})
+  setCurr(response.data)
   refresh()
   
 }
@@ -433,7 +455,7 @@ function openTopClienteMenu(){
 
     {title: 'Remover',
     click:() => removerCliente(), 
-    enabled: true, visible: !misc.isNEU(curr?.cliente)},
+    enabled: true, visible: !!curr?.cliente?.nome},
 
     {title: 'Sem cadastro', 
     click:() => openSelectBoxCliente('semcadastro'), 
@@ -444,45 +466,206 @@ function openTopClienteMenu(){
     enabled: false, visible: !!curr?.cliente?.id} 
 ])
 }
-function openPizzasMenu(item){
+
+const [selectedEndereco, setSelectedEndereco] = useState(null)
+const [selecionarEndereco, setSelecionarEndereco] = useState(false)
+useEffect(() => {
+  let montado = true
+
+  async function mudarEndereco(){
+    if(selecionarEndereco){
+      fecharSelectBox()
+      let ped = {
+        id: curr.id,
+        endereco: curr?.endereco
+      }
+      const payload = {
+        pedido: ped, 
+        novoEndereco: selectedEndereco
+      }
+      const resp = await axios({
+        url: `${process.env.REACT_APP_API_URL}/pedidos/update/endereco`,
+        method: 'POST',
+        data: payload
+      })
+  
+      if(montado){
+        setCurr({...curr, 
+          endereco: {
+            ...selectedEndereco, 
+            entregador: resp?.data?.endereco?.entregador || curr?.endereco?.entregador, 
+            taxa: selectedEndereco.bairro.taxa, 
+            saida: curr.endereco?.saida
+          }
+        })
+        refresh()
+      }
+      setSelecionarEndereco(false)
+    } 
+  }
+
+  mudarEndereco()
+  return () => {montado = false}
+}, [selecionarEndereco])
+
+function openSelectBoxEndereco(){
+  openSelectBox(
+    <div className='container endereco'>
+      <Endereco endereco={curr?.endereco} 
+      setEndereco={obj => {
+        setSelectedEndereco(obj)
+      }} />
+      <button onClick={() => setSelecionarEndereco(true)}>Salvar</button>
+    </div>
+  )
+}
+
+async function mudarTaxa(){
+
+  const resposta = window.prompt('Digite o valor da taxa de entrega', curr?.endereco?.taxa)
+  if (isNaN(Number(resposta)) || resposta < 0) {
+      alert('Valor inválido!')
+      return
+  } else if (!misc.isNEU(resposta)) {
+      let ped = {
+          id: curr.id,
+      }
+      const payload = {
+          pedido: ped,
+          novaTaxa: resposta,
+      }
+      await axios({
+          url: `${process.env.REACT_APP_API_URL}/pedidos/update/taxa`,
+          method: 'POST',
+          data: payload,
+      })
+
+      setCurr({
+          ...curr,
+          endereco: {
+              ...curr.endereco,
+              taxa: resposta,
+          },
+      })
+      refresh()
+  }
+}
+
+const ListaEntregadores = ({selected, setSelected, titulo}) => {
+  const {entregadores} = useEntregadores()
+  const [selectedTemp, setSelectedTemp] = useState(selected?.id)
+  return (
+    <div className='container entregador'>
+      <h1>{titulo}</h1>
+      <select value={selectedTemp || 'Selecione...'}
+      onChange={(e) => setSelectedTemp(e.target.value)} >
+        <option key={0} disabled>Selecione...</option>
+        {entregadores.filter(e => e.ativo).map(e => (
+          <option key={e.id} value={e.id} label={e.nome}>{e.nome}</option>
+        ))}
+      </select>
+      <button onClick={() => {
+        if(selectedTemp){
+          setSelected( entregadores.filter(x => misc.equals(x.id, selectedTemp))[0] )
+        }
+      }}>Salvar</button>
+    </div>
+  )
+}
+
+function openSelectBoxEntregador(){
+  openSelectBox(
+    <EntregadoresProvider>
+      <ListaEntregadores 
+      titulo={'Selecione o entregador:'}
+      selected={curr?.endereco?.entregador} 
+      setSelected={(selected) => {
+        mudarEntregador(selected)
+        fecharSelectBox()
+      }} />
+    </EntregadoresProvider>
+  )
+}
+
+async function mudarEntregador(selected){
+    let ped = {
+      id: curr.id
+    }
+    const payload = {
+      pedido: ped, 
+      novoEntregador: selected
+    }
+    await axios({
+      url: `${process.env.REACT_APP_API_URL}/pedidos/update/entregador`,
+      method: 'POST',
+      data: payload
+    })
+
+      setCurr({...curr, 
+        endereco: {
+          ...curr.endereco, 
+          entregador: selected,
+        }
+      })
+      refresh()
+  
+}
+
+function openTopEnderecoMenu(){
+  contextMenu([
+    {title: 'Endereço', 
+    click:() => openSelectBoxEndereco(),
+    enabled: true, visible: true},
+
+    {title: 'Taxa de entrega', 
+    click:() => mudarTaxa(), 
+    enabled: true, visible: !!curr?.endereco?.cep},
+
+    {title: 'Entregador',
+    click:() => openSelectBoxEntregador(), 
+    enabled: true, visible: !!curr?.endereco?.cep},
+])
+}
+
+function openSelectBoxPizza(item){
   openSelectBox(
     <ItemMaker fechar={fecharSelectBox} tipo={0} item={item} />
   )
 }
-function openBebidasMenu(item){
+function openSelectBoxBebida(item){
   openSelectBox(
     <ItemMaker fechar={fecharSelectBox} tipo={1} item={item} />
   )
 }
-function openOutrosMenu(item){
+function openSelectBoxOutro(item){
   openSelectBox(
     <ItemMaker fechar={fecharSelectBox} tipo={3} item={item} />
   )
 }
-function openRecentesMenu(){}
+function openSelectBoxRecentes(){}
 
 function openTopItensMenu(){
   openSelectBox(
     <div className='container itens'>
-     <button style={{backgroundColor: '#ed4300'}} onClick={() => openPizzasMenu()}>
+     <button style={{backgroundColor: '#ed4300'}} onClick={() => openSelectBoxPizza()}>
       <div className='top'>
        <FontAwesomeIcon icon={icons.faPizzaSlice} />
        </div>
        <label style={{pointerEvents: 'none'}}>Pizzas</label>
      </button>
-     <button style={{backgroundColor: '#e88b00'}} onClick={() => openBebidasMenu()}>
+     <button style={{backgroundColor: '#e88b00'}} onClick={() => openSelectBoxBebida()}>
       <div className='top'>
        <FontAwesomeIcon icon={icons.faGlassCheers} />
        </div>
        <label style={{pointerEvents: 'none'}}>Bebidas</label>
      </button>
-     <button style={{backgroundColor: '#a1522d'}} onClick={() => openOutrosMenu()}>
+     <button style={{backgroundColor: '#a1522d'}} onClick={() => openSelectBoxOutro()}>
       <div className='top'>
        <FontAwesomeIcon icon={icons.faIceCream} />
        </div>
        <label style={{pointerEvents: 'none'}}>Outros</label>
      </button>
-     <button className='disabled' style={{backgroundColor: '#0c6b00'}} onClick={() => openRecentesMenu()}>
+     <button className='disabled' style={{backgroundColor: '#0c6b00'}} onClick={() => openSelectBoxRecentes()}>
       <div className='top'>
        <FontAwesomeIcon icon={icons.faHistory} />
        </div>
@@ -508,16 +691,13 @@ function openTopPagamentoMenu(pagamento){
 function editarItem(item){
   switch(item.tipo){
     case 0:
-      openPizzasMenu(item)
+      openSelectBoxPizza(item)
       break
     case 1:
-      openBebidasMenu(item)
+      openSelectBoxBebida(item)
       break
     case 3: 
-      openOutrosMenu(item)
-      break
-    case 5:
-      openRecentesMenu(item)
+      openSelectBoxOutro(item)
       break
     default:
       alert('não implementado')
@@ -589,6 +769,8 @@ useEffect(() => {
     }
     setItensAgupados([...pizzas, ...bebidas, ...outros])
   }else{setItensAgupados([])}
+
+  
 }, [curr]) 
 
 
@@ -606,6 +788,113 @@ function contextMenuItem(i){
     }},
     {title:'Excluir',click:()=>{alert('EXCLUIR')}},
   ])
+}
+
+const BoxCliente = memo(({cliente}) => {
+  return(
+    <BoxClienteContainer ref={boxCliente} cliente={cliente} className='cliente-container box'>
+          <div className='top cliente'>
+            <button className='principal' onClick={() => openTopClienteMenu()}>CLIENTE</button>
+            <button className='secondary' onClick={() => boxCliente.current.classList.toggle('collapsed')}>_</button>
+          </div>
+          <div className='content'>
+            <div className='img-id'>
+              {
+              cliente?.imagem
+              ? <img src={cliente.imagem} alt='' 
+                onClick={() => imageView({title: cliente.nome, image: cliente.imagem})}/>
+              : cliente?.nome
+              ? <FontAwesomeIcon className='icon' icon={icons.faUser} />
+              : <FontAwesomeIcon className='icon' icon={icons.faTimes} />
+              }
+              {cliente?.id && <p>{cliente.id}</p>}
+            </div>
+            <div className='info'>
+              <div className='top'>
+                {cliente?.id
+                && <span className='alert' style={getAlertStyle()}></span>}
+                <span className='nome'>{cliente?.nome || 'SEM CLIENTE!'}</span>
+              </div>
+              <div className='middle'>
+                <label className='tags'>{cliente?.tags?.length > 0
+                && cliente.tags.join(', ')}</label>
+                {cliente?.id
+                ? <label className='pedido'>{numeroPedido}</label>
+                : cliente.nome
+                ? <label className='sem-cadastro'>Sem cadastro!!</label>
+                : <label className='sem-cadastro'>Altere o cliente para liberar ações do pedido.</label>}
+              </div>
+              <div className='contatos-container'>
+                <ul className='contatos'>{cliente?.contato?.length > 0
+                  && cliente.contato.map(e => (
+                    <li key={e}
+                    onClick={() => contatoClick(e)}
+                    >{Format.formatPhoneNumber(e)}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </BoxClienteContainer>
+  )
+}, (prev, novo) => {
+  return prev?.id === novo?.id && prev?.nome === novo?.nome
+} 
+)
+
+const BoxEndereco = ({tipo, endereco}) => {
+
+  if(tipo === 'ENTREGA') return (
+        <BoxEnderecoContainer ref={boxEndereco} className={`endereco-container box${showMapa ? ' large' : ''}`}>
+        <div className='top endereco'>
+            <button className='principal' onClick={() => openTopEnderecoMenu()}>ENDEREÇO</button>
+            <button className='secondary' onClick={() => boxEndereco.current.classList.toggle('collapsed')}>_</button>
+          </div>
+            {endereco &&
+              <div className='content'>
+                <div className='info'>
+                  <div className='top'>
+                  <strong>
+                    {Format.formatEndereco({
+                      local: endereco.local, 
+                      numero: (!misc.isNEU(endereco.local) 
+                      ? endereco.numero : ''), 
+                      }, false, true, false)}
+                  </strong>
+                  <label className={`${misc.isNEU(endereco.local) ? 'large' : undefined}`}>
+                    {Format.formatEndereco(endereco, false, false, false)}
+                  </label>
+                  <h5>
+                    {Format.formatEndereco({
+                      numero: ((misc.isNEU(endereco.local) && !misc.isNEU(endereco.numero)) 
+                      ? `nº ${endereco.numero}` : ''), 
+                      referencia: endereco.referencia
+                      }, false, true, false)}
+                  </h5>
+                  <div className="bottom">
+                    <p>Cep: {Format.formatCEP(endereco.cep)}</p>
+                  </div>
+
+                  </div>
+                    <div className='bottom'>
+                      <button className={endereco.taxa !== endereco.bairro.taxa ? 'alert' : undefined}
+                      title={endereco.taxa !== endereco.bairro.taxa ? 'Taxa atual diferente da original!' : ''}>
+                        Taxa: {Format.formatReal(endereco.taxa)}
+                      </button>
+                      <button className={(entregadorPadrao && endereco.entregador.id !== entregadorPadrao.id)  ? 'alert' : undefined}
+                      title={endereco.taxa !== endereco.bairro.taxa ? 'Entregador diferente do padrão!' : ''}>
+                        Entregador: {endereco.entregador.nome}
+                      </button>
+                  </div>
+                </div>
+                  {mapa} 
+              </div>
+            }
+        </BoxEnderecoContainer>
+)
+return null
+
+  
 }
 
   return curr
@@ -653,80 +942,9 @@ function contextMenuItem(i){
 
       <div className='middle-container'>
 
-        <div ref={boxCliente} className='cliente-container box'>
-          <div className='top cliente'>
-            <button className='principal' onClick={() => openTopClienteMenu()}>CLIENTE</button>
-            <button className='secondary' onClick={() => boxCliente.current.classList.toggle('collapsed')}>_</button>
-          </div>
-          <div className='content'>
-            <div className='img-id'>
-              {
-              curr.cliente?.imagem
-              ? <img src={curr.cliente.imagem} alt='' 
-                onClick={() => imageView({title: curr.cliente.nome, image: curr.cliente.imagem})}/>
-              : curr.cliente?.nome
-              ? <FontAwesomeIcon className='icon' icon={icons.faUser} />
-              : <FontAwesomeIcon className='icon' icon={icons.faTimes} />
-              }
-              {curr.cliente?.id && <p>{curr.cliente.id}</p>}
-            </div>
-            <div className='info'>
-              <div className='top'>
-                {curr.cliente?.id
-                && <span className='alert' style={getAlertStyle()}></span>}
-                <span className='nome'>{curr.cliente?.nome || 'SEM CLIENTE!'}</span>
-              </div>
-              <div className='middle'>
-                <label className='tags'>{curr.cliente?.tags?.length > 0
-                && curr.cliente.tags.join(', ')}</label>
-                {curr?.cliente?.id
-                ? <label className='pedido'>{getPedNum()}</label>
-                : curr.cliente.nome
-                ? <label className='sem-cadastro'>Sem cadastro!!</label>
-                : <label className='sem-cadastro'>Altere o cliente para liberar ações do pedido.</label>}
-              </div>
-              <div className='contatos-container'>
-                <ul className='contatos'>{curr.cliente?.contato?.length > 0
-                  && curr.cliente.contato.map(e => (
-                    <li key={e}
-                    onClick={() => contatoClick(e)}
-                    >{Format.formatPhoneNumber(e)}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {curr.tipo === 'ENTREGA' && 
-        <div ref={boxEndereco} className={`endereco-container box${showMapa ? ' large' : ''}`}>
-        <div className='top endereco'>
-            <button className='principal'>ENDEREÇO</button>
-            <button className='secondary' onClick={() => boxEndereco.current.classList.toggle('collapsed')}>_</button>
-          </div>
-            {curr.endereco &&
-              <div className='content'>
-                <div className='info'>
-                  <div className='top'>
-                    <p className='endereco'>
-                        {Format.formatEndereco(curr.endereco, false)}
-                      </p>
-                  </div>
-                    <div className='bottom'>
-                      <button className={curr.endereco.taxa !== curr.endereco.bairro.taxa ? 'alert' : undefined}
-                      title={curr.endereco.taxa !== curr.endereco.bairro.taxa ? 'Taxa atual diferente da original!' : ''}>
-                        Taxa: {Format.formatReal(curr.endereco.taxa)}
-                      </button>
-                      <button className={curr.endereco.entregador.id !== getEntregadorPadrao()  ? 'alert' : undefined}
-                      title={curr.endereco.taxa !== curr.endereco.bairro.taxa ? 'Entregador diferente do padrão!' : ''}>
-                        Entregador:{curr.endereco.entregador.nome}
-                      </button>
-                  </div>
-                </div>
-                  {mapa} 
-              </div>
-            }
-        </div>}
+        <BoxCliente cliente={curr?.cliente} />
+        <BoxEndereco tipo={curr?.tipo} endereco={curr?.endereco} />
+        
 
         {curr.tipo === 'APLICATIVO' &&
         <div ref={boxAplicativo} className='aplicativo-container box'>
@@ -781,8 +999,10 @@ function contextMenuItem(i){
                       ${i.pizza.sabores.length} 
                       sabor${i.pizza.sabores.length > 1 ?'es':''}` 
                       : i.tipo === 1 
-                      ? [i.bebida.nome, i.bebida.sabor ?? '', 
-                      Format.formatLitro(i.bebida.tamanho)].filter(e => e !== '').join(' ') 
+                      ? misc.join([
+                          i.bebida.nome, i.bebida.sabor ?? '', 
+                          Format.formatLitro(i.bebida.tamanho)
+                        ], ' ') 
                       : i.tipo === 2
                       ? 'HAMBURGUER'
                       : i.tipo === 3
@@ -1112,186 +1332,6 @@ label,p{
       &.aplicativo{background-color: ${cores.roxo}}
       &.itens{background-color: ${cores.amarelo}}
       &.pagamento{background-color: ${cores.verde}}
-    }
-  }
-
-
-  .cliente-container{
-    min-height: 140px;
-
-    ${(props) => !(!props.pedido.cliente.id || props.pedido.cliente.id < 1)}{
-      min-height: 120px;
-      }
-
-    .content{
-      gap: 10px;
-      padding: 5px;
-      display: flex;
-      align-items: center;
-      flex-grow: 2;
-      .img-id{
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100% ;
-        width: 70px;
-        flex-shrink: 0;
-        img{
-          border: 2px solid black;
-          border-radius: 50% ;
-          width: 70px ;
-          height: 70px ;
-          object-fit: cover;
-          cursor: pointer;
-        }
-        .icon{
-          font-size: 60px;
-        }
-        p{
-          font-size: 10px;
-        }
-      }
-      .info{
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        .top{
-          display: flex;
-          .alert{
-            display: inline-block;
-            background-color: green;
-            width: 20px;
-            height: 20px;
-            border-radius: 50% ;
-            border: 1px solid black;
-            margin-right: 10px;
-          }
-          .nome{
-            line-height: 100% ;
-            display: inline-block;
-            font-size: 20px;
-          }
-        }
-
-        .middle{
-          *{
-            display: block;
-          }
-          .tags{
-            font-size: 13px;
-          }
-          .pedido{
-            font-size: 13px;
-            font-style: italic;
-          }
-        }
-
-        .contatos-container{
-          padding: 0 10px 0 0;
-          overflow-x: auto;
-          display: flex;
-          .contatos{
-            gap: 10px;
-            flex-shrink: 0;
-            flex-grow: 0;
-            list-style: none;
-            display: flex;
-            li{
-              *{pointer-events: none;}
-              flex-shrink: 0;
-              flex-grow: 0;
-              border: 1px solid black;
-              padding: 3px;
-              cursor: pointer;
-
-              &:hover{
-                background-color: ${cores.branco};
-              }
-
-            }
-          }
-        }
-
-      }
-    }
-  }
-
-  .endereco-container{
-    &.large:not(.collapsed){
-      min-height: 400px;
-    }
-    .content{
-      flex-grow: 2;
-      padding: 5px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-
-      .info{
-        flex-grow: 2;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        .top{
-          display: flex;
-          flex-grow: 2;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
-          font-size: 20px;
-        }
-        .bottom{
-          display: flex;
-          justify-content: space-between;
-        > button{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            height: 30px;
-            padding: 0 10px;
-            background-color: transparent;
-            border: none;
-            font-size: 15px;
-
-            &.alert{
-              color: red;
-              font-weight: 600;
-            }
-          }
-        }
-      }
-
-      .mapa{
-        display: flex;
-        flex-direction: column;
-        button{
-          background-color: transparent;
-          border: none;
-          cursor: pointer;
-          &:hover{
-            color: blue;
-          }
-        }
-        .mapouter{
-        width: 100% ;
-        height: 250px ;
-        overflow: hidden;
-        border: 1px solid black;
-        border-radius: 10px;
-      }
-      .gmap_canvas {
-        overflow:hidden;
-        background:none!important;
-      }
-      iframe{
-        height: 250px ;
-        width: 100% ;
-      }
-
-      }
-
     }
   }
 
@@ -1666,5 +1706,231 @@ label,p{
 }
 `
 
+const BoxClienteContainer = styled.div`
+min-height: 140px;
+
+${(props) => !(!props.cliente.id || props.cliente.id < 1)}{
+  min-height: 120px;
+  }
+
+.content{
+  gap: 10px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  flex-grow: 2;
+  .img-id{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100% ;
+    width: 70px;
+    flex-shrink: 0;
+    img{
+      border: 2px solid black;
+      border-radius: 50% ;
+      width: 70px ;
+      height: 70px ;
+      object-fit: cover;
+      cursor: pointer;
+    }
+    .icon{
+      font-size: 60px;
+    }
+    p{
+      font-size: 10px;
+    }
+  }
+  .info{
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    .top{
+      display: flex;
+      .alert{
+        display: inline-block;
+        background-color: green;
+        width: 20px;
+        height: 20px;
+        border-radius: 50% ;
+        border: 1px solid black;
+        margin-right: 10px;
+      }
+      .nome{
+        line-height: 100% ;
+        display: inline-block;
+        font-size: 20px;
+      }
+    }
+
+    .middle{
+      *{
+        display: block;
+      }
+      .tags{
+        font-size: 13px;
+      }
+      .pedido{
+        font-size: 13px;
+        font-style: italic;
+      }
+    }
+
+    .contatos-container{
+      padding: 0 10px 0 0;
+      overflow-x: auto;
+      display: flex;
+      .contatos{
+        gap: 10px;
+        flex-shrink: 0;
+        flex-grow: 0;
+        list-style: none;
+        display: flex;
+        li{
+          *{pointer-events: none;}
+          flex-shrink: 0;
+          flex-grow: 0;
+          border: 1px solid black;
+          padding: 3px;
+          cursor: pointer;
+
+          &:hover{
+            background-color: ${cores.branco};
+          }
+
+        }
+      }
+    }
+
+  }
+}
+`
+
+const BoxEnderecoContainer = styled.div`
+    &.large:not(.collapsed){
+      min-height: 400px;
+    }
+
+    &:not(.collapsed){
+      .content{
+        .info{
+          flex-grow: 2;
+        }
+      }
+    }
+
+    .content{
+      flex-grow: 2;
+      padding: 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+
+      .info{
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        .top{
+          margin: auto 0;
+          flex-direction: column;
+          flex-grow: 0;
+          flex-shrink: 0;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          overflow: auto;        
+          max-height: 80px;
+          > *{
+            display: block;
+            text-align: middle;
+            margin-top: auto;
+            margin-bottom: auto;
+          }
+          strong{
+            margin-top: auto;
+            font-size: 16px;
+          }
+          label{
+            font-size: 13px;
+            &.large{
+              font-size: 18px;
+            }
+          }
+          p{
+            text-align: center;
+            margin: 0 auto;
+            font-size: 12px;
+          }
+          @media (max-width: 550px){
+            strong{
+            font-size: 13px;
+          }
+          label{
+            font-size: 12px;
+          }
+          p{
+            font-size: 11px;
+          }
+          }
+        }
+        .bottom{
+          display: flex;
+          justify-content: space-between;
+        > button{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            height: 30px;
+            padding: 0 10px;
+            background-color: transparent;
+            border: none;
+            font-size: 15px;
+
+            &.alert{
+              color: red;
+              font-weight: 600;
+            }
+          }
+        }
+      }
+
+      .mapa{
+        flex-grow: 2;
+        display: flex;
+        flex-direction: column;
+        button{
+          background-color: transparent;
+          border: none;
+          cursor: pointer;
+          &:hover{
+            color: blue;
+          }
+        }
+        .mapouter{
+        width: 100% ;
+        flex-grow: 2;
+        height: 100%;
+        
+        overflow: hidden;
+        border: 1px solid black;
+        border-radius: 10px;
+      }
+      .gmap_canvas {
+        overflow:hidden;
+        background:none!important;
+      }
+      iframe{
+        width: 100% ;
+        height: 250px ;
+        min-height: 50px;
+      }
+
+      }
+
+    }
+`
 
 

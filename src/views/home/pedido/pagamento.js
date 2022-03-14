@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
-import { useContextMenu } from '../../components/ContextMenu';
+import { useContextMenu } from '../../../components/ContextMenu';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import * as icons from '@fortawesome/free-solid-svg-icons'
-import * as Format from '../../util/Format'
-import * as misc from '../../util/misc'
-import * as cores from '../../util/cores'
-import * as pedidoUtil from '../../util/pedidoUtil'
+import * as Format from '../../../util/Format'
+import * as misc from '../../../util/misc'
+import * as cores from '../../../util/cores'
+import * as pedidoUtil from '../../../util/pedidoUtil'
 
 function getCostume(){
  return ' em ?'

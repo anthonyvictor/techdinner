@@ -31,6 +31,11 @@ function PizzasProvider({children}) {
         return () => {montado = false}
     },[atualizar, ]) 
 
+
+    function refresh(){
+        setAtualizar(prev => prev + 1)
+    }
+
   return (
       <PizzasContext.Provider value={{
           sabores, setSabores,
@@ -39,7 +44,7 @@ function PizzasProvider({children}) {
           tipos, setTipos,
           valores, setValores,
           bordas, setBordas,
-          atualizar, setAtualizar
+          refresh
         }}>
             {children}
         </PizzasContext.Provider>

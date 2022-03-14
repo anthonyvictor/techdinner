@@ -9,7 +9,7 @@ import PictureBox from '../../../components/PictureBox';
 import { SearchBar } from '../../../components/SearchBar';
 import { useOutros } from '../../../context/outrosContext'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGlassCheers, faIceCream } from "@fortawesome/free-solid-svg-icons";
+import { faIceCream } from "@fortawesome/free-solid-svg-icons";
 import { useContextMenu } from '../../../components/ContextMenu';
 
 export const Outros = () => {

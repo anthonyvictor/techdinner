@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import * as Format from '../util/Format'
 import Axios from "axios";
 
@@ -14,13 +14,7 @@ export default function PedidosProvider({children}){
 }
 
 function PedidosProvider2({ children }) {
-  const [pedidos, setPedidos] = useState([]);
-  const [caixa, setCaixa] = useState([])
-  const [entrega, setEntrega] = useState([])
-  const [aplicativo, setAplicativo] = useState([]) 
-  const [arquivados, setArquivados] = useState([]) 
-  const [semTipo, setSemTipo] = useState([])
-
+  const [_pedidos, set_Pedidos] = useState([]);
   const [atualizar, setAtualizar] = useState(0)
   const [clientesImagens, setClientesImagens] = useState([])
 
@@ -49,42 +43,59 @@ function PedidosProvider2({ children }) {
   useEffect(() => {
       let montado = true
       async function getAll(){
-          Axios.get(`${process.env.REACT_APP_API_URL}/pedidos`).then(r=>
-              {if(montado) {
-                let _pedidos = r.data
-                setPedidos(_pedidos)
-                if(_pedidos.length > 0){
-                  const payload = {
-                    ids: [...new Set(_pedidos.map(ped => ped.cliente?.id).filter(x => x > 0))]
-                  }
-                  axios({
-                    url: `${process.env.REACT_APP_API_URL}/clientes/imagens`, 
-                    method: 'post',
-                    data: payload
-                  }).then(e => {
-                    if(montado){
-                      setClientesImagens(e.data)
-                    }
-                  })
-                }
-                let a = [
-                  _pedidos.filter(p => p.tipo === 'CAIXA'),
-                  _pedidos.filter(p => p.tipo === 'ENTREGA'),
-                  _pedidos.filter(p => p.tipo === 'APLICATIVO'),
-                  _pedidos.filter(p => !!p.arq)
-                ]
-                setSemTipo(_pedidos.filter(p => a.flat().map(a => a.id).includes(p.id) === false))
-                setCaixa(a[0])
-                setEntrega(a[1])
-                setAplicativo(a[2])
-                setArquivados(a[3])
-              } 
-            }
-          )
-      }   
-      getAll()
+        let r = await axios({
+          url: `${process.env.REACT_APP_API_URL}/pedidos`,
+          method: 'GET'
+        })
+        if(montado) {
+          let _peds = r.data
+          set_Pedidos(_peds)
+        } 
+      } 
+      getAll(montado)
       return () => {montado = false}
   }, [atualizar,])
+
+  // axios({
+  //   url: `${process.env.REACT_APP_API_URL}/clientes/imagens`, 
+  //   method: 'post',
+  //   data: payload
+  // }).then(e => {
+  //   if(montado){
+  //     setClientesImagens(e.data)
+  //   }
+  // })
+
+  const pedidos = useMemo(() => 
+   {
+    //  console.log(_pedidos.map(e => e.valor).join(', '))
+     return  _pedidos
+   }
+, [_pedidos])
+
+  const semTipo = useMemo(() => 
+    pedidos.filter(p => !['CAIXA', 'ENTREGA', 'APLICATIVO'].includes(p.tipo))
+  , [pedidos])
+
+
+  const caixa = useMemo(() => 
+    pedidos.filter(p => p.tipo === 'CAIXA')
+  , [pedidos])
+
+
+  const entrega = useMemo(() => 
+    pedidos.filter(p => p.tipo === 'ENTREGA')
+  , [pedidos])
+
+
+  const aplicativo = useMemo(() => 
+    pedidos.filter(p => p.tipo === 'APLICATIVO')
+  , [pedidos])
+
+  const arquivados = useMemo(() => 
+    pedidos.filter(p => !!p.arq)  
+  , [pedidos])
+
 
   function refresh(){
     setAtualizar(prev => prev + 1)
@@ -92,7 +103,7 @@ function PedidosProvider2({ children }) {
 
   return (
     <PedidoContext.Provider value={{ 
-      pedidos, setPedidos, 
+      pedidos, 
       refresh, getImagem,
       semTipo, caixa, entrega,
       aplicativo, arquivados
