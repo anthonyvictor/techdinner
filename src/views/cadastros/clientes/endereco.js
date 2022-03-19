@@ -12,22 +12,20 @@ import { NotImplementedError } from '../../../exceptions/notImplementedError';
 
 // import { Container } from './styles';
 
-function Endereco(props) {
+function Endereco({endereco, setEndereco, children}) {
 
-    const [endereco, setEndereco] = useState(props.endereco)
-
-    const memoNumero = useMemo(() => endereco?.numero ?? '', [endereco?.numero])
+    // const memoNumero = () => endereco?.numero ?? '', [endereco?.numero])
     const memoTaxa = useMemo(() => formatReal(endereco?.bairro?.taxa ? endereco.bairro.taxa : 0), [endereco?.bairro?.taxa])
     const memoTemCep = useMemo(() => isNEU(endereco?.cep), [endereco?.cep])
     const memoEnderecoFormatted = useMemo(() => formatEndereco(endereco, false, false), [endereco?.cep])
-    const memoLocal = useMemo(() => endereco?.local ?? '', [endereco?.local])
-    const memoReferencia = useMemo(() => endereco?.referencia ?? '', [endereco?.referencia])
+    // const memoLocal = useMemo(() => endereco?.local ?? '', [endereco?.local])
+    // const memoReferencia = useMemo(() => endereco?.referencia ?? '', [endereco?.referencia])
 
 
-    useEffect(() => {
-      props.setEndereco(endereco)
-      return () => {}
-    }, [endereco])
+    // useEffect(() => {
+    //   setEndereco(endereco)
+    //   return () => {}
+    // }, [endereco])
 
     const {ask} = useAsk()
     const [mapa, setMapa] = useState(null)
@@ -70,7 +68,7 @@ function Endereco(props) {
             title: 'Substituir antigas informações de local da entrega, e número pelas novas também?',
             buttons: [
                 {title: 'SIM', click:() => setEndereco(selecionado)},
-                {title: 'NÃO', click:() => setEndereco(prev => {return {...prev, logradouro: selecionado.logradouro, taxa: selecionado.taxa}})}
+                {title: 'NÃO', click:() => setEndereco({logradouro: selecionado.logradouro, taxa: selecionado.taxa})}
             ],
             allowCancel: true
             })
@@ -107,9 +105,7 @@ function Endereco(props) {
         <div id="endereco-left">
         <div id="logradouro-container" className="txt">
             <label htmlFor="logradouro">Logradouro:</label>
-            <label id="logradouro">
-            {memoEnderecoFormatted}
-            </label>
+            <label id="logradouro">{memoEnderecoFormatted}</label>
             <button className="logradouro-button"
             type="button"
             onClick={() => {
@@ -126,10 +122,10 @@ function Endereco(props) {
             id="numero"
             placeholder="1600"
             disabled={memoTemCep}
-            value={memoNumero}
+            value={endereco?.numero ?? ''}
             onChange={(e) =>
               {
-                setEndereco(prev => {return {...prev, numero: e.target.value.toUpperCase()}})
+                setEndereco({numero: e.target.value.toUpperCase()})
               }
             }
             onBlur={(e) => {
@@ -145,9 +141,9 @@ function Endereco(props) {
             rows={2}
             id="local"
             placeholder="Casa, Edifício, Apartamento, Condomínio, Hospital, Escola..."
-            value={memoLocal}
+            value={endereco?.local ?? ''}
             onChange={(e) =>
-                setEndereco(prev => {return {...prev, local: e.target.value.toUpperCase()}})
+                setEndereco({local: e.target.value.toUpperCase()})
             }
             onBlur={(e) => {
                 e.target.value = e.target.value.trim();
@@ -170,9 +166,9 @@ function Endereco(props) {
             rows={2}
             id="referencia"
             placeholder="Ao lado de.. Em frente à.."
-            value={memoReferencia}
+            value={endereco?.referencia ?? ''}
             onChange={(e) =>
-                setEndereco(prev => {return {...prev, referencia: e.target.value.toUpperCase()}})
+                setEndereco({referencia: e.target.value.toUpperCase()})
             }
             onBlur={(e) => {
                 e.target.value = e.target.value.trim();
@@ -187,7 +183,7 @@ function Endereco(props) {
         <div id="endereco-right">
             {mapa}
         </div>
-        {props.children}
+        {children}
     </Container>
   )
 }

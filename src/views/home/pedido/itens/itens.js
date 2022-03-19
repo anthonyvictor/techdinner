@@ -2,12 +2,13 @@ import React, {useEffect, useCallback} from 'react';
 import BebidasProvider from '../../../../context/bebidasContext';
 import OutrosProvider from '../../../../context/outrosContext';
 import PizzasProvider from '../../../../context/pizzasContext';
-import Bebida from '../bebida';
-import Outro from '../outro';
-import Pizza from './pizza';
-import Recente from '../recente';
 
-export default function ItemMaker(props) {
+import Bebida from './bebida';
+import Outro from './outro';
+import Pizza from './pizza';
+import Recente from './recente';
+
+export const Itens = (props) => {
   
   useEffect(() => {
     document.addEventListener('keydown', onPressValidator)

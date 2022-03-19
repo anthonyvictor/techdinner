@@ -1,7 +1,6 @@
 import axios from "axios";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import * as Format from '../util/Format'
-import Axios from "axios";
 
 const PedidoContext = createContext();
 
@@ -39,7 +38,7 @@ function PedidosProvider2({ children }) {
     //     }}))
     //   }
     // }, [clientesImagens])
-  
+    
   useEffect(() => {
       let montado = true
       async function getAll(){

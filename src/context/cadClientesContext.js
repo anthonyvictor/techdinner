@@ -25,6 +25,16 @@ function CadCliProvider(props) {
   const [curr, setCurr] = useState(props.cliente ?? Empty)
   const [images, setImages] = useState([])
   const [imagem, setImagem] = useState(null)
+  
+  const [imagemField, setImagemField] = useState(null)
+  const [nomeField, setNomeField] = useState('')
+  const [contatoField, setContatoField] = useState('')
+  const [tagField, setTagField] = useState('')
+  const [contatosArray, setContatosArray] = useState('')
+  const [tagsArray, setTagsArray] = useState('')
+  // const [, set] = useState('')
+  // const [, set] = useState('')
+  // const [, set] = useState('')
 
   function limpar(confirm) {
     const res = confirm && window.confirm("Limpar formulário?")

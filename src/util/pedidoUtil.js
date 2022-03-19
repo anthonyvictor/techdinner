@@ -1,21 +1,34 @@
-import * as icons from '@fortawesome/free-solid-svg-icons';
-import * as misc from './misc'
+import { faHome, faTruck, faMobile, faQuestion } from '@fortawesome/free-solid-svg-icons';
+
 export function IcoTipo(tipo) {
     switch (tipo) {
       case "CAIXA":
-        return icons.faHome;
+        return faHome;
       case "ENTREGA":
-        return icons.faTruck;
+        return faTruck;
       case "APLICATIVO":
-        return icons.faMobile;
+        return faMobile;
       default:
-        return icons.faQuestion;
+        return faQuestion;
+    }
+  }
+
+  export function CorTipo(tipo) {
+    switch (tipo) {
+      case "CAIXA":
+        return "#2b2e30";
+      case "ENTREGA":
+        return "#040ac9";
+      case "APLICATIVO":
+        return "#591357";
+      default:
+        return '#000'
     }
   }
 
 
   export function getDataPagamentoDescrito(data){
-    // data  = misc.toDate(data)
+
     data = new Date(data)
     let horas = data.toLocaleTimeString([], {timeStyle: 'short'})
 
@@ -39,4 +52,11 @@ export function IcoTipo(tipo) {
       : `em ${data.toLocaleDateString()}`
       ) 
 
+}
+
+export function getValorPago(pedido){
+  return pedido.pagamentos.filter(e => e.status === 1).reduce((a,b) => a + b, 0) || 0
+}
+export function getValorPendente(pedido){
+  return pedido.valor - getValorPago(pedido)
 }

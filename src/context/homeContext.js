@@ -35,7 +35,7 @@ function HomeProvider(props) {
     }
   }, [curr])
 
-  function fechar(tab) {
+  function fecharPedido(tab) {
     if (curr && curr.id === tab.id) {
       if (tabs.length >= 2) {
         setCurr(prev => tabs[tabs.map(e => e.id).indexOf(prev.id) - 1])
@@ -72,7 +72,7 @@ function HomeProvider(props) {
         setTabs,
         showLista: props.showLista,
         setShowLista: props.setShowLista,
-        fechar,
+        fecharPedido,
         openSelectBox,
         fecharSelectBox,
         entregadorPadrao,

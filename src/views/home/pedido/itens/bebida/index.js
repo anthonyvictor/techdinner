@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
-import { SearchBar } from '../../../components/SearchBar';
-import { useBebidas } from '../../../context/bebidasContext';
-import { useContextMenu } from '../../../components/ContextMenu';
-import ListaProvider from '../../../context/listaContext';
+import { SearchBar } from '../../../../../components/SearchBar';
+import { useBebidas } from '../../../../../context/bebidasContext';
+import { useContextMenu } from '../../../../../components/ContextMenu';
+import ListaProvider from '../../../../../context/listaContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import * as icons from '@fortawesome/free-solid-svg-icons'
-import * as Format from '../../../util/Format'
-import * as misc from '../../../util/misc'
-import * as cores from '../../../util/cores'
-import { Lista } from '../../../components/Lista';
+import * as Format from '../../../../../util/Format'
+import * as misc from '../../../../../util/misc'
+import * as cores from '../../../../../util/cores'
+import { Lista } from '../../../../../components/Lista';
 
 export default function Bebida({item}) {
   const [search, setSearch] = useState('')
