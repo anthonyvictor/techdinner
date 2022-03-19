@@ -7,7 +7,7 @@ import { convertFileToBase64, convertImageToBase64, formatReal } from "../../uti
 import * as cores from "../../util/cores";
 import { useHome } from "../../context/homeContext";
 import FloatButton from "../../components/FloatButton";
-import * as pedidoUtil from '../../util/pedidoUtil'
+import { CorTipo, IcoTipo } from '../../util/pedidoUtil';
 import { isNEU } from "../../util/misc";
 
 export default function Lista() {
@@ -228,12 +228,6 @@ function Item({pedido}) {
       return "#126125";
     }
   }
-
-  
-
-  // let images = require.context('../../images', true);
-
-  // let itemImg = images(`./${pedido.cli_img}`).default;
   
 useEffect(() => {
   const timer = setInterval(
@@ -245,7 +239,7 @@ useEffect(() => {
     <ItemContainer className={(curr && pedido && pedido.id && curr.id === pedido.id) ? 'active' : undefined}
       pedido={{
         ...pedido,
-        cortipo: cores.tipo(pedido.tipo),
+        cortipo: CorTipo(pedido.tipo),
         corhora: CorHora,
         corvalor: CorValor,
         corimpr: CorImpr,
@@ -263,7 +257,7 @@ useEffect(() => {
         <p className="nome-cliente">{pedido.cliente.nome ?? '* SEM CLIENTE *'}</p>
         <div className="info-secundarias">
           <span className="tipo" title={pedido.tipo}>
-            <FontAwesomeIcon className="ico" icon={pedidoUtil.IcoTipo(pedido.tipo)} />
+            <FontAwesomeIcon className="ico" icon={IcoTipo(pedido.tipo)} />
           </span>
           <span className="tempo">
             <FontAwesomeIcon className="ico" icon={icons.faClock} />

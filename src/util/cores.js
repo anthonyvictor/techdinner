@@ -34,20 +34,4 @@ export const roxo = '#ad1be3'
 export const roxoEscuro = '#833471'
 export const roxoDark = '#6F1E51'
 
-export function tipo(tipo) {
-    switch (tipo) {
-      case "CAIXA":
-        return "#2b2e30";
-
-      case "ENTREGA":
-        return "#040ac9";
-
-      case "APLICATIVO":
-        return "#591357";
-        
-        default:
-          return '#000'
-    }
-  }
-
 ///https://flatuicolors.com/palette/se

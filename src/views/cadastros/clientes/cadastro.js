@@ -67,7 +67,7 @@ export default function Cadastro(props) {
             listar()
           }  
       }).catch(e => {
-        alert(`Erro: ${e}`)
+        alert(`Erro: ${e} stack: ${e.stack}`)
       })
     }  
     

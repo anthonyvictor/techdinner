@@ -44,7 +44,7 @@ export const SaborLi = ({sabor}) => {
 
     function openContext() {
         contextMenu([
-            { title: 'Editar', click: () => abrirIngredientesComponent(sabor), enabled:  sabor.ativo},
+            { title: 'Editar', click: () => abrirIngredientesComponent(sabor), enabled: !!sabor.ativo},
             { title: 'Ativar/Desativar', click: () => ativarDesativar(sabor) },
             { title: 'Remover', click: () => checkUncheck(sabor, false), enabled: getIsSelected(sabor) },
         ])
@@ -60,12 +60,16 @@ export const SaborLi = ({sabor}) => {
         fecharIngredientesComponent()
     }
 
+    const editar = () => {
+        if(!!sabor.ativo) abrirIngredientesComponent(sabor)
+    }
+
     return (
         <Container
             ref={isActive() ? saborHoveredRef : undefined}
             key={sabor.id}
             className={myClassName}
-            onDoubleClick={() => abrirIngredientesComponent(sabor)}
+            onDoubleClick={() => editar()}
             onMouseEnter={() => !isHoverLocked && setSaborHovered(sabor)}
             onMouseLeave={() => setIsHoverLocked(false)}
             onContextMenu={event => {

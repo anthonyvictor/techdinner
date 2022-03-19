@@ -14,7 +14,7 @@ function getCostume(){
 function getUltPag(){
     return ' em ?'
 }
-export default function Pagamento({pedido, pagamento}) {
+export default function Pagamentos({pedido, pagamento}) {
   return (
       <Container className='container'>
           {pedido.cliente && (
@@ -91,64 +91,8 @@ export default function Pagamento({pedido, pagamento}) {
 
           <div className='middle'>
           <ul className='pagamentos-ul'>
-                {pedido.pagamentos && pedido.pagamentos.map(e => 
-                  <li key={e.id} className={e.status === 1 ? 'pago' : 'pendente'} >
-                    <div className='inicio'>
-                        {
-                        e.tipo === 0 
-                        ? <FontAwesomeIcon icon={icons.faMoneyBillWaveAlt} />
-                        : e.tipo === 1 
-                        ? <FontAwesomeIcon icon={icons.faCreditCard} />
-                        : e.tipo === 2
-                        ? <FontAwesomeIcon icon={icons.faGlobe} />
-                        : e.tipo === 3
-                        ? <FontAwesomeIcon icon={icons.faExchangeAlt} />
-                        : e.tipo === 4
-                        ? <FontAwesomeIcon icon={icons.faCalendarCheck} />
-                        : e.tipo === 5
-                        ? <FontAwesomeIcon icon={icons.faQuestion} />
-                        : <FontAwesomeIcon icon={icons.faCommentDollar} /> 
-                        }
-                    </div>
-                    <div className='centro'>
-                        <div className='info-secundarias'>
-                          <p>Cód.{e.id}</p>
-                          <p>{`Add ${pedidoUtil.getDataPagamentoDescrito(e.dataAdicionado)}`}</p>
-                          {e.dataRecebido && <p>{`Receb. ${pedidoUtil.getDataPagamentoDescrito(e.dataRecebido)}`}</p>}
-                        </div>
-                        <label className='titulo'>
-                          {`${Format.formatReal(e.valorPago)} - ${
-                            e.tipo === 0 
-                            ? 'EM ESPÉCIE'
-                            : e.tipo === 1 
-                            ? 'NO CARTÃO'
-                            : e.tipo === 2
-                            ? 'VIA PIX'
-                            : e.tipo === 3
-                            ? 'TRANSFERÊNCIA BANCÁRIA'
-                            : e.tipo === 4
-                            ? `AGENDADO P/ ${e.progr.data}` 
-                            : e.tipo === 5
-                            ? 'NÃO INFORMADO'
-                            : 'DESCONHECIDO PELO SISTEMA'} ${
-                              e.status === 0
-                              ? '(PAGO)'
-                              : '(PENDENTE)'
-                            }`
-                          }
-                        </label>
-                        {e.valorRecebido && e.valorPago < e.valorRecebido && 
-                        <div className='info-secundarias bottom'>
-                          <p>{`Troco para ${Format.formatReal(e.valorRecebido)}`}</p>
-                          <p>{`(${Format.formatReal(e.valorRecebido - e.valorPago)} de troco)`}</p>
-                        </div>}
-                    </div>
-                    <div className='fim'>
-                      <button className='opcoes-item'>
-                        <FontAwesomeIcon icon={icons.faEllipsisV} />
-                      </button>
-                    </div>
-                  </li>
+                {pedido.pagamentos && pedido.pagamentos.map(pagamento => 
+                  <Pagamento pagamento={pagamento} key={pagamento.id} />
                   )}
             </ul>
           </div>
