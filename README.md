@@ -1,3 +1,8 @@
+# TechDinner - Sitema de pedidos
+
+Sistema idealizado para gerenciamento de pedidos para pizzarias e restaurantes voltados principalmente para delivery
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
