@@ -20,11 +20,11 @@ const PedidoContext = createContext()
 
 export const Pedido = () => {
 
-    const { curr, setCurr, fecharSelectBox } = useHome()
+    const { curr, setCurr, closeSelectBox } = useHome()
     const { refresh } = usePedidos();
 
     async function mudarTipo(newTipo){
-      fecharSelectBox()
+      closeSelectBox()
       let ped = {
         id: curr.id,
         tipo: curr.tipo,
@@ -45,7 +45,7 @@ export const Pedido = () => {
     }
 
     async function mudarCliente(newCliente){
-      fecharSelectBox()
+      closeSelectBox()
       let ped = {
         id: curr.id,
         tipo: curr.tipo,
@@ -70,7 +70,7 @@ export const Pedido = () => {
     }
 
     async function mudarEndereco(newEndereco) {
-        fecharSelectBox()
+        closeSelectBox()
         let ped = {
             id: curr.id,
             endereco: curr?.endereco,
@@ -96,7 +96,6 @@ export const Pedido = () => {
         })
         refresh()
     }
-
     async function mudarTaxa(newTaxa) {
             let ped = {
                 id: curr.id,
@@ -120,9 +119,8 @@ export const Pedido = () => {
             })
             refresh()
     }
-
     async function mudarEntregador(newEntregador) {
-        fecharSelectBox()
+        closeSelectBox()
         let ped = {
             id: curr.id,
         }
@@ -146,8 +144,84 @@ export const Pedido = () => {
         refresh()
     }
 
-    function mudarObservacoes(newObservacoes){
-      alert('não implementado')  
+    async function mudarItem(newItem) {
+        closeSelectBox()
+        let ped = {
+            id: curr.id,
+        }
+        const payload = {
+            pedido: ped,
+            novoItem: newItem,
+        }
+        const response = await axios({
+            url: `${process.env.REACT_APP_API_URL}/pedidos/update/item`,
+            method: 'POST',
+            data: payload,
+        })
+
+        if(response?.data){
+          setCurr({
+              ...curr,
+              itens: [
+                  ...curr.itens.filter(e => e.id !== response.data.item.id),
+                  response.data.item,
+              ],
+              valor: response.data.valor
+          })
+          refresh()
+        }
+    }
+
+    async function mudarPagamento(newPagamento) {
+        closeSelectBox()
+        let ped = {
+            id: curr.id,
+        }
+        const payload = {
+            pedido: ped,
+            novoPagamento: newPagamento,
+        }
+        const response = await axios({
+            url: `${process.env.REACT_APP_API_URL}/pedidos/update/pagamento`,
+            method: 'POST',
+            data: payload,
+        })
+
+        if(response?.data){
+          setCurr({
+            ...curr,
+            itens: [
+                ...curr.itens.filter(e => e.id !== response.data.item.id),
+                response.data.item,
+            ],
+            valor: response.data.valor
+          })
+          refresh()
+        }
+    }
+
+    async function mudarObservacoes(newObservacoes){
+      closeSelectBox()
+        let ped = {
+            id: curr.id,
+        }
+        const payload = {
+            pedido: ped,
+            novoObservacoes: newObservacoes,
+        }
+        const response = await axios({
+            url: `${process.env.REACT_APP_API_URL}/pedidos/update/observacoes`,
+            method: 'POST',
+            data: payload,
+        })
+
+        if(response?.data){
+          setCurr({
+            ...curr,
+            observacoes: response.data
+          })
+          refresh()
+        }
     }
 
 
@@ -167,7 +241,7 @@ export const Pedido = () => {
 
         mudarTipo, mudarCliente, 
         mudarEndereco, mudarTaxa, mudarEntregador, 
-        mudarObservacoes,
+        mudarItem, mudarPagamento, mudarObservacoes,
         getSaboresDescritos,
 
       }}>

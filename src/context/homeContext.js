@@ -46,18 +46,27 @@ function HomeProvider(props) {
     setTabs(prev => prev.filter(e => e.id !== tab.id))
   }
 
-  function fecharSelectBox(e) {
+  function closeSelectBox() {
+    setCurrentRoute('/pedido' + (curr && curr.id ? `/${curr.id}` : ''))
+    setSelectBox(null)
+  }
+
+  function askForCloseSelectBox(e){
     if (e && e.target !== e.currentTarget) {
       return
     }
-    setCurrentRoute('/pedido' + (curr && curr.id ? `/${curr.id}` : ''))
-    setSelectBox(null)
+    
+    if(window.confirm('Deseja realmente fechar esta tela?')){
+      closeSelectBox()
+    }
   }
 
   function openSelectBox(element) {
     setSelectBox(
       <SelectBox className='absolute-black' 
-      onMouseDown={e => fecharSelectBox(e)}>
+      onMouseDown={askForCloseSelectBox}>
+        <button className='close-button'
+        onClick={askForCloseSelectBox}>X</button>
         {element}
       </SelectBox>
     )
@@ -73,8 +82,7 @@ function HomeProvider(props) {
         showLista: props.showLista,
         setShowLista: props.setShowLista,
         fecharPedido,
-        openSelectBox,
-        fecharSelectBox,
+        openSelectBox, closeSelectBox,
         entregadorPadrao,
 
       }}
@@ -101,6 +109,25 @@ const SelectBox = styled.div`
     justify-content: center;
     align-items: center;
     *{user-select: none;}
+
+    > .close-button{
+      position: absolute;
+      right: 2%;
+      top: 2%;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      background-color: white;
+
+      @media (hover: hover) and (pointer: fine){
+        &:hover{
+          background-color: yellow;
+        }
+      }
+
+    }
 
     > .container {
       animation: aparecer 0.2s linear;

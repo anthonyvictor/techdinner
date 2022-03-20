@@ -30,8 +30,17 @@ export const ItemButton = ({type, click}) => {
         )
     }
 
+    const getTypeId = () => {
+        if(type === 'pizzas') return 0
+        if(type === 'bebidas') return 1
+        if(type === 'hamburgueres') return 2
+        if(type === 'outros') return 3
+        if(type === 'recentes') return 4
+        if(type === 'combos') return 5
+    }
+
     return (
-        <button style={getColor()} onClick={() => click()}>
+        <button style={getColor()} onClick={() => click({tipo: getTypeId()})}>
             <div className='top'>
                 <Icone />
             </div>

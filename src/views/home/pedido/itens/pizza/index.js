@@ -7,14 +7,15 @@ import { SaboresLista } from './sabores'
 import { IngredientesLista } from './ingredientes'
 import { Rodape } from './rodape'
 import axios from 'axios';
+import { useItens } from '../itens';
 
 
 const PizzaContext = createContext()
 
-export default function Pizza({item}) {
+export default function Pizza() {
     const { sabores, ingredientes, tipos, refresh } = usePizzas()
 
-    const [itemState] = useState(item)
+    const {item, callback} = useItens()
 
     const [tamanhoSelected, setTamanhoSelected] = useState(null)
     const [saboresSelected, setSaboresSelected] = useState([])
@@ -40,7 +41,7 @@ export default function Pizza({item}) {
 
     useEffect(() => {
         carregarItem()
-    },[itemState])
+    },[item])
 
     useEffect(() => {
         if(!isHoverLocked){
@@ -70,23 +71,23 @@ export default function Pizza({item}) {
     }, [searchResults, saboresSelected])
 
     const carregarItem = useCallback(() => {
-        if(itemState && itemState.pizza){
+        if(item?.pizza){
 
             //BLOQUEIA VALOR (PARA MUDANÇAS FORA DESTA FUNÇÃO)
             setIsPriceLocked(true)
 
             //MUDA TAMANHO
-            setTamanhoSelected(itemState.pizza.tamanho ?? null)
+            setTamanhoSelected(item.pizza.tamanho ?? null)
 
             //MUDA SABORES
-            const itemSabores = itemState.pizza.sabores ?? [] 
+            const itemSabores = item.pizza.sabores ?? [] 
             itemSabores.forEach(sabor => checkUncheck(sabor, true))     
             
             //MUDA OBSERVAÇÕES
-            setObservacoes(itemState?.observacoes ?? '')
+            setObservacoes(item?.observacoes ?? '')
             
             //MUDA VALOR
-            setValor(itemState.valor)
+            setValor(item.valor)
 
         }
     }, [])
@@ -230,13 +231,14 @@ export default function Pizza({item}) {
             abrirIngredientesComponent, fecharIngredientesComponent,
             ingredientesComponentResult, setIngredientesComponentResult,
 
+            item,
             tamanhoSelected, setTamanhoSelected,
             saboresSelected, setSaboresSelected,
             observacoes, setObservacoes,
             valor, setValor,
-
             ativarDesativar,
-
+            
+            callback,
         }}>
             <Container className='container pizza'>
                 <TamanhosLista />

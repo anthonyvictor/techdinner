@@ -49,7 +49,7 @@ const ImagemOuIcone = () => {
 export const Item2 = () => {
 
     const {item} = useItem()
-    const {openSelectBoxPizza, openSelectBoxBebida, openSelectBoxOutro} = useBoxItens()
+    const {openSelectBoxItens} = useBoxItens()
     const {getSaboresDescritos} = usePedido()
     const {contextMenu} = useContextMenu()
 
@@ -88,20 +88,8 @@ export const Item2 = () => {
     }
 
     function editar(){
-        switch(item.tipo){
-          case 0:
-            openSelectBoxPizza(item)
-            break
-          case 1:
-            openSelectBoxBebida(item)
-            break
-          case 3: 
-            openSelectBoxOutro(item)
-            break
-          default:
-            alert('não implementado')
-        }
-      }
+      openSelectBoxItens(item)
+    }
 
       function copiar(){
         const cp = (qtd) => {
