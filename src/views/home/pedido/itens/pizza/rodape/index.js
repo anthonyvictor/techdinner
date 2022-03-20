@@ -15,7 +15,8 @@ export const Rodape = () => {
     const {
       observacoes, setObservacoes, valor, setValor, 
       tamanhoSelected, saboresSelected, getSaborId,
-      isPriceLocked, setIsPriceLocked, getIngredientesDescritos
+      isPriceLocked, setIsPriceLocked, getIngredientesDescritos,
+      callback, itemState
     } = usePizza()
     const { bordas, valores } = usePizzas()
     const { contextMenu } = useContextMenu()
@@ -30,7 +31,6 @@ export const Rodape = () => {
     }, [saboresSelected])
 
     useEffect(() => {
-      console.log(observacoes.toUpperCase().includes('FIDELIDADE'))
         setTemBorda(observacoes.toUpperCase().includes('BORDA'))
         setIsFidelidade(observacoes.toUpperCase().includes('FIDELIDADE'))
       }, [observacoes])
@@ -136,6 +136,16 @@ export const Rodape = () => {
         alert('Escolha o tamanho!')
       }else if (saboresSelected.length === 0){
         alert('Selecione ao menos um sabor!')
+      }else{
+        callback({
+          ...itemState, 
+          observacoes: observacoes,
+          valor: valor,
+          pizza: {
+            tamanho: tamanhoSelected, 
+            sabores: saboresSelected, 
+          },
+        })
       }
     }
 

@@ -25,7 +25,7 @@ export const useBoxPagamentos = () => {
 
 const BoxPagamentos2 = () => {
 
-    const {curr, openSelectBox, fecharSelectBox} = useHome()
+    const {curr, openSelectBox, closeSelectBox} = useHome()
     
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [fixedSize, setFixedSize] = useState('')
@@ -63,7 +63,7 @@ const BoxPagamentos2 = () => {
 
     function openMenu(pagamento){
         openSelectBox(
-          <Pagamento fechar={fecharSelectBox} pedido={curr} pagamento={pagamento} />
+          <Pagamento fechar={closeSelectBox} pedido={curr} pagamento={pagamento} />
         )
       }
 

@@ -15,29 +15,16 @@ const BoxItensContext = createContext()
 
 export const BoxItens = () => {
 
-    const { openSelectBox, fecharSelectBox } = useHome()
+    const { openSelectBox } = useHome()
+    const {insertUpdateItem} = usePedido()
 
-    function openSelectBoxPizza(item){
-        openSelectBox(
-          <Itens fechar={fecharSelectBox} tipo={0} item={item} />
-        )
+      function openSelectBoxItens(item){
+        openSelectBox(<Itens item={item} callback={insertUpdateItem} />)
       }
-      function openSelectBoxBebida(item){
-        openSelectBox(
-          <Itens fechar={fecharSelectBox} tipo={1} item={item} />
-        )
-      }
-      function openSelectBoxOutro(item){
-        openSelectBox(
-          <Itens fechar={fecharSelectBox} tipo={3} item={item} />
-        )
-      }
-      function openSelectBoxRecentes(){}
 
     return (
         <BoxItensContext.Provider value={{
-            openSelectBoxPizza, openSelectBoxBebida,
-            openSelectBoxOutro, openSelectBoxRecentes,
+            openSelectBoxItens,
         }}>
             <BoxItens2 />
         </BoxItensContext.Provider>
@@ -52,7 +39,7 @@ const BoxItens2 = () => {
     const [itensAgrupados, setItensAgupados] = useState([])
     const {curr, openSelectBox} = useHome()
     const {getSaboresDescritos} = usePedido()
-    const {openSelectBoxPizza, openSelectBoxBebida, openSelectBoxOutro, openSelectBoxRecentes} = useBoxItens()
+    const {openSelectBoxItens} = useBoxItens()
 
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [fixedSize, setFixedSize] = useState('')
@@ -96,11 +83,11 @@ const BoxItens2 = () => {
         openSelectBox(
             <div className='container itens'>
 
-              <ItemButton type={'pizzas'} click={openSelectBoxPizza} />
-              <ItemButton type={'bebidas'} click={openSelectBoxBebida} />
-              <ItemButton type={'outros'} click={openSelectBoxOutro} />
-              <ItemButton type={'recentes'} click={openSelectBoxRecentes} />
-              <ItemButton type={'combos'} click={() => {}} />
+              <ItemButton type={'pizzas'} click={openSelectBoxItens} />
+              <ItemButton type={'bebidas'} click={openSelectBoxItens} />
+              <ItemButton type={'outros'} click={openSelectBoxItens} />
+              <ItemButton type={'recentes'} click={openSelectBoxItens} />
+              <ItemButton type={'combos'} click={openSelectBoxItens} />
 
             </div>
           )
