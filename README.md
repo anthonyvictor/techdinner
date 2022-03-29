@@ -1,7 +1,11 @@
 # TechDinner - Sitema de pedidos
 
-Sistema idealizado para gerenciamento de pedidos para pizzarias e restaurantes voltados principalmente para delivery
+Web App idelalized for orders management of delivery-oriented pizzerias and restaurants, containing
 
+- Options for integration with Google Apis (Maps, people, drive).
+- User register with permission levels for data access.
+- Customers register, with easy search by keywords, Street address, phone number, tags, among others.
+- Items register containing some categories like Pizza, drinks, and others.
 
 # Getting Started with Create React App
 
