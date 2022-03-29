@@ -1,16 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import Axios from "axios";
+import { useApi } from '../api';
 
 const BebidasContext = createContext()
 function BebidasProvider({children}) {
     const [bebidas, setBebidas] = useState([])
     const [atualizar, setAtualizar] = useState(0)
+    const {api} = useApi()
 
     useEffect(() => {            
         let montado = true
         console.log('bebidas')
         async function getAll(){
-            Axios.get(`${process.env.REACT_APP_API_URL}/bebidas`).then(r=>
+            api().get('bebidas').then(r=>
                 {if(montado) {
                     setBebidas(r.data.map(e => {return{
                         ...e, 
@@ -23,10 +24,14 @@ function BebidasProvider({children}) {
         return () => {montado = false}
     },[atualizar, ]) 
 
+    function refresh(){
+        setAtualizar(prev => prev + 1)
+    }
+
   return (
       <BebidasContext.Provider value={{
           bebidas, setBebidas,
-          atualizar, setAtualizar
+          refresh,
       }} >
           {children}
       </BebidasContext.Provider>

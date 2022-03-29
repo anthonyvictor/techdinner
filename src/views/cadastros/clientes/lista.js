@@ -19,6 +19,7 @@ import {Lista} from '../../../components/Lista'
 import { NotImplementedError } from "../../../exceptions/notImplementedError";
 import { useContextMenu } from "../../../components/ContextMenu";
 import axios from "axios";
+import { useApi } from "../../../api";
 
 
 export default function ListaCli(props) {
@@ -29,6 +30,7 @@ export default function ListaCli(props) {
   const {contextMenu} = useContextMenu()
   const [filtered, setFiltered] = useState([])
   const { imageView } = useImageViewer()
+  const {api} = useApi()
   
 
   useEffect(() => {
@@ -151,14 +153,9 @@ export default function ListaCli(props) {
       )
     ) {
       const payload ={
-        id: cliente.id
+        data: {id: cliente.id}
       }
-      axios({
-        url:`${process.env.REACT_APP_API_URL}/clientes/excluir`,
-        method: 'delete',
-        data: payload
-
-      })
+      api().delete('clientes/excluir', payload)
       .then(()=>{
         setClientes(prev => prev.filter(e=> e.id !== cliente.id))
       })
@@ -296,11 +293,8 @@ useEffect(() => {
           ids: [...filtered.map(e=> e.id)]
         }
         if(lista){//let imagens = 
-          axios({
-            url: `${process.env.REACT_APP_API_URL}/clientes/imagens`, 
-            method: 'post',
-            data: payload
-          }).then(e => {
+          api().get('clientes/imagens', {params: payload})
+          .then(e => {
             setImages(prev => [
               ...prev,
               ...e.data.filter(img => prev.map(p => p.id).includes(img.id) === false )

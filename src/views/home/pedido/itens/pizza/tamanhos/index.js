@@ -6,13 +6,15 @@ import { equals } from '../../../../../../util/misc';
 import { formatReal } from '../../../../../../util/Format';
 
 export const TamanhosLista = () => {
-    const { tamanhoSelected, setTamanhoSelected } = usePizza() 
+    const { temBorda, isFidelidade, tamanhoSelected, setTamanhoSelected } = usePizza() 
     const { tamanhos, valores } = usePizzas()
     const [finalResults, setFinalResults] = useState([]) //array after filtering and getting adjustments
 
     useEffect(() => {
-        fillSelect()
-     }, [tamanhos, valores]) 
+        if(valores.length > 0 && tamanhos.length > 0){
+            fillSelect()
+        }
+     }, [tamanhos, valores])
 
      const isAllLoaded = () => tamanhos.length > 0 && valores.length > 0
 
@@ -51,8 +53,8 @@ export const TamanhosLista = () => {
 
   return (
     <Container
-    defaultValue={tamanhoSelected ?? 'Selecione o tamanho...'}
-    onChange={(e) => setTamanhoSelected(e.target.value)}>
+    value={tamanhoSelected ?? 'Selecione o tamanho...'}
+    onChange={e => setTamanhoSelected(e.target.value)}>
 
         <option key={0} disabled>
             Selecione o tamanho...

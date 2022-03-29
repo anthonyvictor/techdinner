@@ -14,7 +14,7 @@ export const SaborLi = ({sabor}) => {
         saborHovered, setSaborHovered, saborHoveredRef, 
         checkUncheck, getIsSelected,
         isHoverLocked, setIsHoverLocked,
-        replaceSabor, getIngredientesDescritos,
+        replaceSabor, getIngredientesDescritos, saboresSelected,
         ingredientesComponentResult, setIngredientesComponentResult,
         abrirIngredientesComponent, fecharIngredientesComponent, 
         ativarDesativar

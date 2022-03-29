@@ -1,17 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import Axios from "axios";
+import { useApi } from '../api';
 
 const OutrosContext = createContext()
 
 function OutrosProvider({children}) {
     const [outros, setOutros] = useState([])
     const [atualizar, setAtualizar] = useState(0)
-    console.log('outros')
+    const {api} = useApi()
 
-    useEffect(() => {            
+    
+    useEffect(() => {         
         let montado = true
         async function getAll(){
-            Axios.get(`${process.env.REACT_APP_API_URL}/outros`).then(r=>
+            api().get('outros').then(r=>
                 {if(montado) {
                     setOutros(r.data)
                 }}
@@ -21,10 +22,15 @@ function OutrosProvider({children}) {
         return () => {montado = false}
     },[atualizar, ]) 
 
+    function refresh(){
+        setAtualizar(prev => prev + 1)
+    }
+
   return (
       <OutrosContext.Provider value={{
           outros, setOutros,
-          atualizar, setAtualizar}} >
+          refresh
+          }} >
           {children}
       </OutrosContext.Provider>
   )

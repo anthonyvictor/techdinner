@@ -3,20 +3,21 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPizzaSlice, faGlassCheers, faIceCream, 
     faHamburger, faUtensils, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { convertImageToBase64, formatLitro, formatReal } from '../../../../util/Format';
-import { isNEU, join } from "../../../../util/misc";
+import { equals, isNEU, join } from "../../../../util/misc";
 import styled from "styled-components";
 import * as cores from '../../../../util/cores'
 import { useContextMenu } from '../../../../components/ContextMenu';
 import { useBoxItens } from ".";
 import { usePedido } from "..";
+import { useHome } from "../../../../context/homeContext";
+import { useMessage } from "../../../../components/Message";
 
 const ItemContext = createContext()
 
 export const Item = ({item}) => {
-    const [itemState] = useState(item)
     return (
         <ItemContext.Provider value={{
-            item: itemState
+            item
         }}>
             <Item2 />
         </ItemContext.Provider>
@@ -50,7 +51,9 @@ export const Item2 = () => {
 
     const {item} = useItem()
     const {openSelectBoxItens} = useBoxItens()
-    const {getSaboresDescritos} = usePedido()
+    const {getSaboresDescritos, copiarItem, excluirItem, getOnly1Item} = usePedido()
+    const {message} = useMessage()
+
     const {contextMenu} = useContextMenu()
 
     function getTitulo() {
@@ -88,12 +91,17 @@ export const Item2 = () => {
     }
 
     function editar(){
-      openSelectBoxItens(item)
+      openSelectBoxItens(getOnly1Item(item))
     }
 
       function copiar(){
         const cp = (qtd) => {
-            alert('não implementado')
+          const itemOne = getOnly1Item(item)
+            copiarItem({
+              ...itemOne, 
+              bebida: {...itemOne?.bebida, imagem: ''},
+              outro: {...itemOne?.outro, imagem: ''},
+            }, qtd)
         }
         contextMenu([
           {title:'Acres. mais 1',click:() => cp(1)},
@@ -104,7 +112,40 @@ export const Item2 = () => {
       }
 
       function excluir(){
-        alert('não implementado')
+        try{
+          if(window.confirm('Deseja realmente excluir este item?')){
+            const maxItensContextMenu = item.ids.slice(0, 5)
+            if(item.ids?.length > 1){
+              contextMenu(
+                maxItensContextMenu.map((e, i) => {
+                 const isLast =  i + 1 === maxItensContextMenu.length
+                  return {
+
+                    title: isLast 
+                    ? `TODOS (${item.ids.length} unidades)` 
+                    : `${i + 1} unidade${(i + 1) > 1 ? 's' : ''}`,
+
+                    click: () => isLast 
+                    ? next(item.ids) 
+                    : next(item.ids.slice(0, i + 1))
+
+                  }
+                }
+                )
+              )
+            }else if(item.id){
+              next([item.id])
+            }else{
+              message('error', 'Ocorreu um erro!')
+              throw new Error('Ids não definidos para o escopo de exclusão')
+            }
+            function next(itens){
+              if(itens && itens?.length > 0) excluirItem(getOnly1Item(item))
+            }
+          }
+        }catch(err){
+          console.error(err, err.stack)
+        } 
       }
 
     function openContextMenu(){
@@ -115,8 +156,10 @@ export const Item2 = () => {
         ])
       }
 
+    const Secundarias = () => <p className='info-secundarias'>{getInfoSecundarias()}</p>
+
     return (
-        <Container key={item.id ?? item.ids.join(',')}
+        <Container 
                 onDoubleClick={() => editar()}
                 onContextMenu={(e) => {
                   e.preventDefault()
@@ -131,9 +174,9 @@ export const Item2 = () => {
                   </div>
 
                   <div className='centro'>
-
+                    {['1','3'].includes(String(item.tipo)) && <Secundarias />}
                     <label className='titulo'>{getTitulo()}</label>
-                    <p className='info-secundarias'>{getInfoSecundarias()}</p>
+                    {!['1','3'].includes(String(item.tipo)) && <Secundarias />}
                     <p className='info-secundarias observacoes'>{item.observacoes}</p>
 
                   </div>
@@ -160,6 +203,7 @@ const Container = styled.li`
           flex-shrink:0;
           flex-basis: 70px;
           border-bottom: 1px solid black;
+
           *{pointer-events: none;}
             &:hover{ 
               background-color: ${cores.branco}; 

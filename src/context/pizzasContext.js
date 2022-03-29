@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import Axios from "axios";
+import { useApi } from '../api';
 
 const PizzasContext = createContext()
 
@@ -11,21 +11,23 @@ function PizzasProvider({children}) {
     const [valores, setValores] = useState([])
     const [bordas, setBordas] = useState([])
     const [atualizar, setAtualizar] = useState(0)
+    const {api} = useApi()
 
     useEffect(() => {            
         let montado = true
         console.log('pizzas')
         async function getAll(){
-            Axios.get(`${process.env.REACT_APP_API_URL}/pizzas`).then(r=>
-                {if(montado) {
-                    setTipos(r.data.tipos)
-                    setIngredientes(r.data.ingredientes)
-                    setSabores(r.data.sabores)
-                    setTamanhos(r.data.tamanhos)
-                    setValores(r.data.valores)
-                    setBordas(r.data.bordas)
-                } }
-            )
+
+            const response = await api().get('pizzas')
+
+            if(montado) {
+                setTipos(response.data.tipos)
+                setIngredientes(response.data.ingredientes)
+                setSabores(response.data.sabores)
+                setTamanhos(response.data.tamanhos)
+                setValores(response.data.valores)
+                setBordas(response.data.bordas)
+            }
         }   
         getAll()
         return () => {montado = false}

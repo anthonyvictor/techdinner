@@ -61,6 +61,7 @@ export function isNEU (val) {
     !val ||
     val === null ||
     val === "" ||
+    val === 'null' ||
     (Array.isArray(val) && val.length === 0) ||
     (typeof(val) === 'object' && Object.keys(val).length === 0)
 

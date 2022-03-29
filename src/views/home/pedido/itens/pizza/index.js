@@ -6,21 +6,20 @@ import { TamanhosLista } from './tamanhos'
 import { SaboresLista } from './sabores'
 import { IngredientesLista } from './ingredientes'
 import { Rodape } from './rodape'
-import axios from 'axios';
 import { useItens } from '../itens';
+import { useApi } from '../../../../../api';
 
 
 const PizzaContext = createContext()
 
 export default function Pizza() {
-    const { sabores, ingredientes, tipos, refresh } = usePizzas()
+    const { tamanhos, sabores, ingredientes, tipos, refresh } = usePizzas()
+
+    const {api} = useApi()
 
     const {item, callback} = useItens()
 
-    const [tamanhoSelected, setTamanhoSelected] = useState(null)
-    const [saboresSelected, setSaboresSelected] = useState([])
-    const [observacoes, setObservacoes] = useState('')
-    const [valor, setValor] = useState(0)
+    const [isLoaded, setIsLoaded] = useState(false)
     
     const [saboresSelectedUpdates, setSaboresSelectedUpdates] = useState(0)
     const [saborHovered, setSaborHovered] = useState(null)
@@ -36,12 +35,19 @@ export default function Pizza() {
     const [ingredientesComponent, setIngredientesComponent] = useState(<></>)
     const [ingredientesComponentResult, setIngredientesComponentResult] = useState(null)
 
+    const [tamanhoSelected, setTamanhoSelected] = useState(item.pizza?.tamanho?.id ? String(item.pizza?.tamanho?.id) : null)
+    const [saboresSelected, setSaboresSelected] = useState(getSaboresSelected())
+    const [observacoes, setObservacoes] = useState(item?.observacoes ?? '')
+    const [valor, setValor] = useState(item?.valor ?? 0)
+
     const searchRef = useRef()
     const saborHoveredRef = useRef()
-
+    
     useEffect(() => {
-        carregarItem()
-    },[item])
+        if(sabores.length > 0 && tamanhos.length > 0){
+            carregarItem()
+        }
+    },[sabores,tamanhos])
 
     useEffect(() => {
         if(!isHoverLocked){
@@ -54,11 +60,16 @@ export default function Pizza() {
     }, [finalResults])
 
     useEffect(() => {
-        setSaboresSelectedUpdates(prev => prev < saboresSelected.length ? saboresSelected.length : prev + 1)
+        if(sabores.length > 0){
+            setSaboresSelectedUpdates(prev => prev < saboresSelected.length ? saboresSelected.length : prev + 1)
+        }
     }, [saboresSelected])
 
     useEffect(() => {
-        setSearchResults(sabores.filter(e => e.visivel).filter(e => filtro({ nome: e.nome, numero: e.numero }, searchString)))
+        if(sabores.length > 0){
+            setSaboresSelected(getSaboresSelected())
+            setSearchResults(sabores.filter(e => e.visivel).filter(e => filtro({ nome: e.nome, numero: e.numero }, searchString)))
+        }
     }, [searchString, sabores])
 
     useEffect(() => {
@@ -70,25 +81,46 @@ export default function Pizza() {
         )
     }, [searchResults, saboresSelected])
 
+    function getSaboresSelected(){
+        if(item?.pizza?.sabores && sabores.length > 0){
+            let res = []
+           for(let sabor of item.pizza.sabores){
+            const original = sabores.find(e => equals(e.id, sabor.id))
+            const _tipo = {...original.tipo, ...sabor.tipo}
+            const _id = buildNewId(sabor)
+            const filled = {...original, ...sabor, tipo: _tipo, id: _id}
+            res.push(filled)
+        }
+           return res
+        }else{
+            return []
+        }
+    }
+
     const carregarItem = useCallback(() => {
         if(item?.pizza){
 
             //BLOQUEIA VALOR (PARA MUDANÇAS FORA DESTA FUNÇÃO)
             setIsPriceLocked(true)
 
-            //MUDA TAMANHO
-            setTamanhoSelected(item.pizza.tamanho ?? null)
+            // //MUDA TAMANHO
+            // setTamanhoSelected(String(item.pizza?.tamanho?.id) ?? null)
 
             //MUDA SABORES
-            const itemSabores = item.pizza.sabores ?? [] 
-            itemSabores.forEach(sabor => checkUncheck(sabor, true))     
+            // const itemSabores = item.pizza.sabores ?? [] 
+            // itemSabores.forEach(sabor => checkUncheck(sabor, true))     
+            // // buildNewId
+            // //MUDA OBSERVAÇÕES
+            // setObservacoes(item?.observacoes ?? '')
             
-            //MUDA OBSERVAÇÕES
-            setObservacoes(item?.observacoes ?? '')
+            // //MUDA VALOR
+            // setValor(() => {
+            //     return item.valor
+            // })
+            setIsLoaded(true)
             
-            //MUDA VALOR
-            setValor(item.valor)
-
+        }else{
+            setIsLoaded(true)
         }
     }, [])
 
@@ -96,7 +128,7 @@ export default function Pizza() {
         return filtro({ nome: e.nome, numero: e.numero }, searchString)
     }
 
-    const getFullSaborFromId = (saborId) => sabores.filter(s => equals(s.id, saborId))[0]
+    const getFullSaborFromId = (saborId) => sabores.find(s => equals(s.id, saborId))
     const getFullIngredientesFromIds = (ingredientesIds) => ingredientes.filter(i => ingredientesIds.includes(i.id))
     const getFullTipoFromId = (tipoId) => tipos.filter(t => equals(t.id, tipoId))[0]
 
@@ -139,10 +171,10 @@ export default function Pizza() {
         focusSearch()
     }
 
-    const getSaborId = (sabor) => String(sabor.id).split('s')[0]
-    const getTodosIngredientes = (sabor) => sabor.ingredientes.map(e => ingredientes.filter(i => i.id === e.id)[0].nome).join(', ')
-    const getIsSelected = (sabor) => saboresSelected.map(e => String(e.id)).includes(String(sabor.id))
-    const buildNewId = (sabor) => getSaborId(sabor) + 's' + saboresSelectedUpdates
+    function getSaborId(sabor) {return String(sabor.id).split('s')[0]}
+    function getTodosIngredientes(sabor) {return sabor.ingredientes.map(e => ingredientes.filter(i => i.id === e.id)[0].nome).join(', ')}
+    function getIsSelected(sabor) {return saboresSelected.map(e => String(e.id)).includes(String(sabor.id))}
+    function buildNewId(sabor) {return getSaborId(sabor) + 's' + saboresSelectedUpdates}
 
     function getIngredientesDescritos(sabor, retornarTudo = true) {
         let res = ''
@@ -175,7 +207,6 @@ export default function Pizza() {
 
     function replaceSabor(sabor, novoSabor){
         if(sabor.id || novoSabor.id){
-
             setSaboresSelected(prev => [
                 ...prev.filter(e => !equals(e.id, sabor.id)),
                 {...novoSabor, id: getIsSelected(sabor) ? sabor.id : buildNewId(novoSabor)},
@@ -210,11 +241,7 @@ export default function Pizza() {
         const payload = {
             sabor: {...sabor, ativo: !sabor.ativo}
         }
-        await axios({
-            url: `${process.env.REACT_APP_API_URL}/pizzas/salvar/sabor`,
-            method: 'POST',
-            data: payload 
-        })
+        await api().post('pizzas/salvar/sabor', payload) 
         refresh()
     }       
 
@@ -231,7 +258,7 @@ export default function Pizza() {
             abrirIngredientesComponent, fecharIngredientesComponent,
             ingredientesComponentResult, setIngredientesComponentResult,
 
-            item,
+            item, isLoaded,
             tamanhoSelected, setTamanhoSelected,
             saboresSelected, setSaboresSelected,
             observacoes, setObservacoes,

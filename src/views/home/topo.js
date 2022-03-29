@@ -65,6 +65,7 @@ flex-shrink: 0;
       select {
         width: 100%;
         display: block;
+        user-select: none;
       }
 
 

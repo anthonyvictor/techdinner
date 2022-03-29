@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 
 import * as cores from '../../../util/cores'
-import { isNEU, join } from '../../../util/misc';
+import { equals, isNEU, join, removeAccents } from '../../../util/misc';
 
 import { useHome } from '../../../context/homeContext';
 import { usePedidos } from '../../../context/pedidosContext';
@@ -14,6 +14,7 @@ import { BoxEndereco } from './endereco';
 import { BoxItens } from './itens';
 import { BoxPagamentos } from './pagamento';
 import { Rodape } from './rodape';
+import { useApi } from '../../../api';
 
 
 const PedidoContext = createContext()
@@ -22,6 +23,16 @@ export const Pedido = () => {
 
     const { curr, setCurr, closeSelectBox } = useHome()
     const { refresh } = usePedidos();
+    const { api } = useApi()
+
+    function getOnly1Id(item){
+      return item?.id ? item.id
+      : item?.ids?.length > 0 ? item.ids[0] 
+      : null
+    }
+    function getOnly1Item(item){
+      return curr.itens.find(e => equals(e.id, getOnly1Id(item)))
+    }
 
     async function mudarTipo(newTipo){
       closeSelectBox()
@@ -35,11 +46,8 @@ export const Pedido = () => {
         novoTipo: newTipo
       }
     
-      const response = await axios({
-        url: `${process.env.REACT_APP_API_URL}/pedidos/update/tipo`,
-        method: 'POST',
-        data: payload
-      })
+      const response = await api().post('pedidos/update/tipo', payload) 
+
       setCurr(prev => {return{ ...response.data, cliente: prev.cliente }})//...prev,
       refresh()
     }
@@ -59,11 +67,8 @@ export const Pedido = () => {
         }
       }
     
-      const response = await axios({
-        url: `${process.env.REACT_APP_API_URL}/pedidos/update/cliente`,
-        method: 'POST',
-        data: payload
-      })
+      const response = await api().post('pedidos/update/cliente', payload)  
+      
       setCurr(response.data) 
       refresh()
       
@@ -79,11 +84,7 @@ export const Pedido = () => {
             pedido: ped,
             novoEndereco: newEndereco,
         }
-        const resp = await axios({
-            url: `${process.env.REACT_APP_API_URL}/pedidos/update/endereco`,
-            method: 'POST',
-            data: payload,
-        })
+        const resp = await api().post('pedidos/update/endereco', payload) 
 
         setCurr({
             ...curr,
@@ -104,11 +105,7 @@ export const Pedido = () => {
                 pedido: ped,
                 novaTaxa: newTaxa,
             }
-            await axios({
-                url: `${process.env.REACT_APP_API_URL}/pedidos/update/taxa`,
-                method: 'POST',
-                data: payload,
-            })
+            await api().post('pedidos/update/taxa', payload)
 
             setCurr({
                 ...curr,
@@ -128,11 +125,7 @@ export const Pedido = () => {
             pedido: ped,
             novoEntregador: newEntregador,
         }
-        await axios({
-            url: `${process.env.REACT_APP_API_URL}/pedidos/update/entregador`,
-            method: 'POST',
-            data: payload,
-        })
+        await api().post('pedidos/update/entregador', payload) 
 
         setCurr({
             ...curr,
@@ -149,28 +142,60 @@ export const Pedido = () => {
         let ped = {
             id: curr.id,
         }
+
         const payload = {
             pedido: ped,
-            novoItem: newItem,
+            novoItem: {
+              ...newItem, 
+              id: getOnly1Id(newItem), 
+              observacoes: newItem?.observacoes ? removeAccents(newItem.observacoes) : null 
+            },
         }
-        const response = await axios({
-            url: `${process.env.REACT_APP_API_URL}/pedidos/update/item`,
-            method: 'POST',
-            data: payload,
-        })
+        const response = await api().post('pedidos/update/item', payload)
 
         if(response?.data){
-          setCurr({
-              ...curr,
-              itens: [
-                  ...curr.itens.filter(e => e.id !== response.data.item.id),
-                  response.data.item,
-              ],
-              valor: response.data.valor
-          })
+          setCurr(response.data)
           refresh()
         }
     }
+
+    async function copiarItem(item, qtd) {
+        closeSelectBox()
+        let ped = {
+            id: curr.id,
+        }
+        const payload = {
+            pedido: ped,
+            item: {...item, id: getOnly1Id(item)},
+            qtd: qtd,
+        }
+        const response = await api().post('pedidos/update/item/copy', payload)
+
+        if(response?.data){
+          setCurr(response.data)
+          refresh()
+        }
+    }
+
+    async function excluirItem(itens) {
+      closeSelectBox()
+      let ped = {
+          id: curr.id,
+      }
+      
+      const payload = {
+          data: {
+            pedido: ped,
+            itens: itens,
+          }
+      }
+      const response = await api().delete('pedidos/update/item/delete', payload)
+    
+      if(response?.data){
+        setCurr(response.data)
+        refresh()
+      }
+  }
 
     async function mudarPagamento(newPagamento) {
         closeSelectBox()
@@ -181,11 +206,7 @@ export const Pedido = () => {
             pedido: ped,
             novoPagamento: newPagamento,
         }
-        const response = await axios({
-            url: `${process.env.REACT_APP_API_URL}/pedidos/update/pagamento`,
-            method: 'POST',
-            data: payload,
-        })
+        const response = await api().post('pedidos/update/pagamento', payload) 
 
         if(response?.data){
           setCurr({
@@ -209,11 +230,7 @@ export const Pedido = () => {
             pedido: ped,
             novoObservacoes: newObservacoes,
         }
-        const response = await axios({
-            url: `${process.env.REACT_APP_API_URL}/pedidos/update/observacoes`,
-            method: 'POST',
-            data: payload,
-        })
+        const response = await api().post('pedidos/update/observacoes', payload) 
 
         if(response?.data){
           setCurr({
@@ -241,8 +258,10 @@ export const Pedido = () => {
 
         mudarTipo, mudarCliente, 
         mudarEndereco, mudarTaxa, mudarEntregador, 
-        mudarItem, mudarPagamento, mudarObservacoes,
-        getSaboresDescritos,
+        mudarItem, copiarItem, excluirItem, 
+        mudarPagamento, mudarObservacoes,
+        getSaboresDescritos, 
+        getOnly1Id, getOnly1Item,
 
       }}>
           {curr ? <Pedido2 /> : <></>}

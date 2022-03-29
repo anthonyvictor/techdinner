@@ -8,9 +8,6 @@ export async function getLatLng(endereco) {
   
   if (misc.isConnected()){
 
-    // 
-    // 
-
   const url =
     "https://maps.googleapis.com/maps/api/geocode/json?sensor=false" +
     "&components=postal_code:" +
@@ -27,17 +24,7 @@ export async function getLatLng(endereco) {
   }
 
   return res;
-  //     .then((e) =>
-  //       e.json()
-  //         .then((data) => data.results.length > 0 ? data.results[0].geometry.location : {})
-  //         .catch((e) => console.log(e))
-  //     )
-  //     .catch((e) => console.log(e));
-
-  //   return resp;
 }
-
-
 
 export function sendWhatsAppMessage(txt, phoneNumber){
   txt = txt !== '' ? "&text=" + txt.replace(' ', '+') : ''
@@ -65,5 +52,9 @@ export function enderecoToUrl(endereco){
     }
   })
 }
+
+
+
+
 
 

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useRotas } from './rotasContext'
 import * as cores from '../util/cores'
-import axios from 'axios'
+import { useApi } from '../api'
 
 const HomeContext = createContext()
 
@@ -12,13 +12,11 @@ function HomeProvider(props) {
   const { setCurrentRoute } = useRotas()
   const [selectBox, setSelectBox] = useState(null)
   const [entregadorPadrao, setEntregadorPadrao] = useState(null)
+  const {api} = useApi()
 
   useEffect(() => {
     let montado = true
-    axios({
-      url: `${process.env.REACT_APP_API_URL}/entregadores/padrao`,
-      method: 'GET'
-    }).then(e => montado && setEntregadorPadrao(e.data))
+    api().get('entregadores/padrao').then(e => montado && setEntregadorPadrao(e.data))
     return () => {montado = false}
   }, [])
 
@@ -51,22 +49,25 @@ function HomeProvider(props) {
     setSelectBox(null)
   }
 
-  function askForCloseSelectBox(e){
-    if (e && e.target !== e.currentTarget) {
-      return
-    }
+  function askForCloseSelectBox(e, skipAsk=false){
     
-    if(window.confirm('Deseja realmente fechar esta tela?')){
+    if (e && e.target !== e.currentTarget) return
+
+    e.preventDefault()
+    e.stopPropagation()
+    
+    if(skipAsk || window.confirm('Deseja realmente fechar esta tela?')){
       closeSelectBox()
+    
     }
   }
 
   function openSelectBox(element) {
     setSelectBox(
       <SelectBox className='absolute-black' 
-      onMouseDown={askForCloseSelectBox}>
+      onDoubleClick={e => askForCloseSelectBox(e, true)}>
         <button className='close-button'
-        onClick={askForCloseSelectBox}>X</button>
+        onClick={e => askForCloseSelectBox(e, true)}>X</button>
         {element}
       </SelectBox>
     )
@@ -116,8 +117,8 @@ const SelectBox = styled.div`
       top: 2%;
       border: none;
       border-radius: 50%;
-      width: 20px;
-      height: 20px;
+      width: 40px;
+      height: 40px;
       cursor: pointer;
       background-color: white;
 

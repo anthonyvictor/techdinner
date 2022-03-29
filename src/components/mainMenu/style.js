@@ -40,6 +40,9 @@ export const Sidebar = styled.div `
             justify-content: stretch;
             padding: 5px 5px 5px 20px;
             div{display: block;}
+            .sair{
+                display: block;
+            }
         }
 
        .fundo{
@@ -188,6 +191,22 @@ export const Sidebar = styled.div `
             font-size: 30px;
             user-select: none;
             pointer-events: none;
+        }
+
+        .sair{
+            background-color: transparent;
+            display: none;
+            border: none;
+            cursor: pointer;
+            color: ${cores.brancoEscuro};
+
+            &:hover{
+                color: ${cores.amarelo};
+            }
+
+            .icone-sair{
+            
+            }
         }
         div{
             flex-grow: 2;

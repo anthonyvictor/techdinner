@@ -21,12 +21,6 @@ function Endereco({endereco, setEndereco, children}) {
     // const memoLocal = useMemo(() => endereco?.local ?? '', [endereco?.local])
     // const memoReferencia = useMemo(() => endereco?.referencia ?? '', [endereco?.referencia])
 
-
-    // useEffect(() => {
-    //   setEndereco(endereco)
-    //   return () => {}
-    // }, [endereco])
-
     const {ask} = useAsk()
     const [mapa, setMapa] = useState(null)
     

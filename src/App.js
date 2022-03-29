@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Login from './views/login' 
-import { useAuth } from './auth'
 import { isNEU } from './util/misc';
 
 import { BrowserRouter } from "react-router-dom";
@@ -15,43 +14,111 @@ import Globals from "./globals";
 import AskProvider from "./context/asksContext";
 import ContextMenuProvider from "./components/ContextMenu";
 import ImageViewerProvider from './components/ImageViewer';
+import * as cores from './util/cores'
+import ApiProvider, { useApi } from './api';
+import MessageProvider from './components/Message';
+// import { QueryClientProvider } from 'react-query';
 
 function App() {
+  return (
+    <MessageProvider>
+      <BrowserRouter >
+        {/* <QueryClientProvider> */}
+          <ApiProvider>
+            <App2 />
+          </ApiProvider>
+        {/* </QueryClientProvider>   */}
+      </BrowserRouter >
+    </MessageProvider>
+  )
+}
 
-  const {user} = useAuth()
+function App2() {
+
+  const {user, isLoading} = useApi()
+  const [preLoad, setPreLoad] = useState(true)
+
+  useEffect(() => {
+    if(!isLoading) setPreLoad(false)
+  }, [isLoading])
+
+  if(isLoading || preLoad) return <Refreshing />
+
+  if(isNEU(user)) return <Login />
 
   return(
-   !isNEU(user) 
-      ? (
-        <Container>
-        <BrowserRouter >
-        <AskProvider>
-          <ContextMenuProvider>
-            <ImageViewerProvider>
-              <RotasProvider>
-                <MainMenuProvider>
-                  <MainMenu className="invisivel" />
-    
-                  <div className="topo-base">
-                    <Header />
-                    <Rotas className="meio" />
-                    <Globals />
-                  </div>
-                </MainMenuProvider>
-              </RotasProvider>
-            </ImageViewerProvider>
-          </ContextMenuProvider>
-        </AskProvider>
-        </BrowserRouter>
-      </Container>
-      ):(
-        <Login />
-      )
-    
+    <Container>
+      <AskProvider>
+        <ContextMenuProvider>
+          <ImageViewerProvider>
+            <RotasProvider>
+              <MainMenuProvider>
+                <MainMenu className="invisivel" />
+  
+                <div className="topo-base">
+                  <Header />
+                  <Rotas className="meio" />
+                  <Globals />
+                </div>
+              </MainMenuProvider>
+            </RotasProvider>
+          </ImageViewerProvider>
+        </ContextMenuProvider>
+      </AskProvider>
+    </Container>
   ) 
 }
 
 export default App;
+
+function Refreshing(){
+
+  return (
+    <RefreshingContainer>
+      <h1>Carregando...</h1>
+      <div className="loader"></div>
+    </RefreshingContainer>
+  )
+}
+
+const RefreshingContainer = styled.div`
+  width: 100vw;
+  height: 100vh;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: ${cores.dark};
+
+  img{
+    width: min(400px, 80%);
+  }
+
+  p{
+    
+  }
+
+  *{
+    color: ${cores.branco};
+  }
+
+.loader {
+  border: 16px solid ${cores.branco}; /* Light grey */
+  border-top: 16px solid ${cores.azul}; /* Blue */
+  border-radius: 50%;
+  width: 90px;
+  height: 90px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+`
 
 
 const Container = styled.div`
