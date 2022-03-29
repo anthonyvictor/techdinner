@@ -100,7 +100,7 @@ export function formatReal(valor) {
   }
 
   export function formatLitro(ml){
-    return ml >= 1000 ? ml / 1000 + 'l' : ml + 'ml'
+    return ml >= 1000 ? ml / 1000 + 'L' : ml + 'ML'
   }
 
  export function formatAbrev(txt){

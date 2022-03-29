@@ -45,9 +45,9 @@ const BoxEndereco2 = () => {
     const [myClassName, setMyClassName] = useState(undefined)
 
     useEffect(() => {
-        getMyClassName()
+       getMyClassName()
     }, [isCollapsed, fixedSize])
-
+    
     useEffect(() => {
         getFixedSize()
     }, [showMapa])
@@ -192,98 +192,101 @@ const BoxEndereco2 = () => {
 
 const Container = styled(box)`
 
->.top{background-color: ${cores.azul}}
+    >.top{background-color: ${cores.azul}}
     
+    &.superlarge:not(.collapsed) {
+        min-height: 450px;
+    }
 
-        &.large:not(.collapsed) {
-            min-height: 400px;
-        }
+    &.large:not(.collapsed) {
+        min-height: 400px;
+    }
 
-        &:not(.collapsed) {
-            .content {
-                .info {
-                    flex-grow: 2;
-                }
+    &:not(.collapsed) {
+        .content {
+            .info {
+                flex-grow: 2;
             }
         }
+    }
 
-        .content {
-            flex-grow: 2;
-            padding: 5px;
+    .content {
+        flex-grow: 2;
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        .info {
+            height: 100%;
             display: flex;
             flex-direction: column;
-            gap: 5px;
-
-            .info {
-                height: 100%;
-                display: flex;
+            justify-content: center;
+            .top {
+                margin: auto 0;
                 flex-direction: column;
+                flex-grow: 0;
+                flex-shrink: 0;
                 justify-content: center;
-                .top {
-                    margin: auto 0;
-                    flex-direction: column;
-                    flex-grow: 0;
-                    flex-shrink: 0;
-                    justify-content: center;
-                    align-items: center;
-                    text-align: center;
-                    overflow: auto;
-                    max-height: 80px;
-                    > * {
-                        display: block;
-                        text-align: middle;
-                        margin-top: auto;
-                        margin-bottom: auto;
-                    }
-                    strong {
-                        margin-top: auto;
-                        font-size: 16px;
-                    }
-                    label {
-                        font-size: 13px;
-                        &.large {
-                            font-size: 18px;
-                        }
-                    }
-                    p {
-                        text-align: center;
-                        margin: 0 auto;
-                        font-size: 12px;
-                    }
-                    @media (max-width: 550px) {
-                        strong {
-                            font-size: 13px;
-                        }
-                        label {
-                            font-size: 12px;
-                        }
-                        p {
-                            font-size: 11px;
-                        }
+                align-items: center;
+                text-align: center;
+                overflow: auto;
+                max-height: 80px;
+                > * {
+                    display: block;
+                    text-align: middle;
+                    margin-top: auto;
+                    margin-bottom: auto;
+                }
+                strong {
+                    margin-top: auto;
+                    font-size: 16px;
+                }
+                label {
+                    font-size: 13px;
+                    &.large {
+                        font-size: 18px;
                     }
                 }
-                .bottom {
+                p {
+                    text-align: center;
+                    margin: 0 auto;
+                    font-size: 12px;
+                }
+                @media (max-width: 550px) {
+                    strong {
+                        font-size: 13px;
+                    }
+                    label {
+                        font-size: 12px;
+                    }
+                    p {
+                        font-size: 11px;
+                    }
+                }
+            }
+            .bottom {
+                display: flex;
+                justify-content: space-between;
+                > label {
                     display: flex;
-                    justify-content: space-between;
-                    > label {
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        gap: 10px;
-                        height: 30px;
-                        padding: 0 10px;
-                        background-color: transparent;
-                        border: none;
-                        font-size: 15px;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 10px;
+                    height: 30px;
+                    padding: 0 10px;
+                    background-color: transparent;
+                    border: none;
+                    font-size: 15px;
 
-                        &.alert {
-                            color: red;
-                            font-weight: 600;
-                            pointer-events: fill;
-                        }
+                    &.alert {
+                        color: red;
+                        font-weight: 600;
+                        pointer-events: fill;
                     }
                 }
             }
         }
+    }
     
 `

@@ -1,16 +1,17 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import Axios from "axios";
+import { useApi } from "../api";
 
 const EntregadoresContext = createContext();
 
 function EntregadoresProvider(props) {
   const [entregadores, setEntregadores] = useState([])
+  const {api} = useApi()
 
   useEffect(() => {            
     let montado = true
     console.log('entregadores')
     async function getAll(){
-        Axios.get(`${process.env.REACT_APP_API_URL}/entregadores`).then(r=>
+        api().get('entregadores').then(r=>
             {if(montado) {
               setEntregadores(r.data)
             } }

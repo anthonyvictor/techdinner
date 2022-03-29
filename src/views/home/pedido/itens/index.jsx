@@ -16,10 +16,10 @@ const BoxItensContext = createContext()
 export const BoxItens = () => {
 
     const { openSelectBox } = useHome()
-    const {insertUpdateItem} = usePedido()
+    const {mudarItem} = usePedido()
 
       function openSelectBoxItens(item){
-        openSelectBox(<Itens item={item} callback={insertUpdateItem} />)
+        openSelectBox(<Itens item={item} callback={mudarItem} />)
       }
 
     return (
@@ -38,7 +38,7 @@ export const useBoxItens = () => {
 const BoxItens2 = () => {
     const [itensAgrupados, setItensAgupados] = useState([])
     const {curr, openSelectBox} = useHome()
-    const {getSaboresDescritos} = usePedido()
+    const {getSaboresDescritos, getOnly1Item} = usePedido()
     const {openSelectBoxItens} = useBoxItens()
 
     const [isCollapsed, setIsCollapsed] = useState(false)
@@ -96,67 +96,76 @@ const BoxItens2 = () => {
       function getItensAgrupados(){
         if(curr){
             const _itens = [...curr.itens]
-            let pizzas = []
-            let bebidas = []
-            let outros = []
+            let pizzasGrupo = []
+            let bebidasGrupo = []
+            let outrosGrupo = []
             for(let item of _itens){
               if(item.tipo === 0){
                   //pizza
                   let achou = false
-                  for(let p of pizzas){
-                    if(item.pizza.tamanho.nome === p.pizza.tamanho.nome
-                      && getSaboresDescritos(item.pizza.sabores) === getSaboresDescritos(p.pizza.sabores)
-                      && item.observacoes === p.observacoes){
-                        if(p.id){p.ids = [p.id]}
-                        p.ids = [...p.ids, item.id]
-                        p.valor += item.valor
-                        delete p.id
+                  for(let grupo of pizzasGrupo){
+                    if(item.pizza.tamanho.nome === grupo.pizza.tamanho.nome
+                      && getSaboresDescritos(item.pizza.sabores) === getSaboresDescritos(grupo.pizza.sabores)
+                      && item.observacoes === grupo.observacoes && item.pizza.valor === getOnly1Item(grupo)?.valor){
+                        if(grupo.id){grupo.ids = [grupo.id]}
+                        grupo.ids = [...grupo.ids, item.id]
+                        grupo.valor += item.valor
+                        delete grupo.id
                         achou = true
                         break;
                       }
                   }
-                  if(!achou){pizzas.push({...item})}   
+                  if(!achou){pizzasGrupo.push({...item})}   
                 }else if(item.tipo === 1){
                   //bebida
                   let achou = false
-                  for(let b of bebidas){
-                    if(item.bebida.id === b.bebida.id
-                      && item.bebida.tamanho === b.bebida.tamanho
-                      && item.bebida.sabor === b.bebida.sabor
-                      && item.bebida.tipo === b.bebida.tipo
-                      && item.observacoes === b.observacoes){
-                        if(b.id){b.ids = [b.id]}
-                        b.ids = [...b.ids, item.id]
-                        b.valor += item.valor
-                        delete b.id
+                  for(let grupo of bebidasGrupo){
+                    if(item.bebida.id === grupo.bebida.id
+                      && item.bebida.tamanho === grupo.bebida.tamanho
+                      && item.bebida.sabor === grupo.bebida.sabor
+                      && item.bebida.tipo === grupo.bebida.tipo
+                      && item.observacoes === grupo.observacoes
+                      && item.bebida.valor ===  getOnly1Item(grupo)?.valor){
+                        if(grupo.id){grupo.ids = [grupo.id]}
+                        grupo.ids = [...grupo.ids, item.id]
+                        grupo.valor += item.valor
+                        delete grupo.id
                         achou = true
                         break;
                       }
                   }
-                  if(!achou){bebidas.push({...item})}    
+                  if(!achou){bebidasGrupo.push({...item})}    
                 }else if(item.tipo === 2){
                   const a = 'hamburguer'
                 }else if(item.tipo === 3){
                   //outro
                   let achou = false
-                  for(let o of outros){
-                    if(item.outro.id === o.outro.id
-                      && item.outro.nome === o.outro.nome
-                      && item.observacoes === o.observacoes){
-                        if(o.id){
-                          o.ids = [o.id]
+                  for(let grupo of outrosGrupo){
+    
+                    if(item.outro.id === grupo.outro.id
+                      && item.outro.nome === grupo.outro.nome
+                      && item.observacoes === grupo.observacoes
+                      && item.outro.valor === getOnly1Item(grupo)?.valor){
+                        if(grupo.id){
+                          grupo.ids = [grupo.id]
                         }
-                        o.ids = [...o.ids, item.id]
-                        o.valor += item.valor
-                        delete o.id
+                        grupo.ids = [...grupo.ids, item.id]
+                        grupo.valor += item.valor
+                        delete grupo.id
                         achou = true
                         break;
                       }
                   }
-                  if(!achou){outros.push({...item})}    
+                  if(!achou){outrosGrupo.push({...item})}    
               }
             }
-            setItensAgupados([...pizzas, ...bebidas, ...outros])
+            setItensAgupados([...pizzasGrupo, ...bebidasGrupo, ...outrosGrupo].sort((a,b) => {
+              const maxA = a?.ids?.reduce((max, current) => max > current ? max : current) ?? a.id
+              const maxB = b?.ids?.reduce((max, current) => max > current ? max : current) ?? b.id
+              if(maxA > maxB) return -1
+              if(maxA < maxB) return 1
+              return 0
+            }))
         }else{
               setItensAgupados([])
         }
@@ -172,7 +181,7 @@ const BoxItens2 = () => {
 
           <div className='content'>
             <ul className='itens-ul'>
-              {itensAgrupados.map(i => <Item key={i.id} item={i} />)}
+              {itensAgrupados.map(i => <Item key={i.id ?? i.ids.join(',')} item={i} />)}
             </ul>
           </div>
 
@@ -189,7 +198,6 @@ const BoxItens2 = () => {
 const Container = styled(box)`
     display: flex; 
     min-height: 145px;
-
 
     >.top{background-color: ${cores.amarelo}}
       
@@ -212,6 +220,20 @@ const Container = styled(box)`
         padding: 0 5px 5px 5px;
         overflow-y: auto;
         flex-grow: 2;
+
+        @media (max-width: 550px){
+          overflow-x: auto;
+          flex-wrap: wrap;
+          gap: 2px;
+
+          scroll-behavior: smooth;
+          -webkit-overflow-scrolling: touch;
+
+          &::-webkit-scrollbar{
+            width: 40px;
+          }
+
+        }
 
       }
     }

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import Axios from "axios";
+import { useApi } from "../api";
 
 const EnderecosContext = createContext();
 
@@ -8,12 +8,13 @@ function EnderecosProvider(props) {
   const [locais, setLocais] = useState([])
   const [bairros, setBairros] = useState([])
   const [atualizar, setAtualizar] = useState(0)
+  const {api} = useApi()
 
   useEffect(() => {            
     let montado = true
     console.log('enderecos')
     async function getAll(){
-        Axios.get(`${process.env.REACT_APP_API_URL}/enderecos`).then(r=>
+        api().get('enderecos').then(r=>
             {if(montado) {
               setBairros(r.data.bairros)
               setEnderecos(r.data.enderecos)

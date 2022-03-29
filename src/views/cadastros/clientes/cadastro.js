@@ -12,6 +12,7 @@ import * as apis from '../../../apis'
 import axios from "axios";
 import { useRotas } from "../../../context/rotasContext";
 import Endereco from "./endereco";
+import { useApi } from "../../../api";
 
 
 
@@ -21,6 +22,7 @@ export default function Cadastro(props) {
   const [tag, setTag] = useState('')
   const {curr, setCurr, limpar, images, setImages, imagem, setImagem} = useCadCli()
   const {clientes, refresh} = useClientes()
+  const {api} = useApi()
 
   async function salvar() {
     let ctt = [...curr.contato.map(c => Format.formatNumber(c))]
@@ -54,12 +56,8 @@ export default function Cadastro(props) {
 
         }
       }
-  
-      axios({
-        url: `${process.env.REACT_APP_API_URL}/clientes/salvar`,
-        method: 'post',
-        data: payload
-      }).then((e) => {
+      api().post('clientes/salvar', payload)
+      .then((e) => {
           refresh(e.data)
           if(props.retorno){
             props.retorno(e.data)

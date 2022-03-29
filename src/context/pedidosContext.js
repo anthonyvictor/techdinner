@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { useApi } from "../api";
 import * as Format from '../util/Format'
 
 const PedidoContext = createContext();
@@ -16,6 +17,7 @@ function PedidosProvider2({ children }) {
   const [_pedidos, set_Pedidos] = useState([]);
   const [atualizar, setAtualizar] = useState(0)
   const [clientesImagens, setClientesImagens] = useState([])
+  const {api} = useApi()
 
   function getImagem(id){
     if(id && clientesImagens.filter(i => i.id === id)[0]){
@@ -42,12 +44,11 @@ function PedidosProvider2({ children }) {
   useEffect(() => {
       let montado = true
       async function getAll(){
-        let r = await axios({
-          url: `${process.env.REACT_APP_API_URL}/pedidos`,
-          method: 'GET'
-        })
+
+        let response = await api().get('pedidos')
+
         if(montado) {
-          let _peds = r.data
+          let _peds = response.data
           set_Pedidos(_peds)
         } 
       } 

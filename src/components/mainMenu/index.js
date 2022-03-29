@@ -1,15 +1,15 @@
 import React, { useRef, useState } from 'react'
 import {Sidebar} from './style'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBars, faBorderAll, faChartPie, faCog, faPizzaSlice, faQuestion, faUser } from '@fortawesome/free-solid-svg-icons'
-import { useAuth } from '../../auth'
+import { faBars, faBorderAll, faChartPie, faCog, faPizzaSlice, faQuestion, faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons'
 
 import { useMainMenu } from '../../context/mainMenuContext'
 
 import SubMenu from './subMenu'
+import { useApi } from '../../api'
 
 export default function MainMenu(){
-    const {user} = useAuth()
+    const {user} = useApi()
     const {ativo, logo, toggleAtivo, changeRoute} = useMainMenu()
     const sidebarRef = useRef()
 
@@ -55,6 +55,16 @@ export default function MainMenu(){
     function openView(e){
         setSubMenu(null)
         changeRoute(e.target.getAttribute('name'))
+    }
+
+    function sair(e){
+        if(e.target == e.currentTarget){
+            if(window.confirm('Deseja realmente sair?')){
+                localStorage.setItem('user',null)
+                localStorage.setItem('password',null)
+                window.location.reload()
+            }
+        }
     }
 
     return (
@@ -113,6 +123,9 @@ export default function MainMenu(){
                     <p className='title'>{user.name}</p>
                     <p>{user.enterprise}</p>
                 </div>
+                <button className='sair' onClick={sair}>
+                    <FontAwesomeIcon className='icone icone-sair' icon={faSignOutAlt} />
+                </button>
             </div>
 
             <span className='fundo' onClick={toggleAtivo}>

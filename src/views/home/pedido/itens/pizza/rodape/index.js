@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { usePizzas } from '../../../../../../context/pizzasContext';
 import * as cores from '../../../../../../util/cores'
-import { equals, join } from '../../../../../../util/misc';
+import { equals, isNEU, join } from '../../../../../../util/misc';
 import { usePizza } from '..';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons'
@@ -16,40 +16,44 @@ export const Rodape = () => {
       observacoes, setObservacoes, valor, setValor, 
       tamanhoSelected, saboresSelected, getSaborId,
       isPriceLocked, setIsPriceLocked, getIngredientesDescritos,
-      callback, itemState
+      callback, item, isLoaded
     } = usePizza()
-    const { bordas, valores } = usePizzas()
+    const { tamanhos, bordas, valores } = usePizzas()
     const { contextMenu } = useContextMenu()
-    const [playSound] = useSound(valorBloqueadoSound)
+    const [playValorBloqueado] = useSound(valorBloqueadoSound)
 
     const [saboresDescritos, setSaboresDescritos] = useState('')
-    const [temBorda, setTemBorda] = useState(null)
-    const [isFidelidade, setIsFidelidade] = useState(false)
+    const [temBorda, setTemBorda] = useState(getTemBorda(String(item?.observacoes)))
+    const [isFidelidade, setIsFidelidade] = useState(String(item?.observacoes))
 
     useEffect(() => {
         setSaboresDescritos(getSaboresDescritos())
     }, [saboresSelected])
 
     useEffect(() => {
-        setTemBorda(observacoes.toUpperCase().includes('BORDA'))
-        setIsFidelidade(observacoes.toUpperCase().includes('FIDELIDADE'))
+        setTemBorda(getTemBorda(observacoes))
+        setIsFidelidade(getIsFidelidade(observacoes))
       }, [observacoes])
 
     useEffect(() => {
-        calculateValor()
-      }, [tamanhoSelected, temBorda, saboresSelected, isFidelidade]) //quando mudar ou tamanho ou borda ou sabores
-    
-      useEffect(() => {
-        isPriceLocked && playSound()
-      }, [tamanhoSelected, temBorda]) 
+      isLoaded && calculateValor()
+    }, [tamanhoSelected, temBorda, saboresSelected, isFidelidade, isLoaded]) //quando mudar ou tamanho ou borda ou sabores
+
+
+    function getTemBorda(obj){
+      return obj.toUpperCase().includes('BORDA')
+    }
+    function getIsFidelidade(obj){
+      return obj.toUpperCase().includes('FIDELIDADE')
+    }
 
     function getBordaValor(){
         let r = 0
         if(temBorda && tamanhoSelected){
-            const bt = bordas.filter(b => equals(b.tamanho.id, tamanhoSelected))
-            if(bt.length > 0){
-              r = bt[0].valor
-            }
+          const bt = bordas.filter(b => equals(b.tamanho.id, tamanhoSelected))
+          if(bt.length > 0){
+            r = bt[0].valor
+          }
           }
           
           return r
@@ -70,17 +74,19 @@ export const Rodape = () => {
     } 
 
     function calculateValor(){
-        if(!isPriceLocked){
-          const resultado = getBordaValor() + (isFidelidade ? 0 : getTamanhoTipoValor())
-          setValor(resultado)
-        }
+      const resultado = getBordaValor() + (isFidelidade ? 0 : getTamanhoTipoValor())
+      if(!isPriceLocked){
+        setValor(resultado)
+      }else if(resultado > 0 && (resultado !== item.valor) && isLoaded){
+        playValorBloqueado()
+      }
     }
 
     function openContextMenuObservacoes(){
         contextMenu([
         {title: 'Borda',
         click:() => {
-            const sb = (t) => {setObservacoes(prev=>[prev,`Borda de ${t}`].filter(e=>e!=='').join(', '))}
+            const sb = (t) => {setObservacoes(prev => join([prev,`Borda de ${t}`], ', '))}
             contextMenu([
             {title:'Cheddar',click:()=>sb('Cheddar')},
             {title:'Requeijão',click:()=>sb('Requeijão')},
@@ -90,7 +96,7 @@ export const Rodape = () => {
         }},
         {title: 'Massa',
         click:() => {
-            const sm = (t) => {setObservacoes(prev=>[prev,`Massa ${t}`].filter(e=>e!=='').join(', '))}
+            const sm = (t) => {setObservacoes(prev => join([prev,`Massa ${t}`], ', '))}
             contextMenu([
             {title:'Bem assada',click:()=>sm('bem assada')},
             {title:'Mais suculenta',click:()=>sm('mais suculenta')},
@@ -101,7 +107,7 @@ export const Rodape = () => {
         }},
         {title: 'Fatias',
         click:() => {
-            const sf = (t) => {setObservacoes(prev=>[prev,`${t} Fatias`].filter(e=>e!=='').join(', '))}
+            const sf = (t) => {setObservacoes(prev => join([prev,`${t} Fatias`], ', '))}
             contextMenu([
             {title:'6',click:()=>sf(6)},
             {title:'8',click:()=>sf(8)},
@@ -112,7 +118,7 @@ export const Rodape = () => {
         {title: 'Fidelidade',
         click:() => {
             if(window.confirm('Deseja zerar o valor desta pizza? Somente valores adicionais serão mantidos.')){
-              setObservacoes(prev=>[prev,`Fidelidade`].filter(e=> e !== '').join(', '))
+              setObservacoes(prev => join([prev,`Fidelidade`], ', '))
             }
         }},
         ])
@@ -138,11 +144,12 @@ export const Rodape = () => {
         alert('Selecione ao menos um sabor!')
       }else{
         callback({
-          ...itemState, 
+          ...item, 
           observacoes: observacoes,
+          tipo: 0,
           valor: valor,
           pizza: {
-            tamanho: tamanhoSelected, 
+            tamanho: tamanhos.find(e => equals(e.id, tamanhoSelected)) , 
             sabores: saboresSelected, 
           },
         })

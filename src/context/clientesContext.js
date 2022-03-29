@@ -1,7 +1,6 @@
-import React, {useContext, useState, createContext, useEffect, useRef} from "react";
-import Axios from 'axios'
+import React, {useContext, useState, createContext, useEffect} from "react";
+import { useApi } from "../api";
 import * as Format from "../util/Format";
-import { isNEU } from "../util/misc";
 
 const ClientesContext = createContext()
 
@@ -9,10 +8,11 @@ const ClientesContext = createContext()
 export default function ClientesProvider({ children }) {
     const [clientes, setClientes] = useState([])
     const [atualizar, setAtualizar] = useState(0)
+    const {api} = useApi()
         useEffect(() => {            
             let montado = true
             async function getAll(){
-                Axios.get(`${process.env.REACT_APP_API_URL}/clientes`).then(r=>
+                api().get('clientes').then(r=>
                     {if(montado) setClientes(r.data.map(e=> {
                         return {...e, imagem: (e.imagem ? Format.convertImageToBase64(e.imagem) : null)}})) }
                 )
