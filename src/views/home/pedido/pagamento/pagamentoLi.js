@@ -8,15 +8,16 @@ import { isNEU, join } from "../../../../util/misc";
 import styled from "styled-components";
 import * as cores from '../../../../util/cores'
 import { useContextMenu } from '../../../../components/ContextMenu';
-import { getDataPagamentoDescrito } from '../../../../util/pedidoUtil';
+import { getDataPagamentoDescrito, getTituloPagamento } from '../../../../util/pedidoUtil';
+import { usePayer } from "./payer";
 
 const PagamentoContext = createContext()
 
-export const Pagamento = ({pagamento}) => {
-    const [pagamentoState] = useState(pagamento)
+export const Pagamento = ({pagamento, setPagamento, readOnly}) => {
+
     return (
         <PagamentoContext.Provider value={{
-            pagamento: pagamentoState
+            pagamento, setPagamento, readOnly
         }}>
             <Pagamento2 />
         </PagamentoContext.Provider>
@@ -40,36 +41,19 @@ const Icone = () => {
 
     return <FontAwesomeIcon icon={faCommentDollar} /> 
 
-}
-
-export const Pagamento2 = () => {
-
-    const {pagamento} = usePagamento()
+  }
+  
+  const Pagamento2 = () => {
+    
+    const {pagamento, setPagamento, readOnly} = usePagamento()
+    const [pagamentosEditor, setPagamentosEditor] = useState(<></>)
+    const {payer} = usePayer()
 
     const {contextMenu} = useContextMenu()
 
-    function getTitulo() {
-
-        const val = `${formatReal(pagamento.valorPago)} - ` 
-
-        const esp = pagamento.tipo === 0 ? 'EM ESPÉCIE' : ''
-        const car = pagamento.tipo === 1 ? 'NO CARTÃO' : ''
-        const onl = pagamento.tipo === 2 ? 'VIA PIX' : ''
-        const tra =  pagamento.tipo === 3 ? 'TRANSFERÊNCIA BANCÁRIA' : ''
-        const pro =  pagamento.tipo === 4 ? `AGENDADO P/ ${pagamento.progr.data}` : ''
-        const des =  pagamento.tipo === 5 ? 'NÃO INFORMADO' : ''
-
-        const stt = pagamento.status === 1 ? ' (PAGO)' : ' (PENDENTE)'
-
-        const res = join([esp, car, onl, tra, pro, des], '')
-
-        return isNEU(res) ? 'DESCONHECIDO PELO SISTEMA' : val + res + stt
-
-    }
-
     function getInfoSecundarias() {
         
-        const cod = `Cód.${pagamento.id}`
+        const cod = !isNaN(pagamento.id) ? `Cód.${pagamento.id}` : ''
         const add = `Add ${getDataPagamentoDescrito(pagamento.dataAdicionado)}`
         const rcb = (pagamento.status === 1 && pagamento.dataRecebido) 
         ? `Receb. ${getDataPagamentoDescrito(pagamento.dataRecebido)}` : ''
@@ -87,16 +71,21 @@ export const Pagamento2 = () => {
 
     }
 
-    function editar(){
-        alert('não implementado')
+    async function editar(){
+      await payer({pedido: null, pagamento: pagamento, callback: setPagamento})
     }
     
-    function togglePagoPendente(){
-        alert('não implementado')
+    async function togglePagoPendente(){
+      if(pagamento.tipo === 5){//n info
+        await payer({pedido: null, pagamento: pagamento, callback: setPagamento})
+      }else{
+        const newPagamento = {...pagamento, status: pagamento.status === 0 ? 1 : 0}
+        setPagamento([newPagamento], pagamento)
+      }
     }
 
     function excluir(){
-        alert('não implementado')
+        setPagamento([], pagamento)
     }
 
     function openContextMenu(){
@@ -113,10 +102,10 @@ export const Pagamento2 = () => {
 
       return (
         <Container key={pagamento.id} className={getStatus()}
-        onDoubleClick={() => togglePagoPendente()}
+        onDoubleClick={() => !readOnly && togglePagoPendente()}
         onContextMenu={(e) => {
           e.preventDefault()
-          openContextMenu()
+          !readOnly && openContextMenu()
         }}>
 
         <div className='inicio'>
@@ -125,28 +114,33 @@ export const Pagamento2 = () => {
 
         <div className='centro'>
 
-            <div className='info-secundarias'>{getInfoSecundarias()}</div>
-            <label className='titulo'>{getTitulo()}</label>
+            <p className='info-secundarias'>{getInfoSecundarias()}</p>
+            <label className='titulo'>{getTituloPagamento(pagamento)}</label>
             {pagamento.valorRecebido && pagamento.valorPago < pagamento.valorRecebido && (
-                <div className='info-secundarias bottom'>{getInfoSecundariasBottom()}</div>
+                <p className='info-secundarias bottom'>{getInfoSecundariasBottom()}</p>
             )}
 
         </div>
 
         <div className='fim'>
 
-            <button className='opcoes'
-            onClick={() => openContextMenu()}>
-                <FontAwesomeIcon icon={faEllipsisV} />
-            </button>
+            {!readOnly && (
+              <button className='opcoes'
+              onClick={() => openContextMenu()}>
+                  <FontAwesomeIcon icon={faEllipsisV} />
+              </button>
+            )}
 
         </div>
+        {pagamentosEditor}
     </Container>
       )
 }
 
 const Container = styled.li`
- display: flex;
+          min-height: 60px;
+          width: 100%;
+          display: flex;
           gap: 5px;
           padding: 5px;
           flex-shrink:0;
@@ -154,8 +148,9 @@ const Container = styled.li`
           border-bottom: 1px solid black;
           *{pointer-events: none;}
           &:hover{ 
-              background-color: ${cores.branco}; 
+              background-color: ${cores.brancoDark}; 
             }
+
           .inicio{
             display: flex;
             align-items: center;
@@ -166,6 +161,7 @@ const Container = styled.li`
               margin: 0 5px 0 5px;
             }
           }
+
           .centro{
             flex-grow: 2;
             display: flex;
@@ -175,20 +171,19 @@ const Container = styled.li`
               display: flex;
               gap: 5px;
 
-              p{
+              
                 font-size: 10px;
                 font-style: italic;
-                :not(:last-child){
-                  &::after{
-                    content: ' | '
-                  }
-                }
-              }
+            
               @media (max-width: 550px){ 
                 &:not(.bottom){
                   display: none;
                 }          
               }
+
+              /* &.bottom{
+                font-size:
+              } */
             }
             .titulo{
               font-weight: bolder;
@@ -197,6 +192,7 @@ const Container = styled.li`
               }
             }
           }
+
           .fim{
             display: flex;
             gap: 10px;
@@ -216,6 +212,7 @@ const Container = styled.li`
               *{color: black!important;}
             }
           }
+
           &.pago{
             *{color: ${cores.verdeEscuro}}
           }

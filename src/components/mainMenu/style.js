@@ -11,10 +11,6 @@ export const Sidebar = styled.div `
   justify-content: stretch;
   transition: 0.5s;
 
-  @media print{
-      display: none;
-  }
-
     *{
         margin: 0;
         padding: 0;

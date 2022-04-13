@@ -17,10 +17,6 @@ export default styled.div`
     padding: 0px 20px 0px 20px;
     justify-content: space-between;
 
-    @media print{
-        display: none;
-    }
-
     h2{
         user-select: none;
         pointer-events: none;

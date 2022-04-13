@@ -7,7 +7,7 @@ import { convertFileToBase64, convertImageToBase64, formatReal } from "../../uti
 import * as cores from "../../util/cores";
 import { useHome } from "../../context/homeContext";
 import FloatButton from "../../components/FloatButton";
-import { CorTipo, IcoTipo } from '../../util/pedidoUtil';
+import { CorTipo, getValorPago, getValorPendente, IcoTipo } from '../../util/pedidoUtil';
 import { isNEU } from "../../util/misc";
 
 export default function Lista() {
@@ -206,10 +206,8 @@ function Item({pedido}) {
   }
 
   function CorValor() {
-    let totalPago = pedido.pagamentos
-    .map(e => e.valorPago)
-    .reduce((a, b) => a + b, 0)
-    let diff = pedido.valor - totalPago
+    // let totalPago = getValorPago()
+    let diff = getValorPendente(pedido)
     if (diff === pedido.valor) {
       return "#bf0f06";
     } else if (diff > 0) {

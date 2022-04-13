@@ -121,7 +121,7 @@ export default function MainMenu(){
                 <FontAwesomeIcon className='icone' icon={faUser}/>
                 <div>
                     <p className='title'>{user.name}</p>
-                    <p>{user.enterprise}</p>
+                    <p>{user.enterprise.name}</p>
                 </div>
                 <button className='sair' onClick={sair}>
                     <FontAwesomeIcon className='icone icone-sair' icon={faSignOutAlt} />

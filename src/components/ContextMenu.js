@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import styled from 'styled-components';
 import * as cores from '../util/cores'
+import { RodapeTechDinner } from './RodapeTechDinner';
 
 const ContextMenuContext = createContext()
 
@@ -89,7 +90,7 @@ function ContextMenu() {
                 )}
             </div>
 
-          <p className="rodape">TechDinner - Sistema de pedidos</p>
+          <RodapeTechDinner />
         </div>
       </Container>
     );
@@ -169,14 +170,5 @@ const Container = styled.div`
             }
         }
 
-        .rodape{
-            width: 100% ;
-            padding: 10px;
-            border-top: 1px solid gray;
-            text-align: center;
-            font-size: 10px;
-            color: gray;
-            padding: 0 10px;
-        }
     }
 `

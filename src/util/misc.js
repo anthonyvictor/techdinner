@@ -119,6 +119,27 @@ export function joinObj(obj){
   return txt
 }
 
+export function removeImagens(obj){
+	let newObj = obj
+    	if(newObj){
+      	for(let v of Object.keys(newObj)){
+        		if(typeof newObj[v] === 'object'){
+					//se a key atual do newObj for object {id: 0} ele atribui newObj = removeImagens()
+              		// newObj = removeImagens(newObj)
+					  newObj[v] = removeImagens(newObj[v])
+					//   console.log('new obj', newObj)
+					}else{
+					  if(v === 'imagem'){
+						  newObj[v] = ''
+					  }
+
+              		// let tempObj = newObj.
+          		}
+      	}
+    	}
+  return newObj
+}
+
 export function join(arr, separator){
   return arr.map(e => String(e)).filter(e => e !== '').join(separator)
 }

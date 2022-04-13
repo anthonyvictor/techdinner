@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { useRotas } from './rotasContext'
 import * as cores from '../util/cores'
 import { useApi } from '../api'
+import { FecharButton } from '../components/FecharButton'
 
 const HomeContext = createContext()
 
@@ -66,8 +67,7 @@ function HomeProvider(props) {
     setSelectBox(
       <SelectBox className='absolute-black' 
       onDoubleClick={e => askForCloseSelectBox(e, true)}>
-        <button className='close-button'
-        onClick={e => askForCloseSelectBox(e, true)}>X</button>
+        <FecharButton fechar={e => askForCloseSelectBox(e, true)} />
         {element}
       </SelectBox>
     )
@@ -109,6 +109,7 @@ const SelectBox = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
     *{user-select: none;}
 
     > .close-button{
@@ -130,8 +131,19 @@ const SelectBox = styled.div`
 
     }
 
+    @keyframes baixo-cima{
+      from{
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      to{
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
     > .container {
-      animation: aparecer 0.2s linear;
+      animation: baixo-cima 0.15s ease-out;
       background-color: ${cores.branco};
       padding: 10px;
       border-radius: 20px;

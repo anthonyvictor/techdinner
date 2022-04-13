@@ -18,14 +18,15 @@ export default function ApiProvider({children}) {
     }, [])
 
     const getApiUrl = (where) => {
-        if(where === 'local') return process.env.REACT_APP_API_URL_LOCAL
-        if(where === 'fixed') return process.env.REACT_APP_API_URL //_LOCAL
+        if(where === 'local') return 'http://localhost:8081'//process.env.REACT_APP_API_URL_LOCAL //localhost:8081
+        if(where === 'fixed') return 'http://192.168.0.3:8081'//process.env.REACT_APP_API_URL //192.168.0.3:8081
+        if(where === 'hamachi') return 'http://25.94.36.68:8081' //25.94.36.68:8081
         if(where === 'web') return null//'192.168.252.115:8081'
         return process.env.REACT_APP_API_URL_LOCAL
     }
 
     const api = (user=null, password=null) => {
-        const url =  getApiUrl('fixed') //local, fixed, web
+        const url =  getApiUrl('fixed') //getStored('api_url') ||  //local, fixed, web
         if(!url) return null
         return axios.create({
             baseURL: url, 
@@ -33,7 +34,7 @@ export default function ApiProvider({children}) {
               username: user ?? getStored('user'),
               password: password ?? getStored('password')
             },
-            timeout: 2000
+            timeout: 10000
           })
     }
 

@@ -11,12 +11,17 @@ import styled from "styled-components";
 import RotasProvider from "./context/rotasContext";
 import MainMenuProvider from "./context/mainMenuContext";
 import Globals from "./globals";
-import AskProvider from "./context/asksContext";
-import ContextMenuProvider from "./components/ContextMenu";
-import ImageViewerProvider from './components/ImageViewer';
 import * as cores from './util/cores'
 import ApiProvider, { useApi } from './api';
+
+import ContextMenuProvider from "./components/ContextMenu";
+import ImageViewerProvider from './components/ImageViewer';
+import AskProvider from "./components/Ask";
 import MessageProvider from './components/Message';
+import { ValuerProvider } from './components/Valuer';
+import { PayerProvider } from './views/home/pedido/pagamento/payer';
+import { HoraProvider } from './views/home/pedido/rodape/hora';
+
 // import { QueryClientProvider } from 'react-query';
 
 function App() {
@@ -48,23 +53,29 @@ function App2() {
 
   return(
     <Container>
-      <AskProvider>
-        <ContextMenuProvider>
-          <ImageViewerProvider>
-            <RotasProvider>
-              <MainMenuProvider>
-                <MainMenu className="invisivel" />
-  
-                <div className="topo-base">
-                  <Header />
-                  <Rotas className="meio" />
-                  <Globals />
-                </div>
-              </MainMenuProvider>
-            </RotasProvider>
-          </ImageViewerProvider>
-        </ContextMenuProvider>
-      </AskProvider>
+      <HoraProvider>
+        <AskProvider>
+          <ValuerProvider>
+            <ContextMenuProvider>
+              <ImageViewerProvider>
+                <PayerProvider>
+                  <RotasProvider>
+                    <MainMenuProvider>
+                      <MainMenu className="invisivel" />
+        
+                      <div className="topo-base">
+                        <Header />
+                        <Rotas className="meio" />
+                        <Globals />
+                      </div>
+                    </MainMenuProvider>
+                  </RotasProvider>
+                </PayerProvider>
+              </ImageViewerProvider>
+            </ContextMenuProvider>
+          </ValuerProvider>
+        </AskProvider>
+      </HoraProvider>
     </Container>
   ) 
 }
@@ -102,6 +113,7 @@ const RefreshingContainer = styled.div`
 
   *{
     color: ${cores.branco};
+    
   }
 
 .loader {
@@ -126,6 +138,18 @@ const Container = styled.div`
   width: 100vw;
   height: 100vh ;
   overflow: hidden;
+
+  @media print{
+        /* :not(.print-area){
+          display: none;
+        } */
+        .print-area{
+            display: block;
+            position: absolute;
+            z-index: 999;
+            border: none;
+        }
+    }
   
   > .topo-base {
     width: 100% ;

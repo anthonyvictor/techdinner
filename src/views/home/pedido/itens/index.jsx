@@ -9,6 +9,7 @@ import { useHome } from '../../../../context/homeContext';
 import { Item } from './itemLi';
 import { ItemButton } from './selectBoxItensButton';
 import { usePedido } from '..';
+import { getItensAgrupados } from '../../../../util/pedidoUtil';
 
 
 const BoxItensContext = createContext()
@@ -38,8 +39,8 @@ export const useBoxItens = () => {
 const BoxItens2 = () => {
     const [itensAgrupados, setItensAgupados] = useState([])
     const {curr, openSelectBox} = useHome()
-    const {getSaboresDescritos, getOnly1Item} = usePedido()
-    const {openSelectBoxItens} = useBoxItens()
+    const {openSelectBoxItens} = useBoxItens() 
+  
 
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [fixedSize, setFixedSize] = useState('')
@@ -54,7 +55,7 @@ const BoxItens2 = () => {
     }, [itensAgrupados.length])
 
     useEffect(() => {
-        getItensAgrupados()  
+        setItensAgupados(getItensAgrupados(curr))  
       }, [curr]) 
 
     const toggleIsCollapsed = () => {
@@ -91,84 +92,6 @@ const BoxItens2 = () => {
 
             </div>
           )
-      }
-
-      function getItensAgrupados(){
-        if(curr){
-            const _itens = [...curr.itens]
-            let pizzasGrupo = []
-            let bebidasGrupo = []
-            let outrosGrupo = []
-            for(let item of _itens){
-              if(item.tipo === 0){
-                  //pizza
-                  let achou = false
-                  for(let grupo of pizzasGrupo){
-                    if(item.pizza.tamanho.nome === grupo.pizza.tamanho.nome
-                      && getSaboresDescritos(item.pizza.sabores) === getSaboresDescritos(grupo.pizza.sabores)
-                      && item.observacoes === grupo.observacoes && item.pizza.valor === getOnly1Item(grupo)?.valor){
-                        if(grupo.id){grupo.ids = [grupo.id]}
-                        grupo.ids = [...grupo.ids, item.id]
-                        grupo.valor += item.valor
-                        delete grupo.id
-                        achou = true
-                        break;
-                      }
-                  }
-                  if(!achou){pizzasGrupo.push({...item})}   
-                }else if(item.tipo === 1){
-                  //bebida
-                  let achou = false
-                  for(let grupo of bebidasGrupo){
-                    if(item.bebida.id === grupo.bebida.id
-                      && item.bebida.tamanho === grupo.bebida.tamanho
-                      && item.bebida.sabor === grupo.bebida.sabor
-                      && item.bebida.tipo === grupo.bebida.tipo
-                      && item.observacoes === grupo.observacoes
-                      && item.bebida.valor ===  getOnly1Item(grupo)?.valor){
-                        if(grupo.id){grupo.ids = [grupo.id]}
-                        grupo.ids = [...grupo.ids, item.id]
-                        grupo.valor += item.valor
-                        delete grupo.id
-                        achou = true
-                        break;
-                      }
-                  }
-                  if(!achou){bebidasGrupo.push({...item})}    
-                }else if(item.tipo === 2){
-                  const a = 'hamburguer'
-                }else if(item.tipo === 3){
-                  //outro
-                  let achou = false
-                  for(let grupo of outrosGrupo){
-    
-                    if(item.outro.id === grupo.outro.id
-                      && item.outro.nome === grupo.outro.nome
-                      && item.observacoes === grupo.observacoes
-                      && item.outro.valor === getOnly1Item(grupo)?.valor){
-                        if(grupo.id){
-                          grupo.ids = [grupo.id]
-                        }
-                        grupo.ids = [...grupo.ids, item.id]
-                        grupo.valor += item.valor
-                        delete grupo.id
-                        achou = true
-                        break;
-                      }
-                  }
-                  if(!achou){outrosGrupo.push({...item})}    
-              }
-            }
-            setItensAgupados([...pizzasGrupo, ...bebidasGrupo, ...outrosGrupo].sort((a,b) => {
-              const maxA = a?.ids?.reduce((max, current) => max > current ? max : current) ?? a.id
-              const maxB = b?.ids?.reduce((max, current) => max > current ? max : current) ?? b.id
-              if(maxA > maxB) return -1
-              if(maxA < maxB) return 1
-              return 0
-            }))
-        }else{
-              setItensAgupados([])
-        }
       }
 
     return(

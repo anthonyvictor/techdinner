@@ -80,6 +80,11 @@ const Container = styled.div`
     align-items: center;
     padding: 5px;
 
+    @media (max-width: 550px){
+        height: auto;
+        width: 80vw;
+    }
+
     @keyframes getinout{
         0%{
             transform: translate(-50%, -110%);

@@ -7,7 +7,7 @@ import CadEnderecoProvider from "../../../context/cadEnderecosContext";
 import EndLocLista from "../enderecos/endlocLista";
 import EnderecosProvider from "../../../context/enderecosContext";
 import * as cores from "../../../util/cores";
-import { useAsk } from "../../../context/asksContext";
+import { useAsk } from "../../../components/Ask";
 import { NotImplementedError } from '../../../exceptions/notImplementedError';
 
 // import { Container } from './styles';
