@@ -62,7 +62,7 @@
   "bugs": {
     "url": "https://github.com/thonnykjjjkk/techdinner/issues"
   },
-  "homepage": ".",
+
   "devDependencies": {
     "babel-plugin-react-html-attrs": "^3.0.5",
     "dotenv": "^16.0.0"
