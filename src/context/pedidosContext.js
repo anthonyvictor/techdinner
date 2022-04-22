@@ -1,9 +1,10 @@
 import axios from "axios";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useApi } from "../api";
+import { useMessage } from "../components/Message";
 import * as Format from '../util/Format'
 
-const PedidoContext = createContext();
+const PedidosContext = createContext();
 
 export default function PedidosProvider({children}){
   return (
@@ -16,15 +17,9 @@ export default function PedidosProvider({children}){
 function PedidosProvider2({ children }) {
   const [_pedidos, set_Pedidos] = useState([]);
   const [atualizar, setAtualizar] = useState(0)
-  const [clientesImagens, setClientesImagens] = useState([])
   const {api} = useApi()
-
-  function getImagem(id){
-    if(id && clientesImagens.filter(i => i.id === id)[0]){
-     return Format.convertImageToBase64(clientesImagens.filter(i => i.id === id)[0].imagem)
-    }
-    return null
-  }
+  const {message} = useMessage()
+  
     // useEffect(() => {
     //   if(clientesImagens){
     //     setPedidos(_pedidos => _pedidos.map(p => {
@@ -55,6 +50,19 @@ function PedidosProvider2({ children }) {
       getAll(montado)
       return () => {montado = false}
   }, [atualizar,])
+
+  async function novo(){
+    const res = await api().post('pedidos/novo')
+    
+    if(res?.data){
+      refresh()
+      return res.data
+    }else{
+      message('error', `Não foi possível iniciar um novo pedido!`)
+      // console.error(err, err.stack)
+      return null
+    }    
+  }
 
   // axios({
   //   url: `${process.env.REACT_APP_API_URL}/clientes/imagens`, 
@@ -102,17 +110,17 @@ function PedidosProvider2({ children }) {
   }
 
   return (
-    <PedidoContext.Provider value={{ 
-      pedidos, 
-      refresh, getImagem,
+    <PedidosContext.Provider value={{ 
+      pedidos, novo,
+      refresh,
       semTipo, caixa, entrega,
       aplicativo, arquivados
     }}>
       {children}
-    </PedidoContext.Provider>
+    </PedidosContext.Provider>
   );
 }
 
 export const usePedidos = () => {
-  return useContext(PedidoContext);
+  return useContext(PedidosContext);
 };

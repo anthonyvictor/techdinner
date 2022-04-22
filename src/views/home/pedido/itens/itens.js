@@ -53,7 +53,6 @@ const Itens2 = () => {
     }
 
   const onPressValidator = useCallback(event => {
-      console.log(event.key)
       if (event.key === 'Escape') {
          askForExit()
       }

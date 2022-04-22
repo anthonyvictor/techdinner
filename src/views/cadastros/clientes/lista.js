@@ -26,7 +26,7 @@ export default function ListaCli(props) {
   const {setCurrentRoute} = useRotas()
   const {curr, setCurr, lista, setLista, images, setImages} = useCadCli();
   const [search, setSearch] = useState("");
-  const { clientes, setClientes } = useClientes();
+  const { clientes, setClientes, getImages } = useClientes();
   const {contextMenu} = useContextMenu()
   const [filtered, setFiltered] = useState([])
   const { imageView } = useImageViewer()
@@ -67,7 +67,7 @@ export default function ListaCli(props) {
 
       {title: 'Ver imagem', 
       click:() => verImagem(cliente),
-      enabled: !misc.isNEU(images.filter(i => i.id === cliente.id)[0]?.imagem), 
+      enabled: cliente.imagem, 
       visible: true}
     ])
   }
@@ -172,7 +172,7 @@ export default function ListaCli(props) {
     
     imageView({
       title: cliente.nome,
-      image: format.convertImageToBase64(images.filter(i => i.id === cliente.id)[0].imagem),
+      image: cliente.imagem,
     })
 
     //  window.open(format.convertImageToBase64(images.filter(i => i.id === cliente.id)[0].imagem));
@@ -287,27 +287,20 @@ useEffect(() => {
 
   useEffect(() => {
     if(filtered){
-       function fillImages(){
-      
-        const payload = {
-          ids: [...filtered.map(e=> e.id)]
-        }
-        if(lista){//let imagens = 
-          api().get('clientes/imagens', {params: payload})
-          .then(e => {
-            setImages(prev => [
-              ...prev,
-              ...e.data.filter(img => prev.map(p => p.id).includes(img.id) === false )
-            ])
-          })
-            
-        }
-      }
+
+      // function fillImages(){
+      //   getImages(filtered.map(e => e.id)).then(imgs => {
+      //     setImages(prev => [
+      //       ...prev,
+      //       ...imgs.filter(img => prev.map(p => p.id).includes(img.id) === false )
+      //     ])
+      //   })
+      // }
   
-      const timer = setTimeout(() => {fillImages()}, 1500);
+      // const timer = setTimeout(() => {fillImages()}, 1500);
       
       setLista(true);
-      return () => clearTimeout(timer);
+      // return () => clearTimeout(timer);
     }else{
       setLista(false)
     }
@@ -324,13 +317,7 @@ useEffect(() => {
               <li className="cli-li" key={cliente.id}>
     
                 <div className="inicio">
-                  {
-                    images.filter(i => i.id === cliente.id).length > 0 &&
-                    <img src={format.convertImageToBase64(
-                      images.filter(i => i.id === cliente.id)[0].imagem
-                      )} alt="imagem" />
-                  }
-                  {/* <Imagem cliente={cliente} />                  */}
+                  {cliente.imagem && <img src={cliente.imagem} alt="imagem" />}
                   <label className={`id${misc.isNEU(cliente.valorGasto) ? ' novo' : ''}`}>{cliente.id}</label>
                 </div>
     

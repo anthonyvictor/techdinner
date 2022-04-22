@@ -97,8 +97,9 @@ export default function MainMenu(){
                     <p>Cadastros</p>
                 </div>
 
+                {/* changeRoute/*.bind(this) */}
                 <div className="botao" name='rel' title="Relatórios" 
-                onClick={changeRoute/*.bind(this)*/}>
+                onClick={e => openView(e)}>
                     <FontAwesomeIcon className='icone' icon={faChartPie}/>
                     <p>Relatórios</p>
                 </div>

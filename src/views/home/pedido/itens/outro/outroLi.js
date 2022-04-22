@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisV, faIceCream } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { formatReal, convertImageToBase64 } from '../../../../../util/Format';
+import { formatReal } from '../../../../../util/Format';
 import { useContextMenu } from '../../../../../components/ContextMenu';
 import { useOutro } from '.';
 import * as cores from '../../../../../util/cores'
@@ -28,7 +28,7 @@ export const OutroLi = ({outro}) => {
             <div className='img'>
             {
                 (outro?.imagem) ? 
-                <img src={convertImageToBase64(outro.imagem)} alt='' />
+                <img src={outro.imagem} alt='' />
                 : <FontAwesomeIcon className='icone' icon={faIceCream} />
             }
         </div>

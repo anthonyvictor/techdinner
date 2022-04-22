@@ -52,7 +52,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thonnykjjjkk/techdinner.git"
+    "url": "git+https://github.com/anthonyvictor/techdinner.git"
   },
   "keywords": [
     "Delivery"
@@ -60,7 +60,7 @@
   "author": "Anthony Victor",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/thonnykjjjkk/techdinner/issues"
+    "url": "https://github.com/anthonyvictor/techdinner/issues"
   },
 
   "devDependencies": {

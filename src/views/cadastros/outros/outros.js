@@ -45,7 +45,7 @@ export const Outros = () => {
 
                     <div className='img'>
                         {!misc.isNEU(e.imagem) 
-                        ? <img src={format.convertImageToBase64(e.imagem)} /> 
+                        ? <img src={e.imagem} /> 
                         : <FontAwesomeIcon className='icone' icon={faIceCream} />}
                     
                     </div>

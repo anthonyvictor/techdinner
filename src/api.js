@@ -18,15 +18,19 @@ export default function ApiProvider({children}) {
     }, [])
 
     const getApiUrl = (where) => {
-        if(where === 'local') return 'http://localhost:8081'//process.env.REACT_APP_API_URL_LOCAL //localhost:8081
-        if(where === 'fixed') return 'http://192.168.0.3:8081'//process.env.REACT_APP_API_URL //192.168.0.3:8081
-        if(where === 'hamachi') return 'http://25.94.36.68:8081' //25.94.36.68:8081
-        if(where === 'web') return null//'192.168.252.115:8081'
+        if(where === 'local') return process.env.REACT_APP_API_URL_LOCAL
+        if(where === 'fixed') return process.env.REACT_APP_API_URL_HOME
+        if(where === 'hamachi') return process.env.REACT_APP_API_URL_HAMACHI
+        if(where === 'web') return process.env.REACT_APP_API_URL_WEB
         return process.env.REACT_APP_API_URL_LOCAL
     }
 
     const api = (user=null, password=null) => {
-        const url =  getApiUrl('fixed') //getStored('api_url') ||  //local, fixed, web
+        const url =  process.env.NODE_ENV === 'development' 
+        ? getApiUrl('fixed') 
+        // : !user ? getApiUrl(window.prompt('Selecione o url da api backend', 'local'))
+        : getApiUrl('hamachi')
+
         if(!url) return null
         return axios.create({
             baseURL: url, 
@@ -59,14 +63,16 @@ export default function ApiProvider({children}) {
         }
     }
     function onError(err){
-        
+        const jsonError = JSON.stringify(err).toUpperCase()
 
         if(err.code === 'ECONNABORTED'){
-            message('error', 'Tempo para conexão esgotado. Verifique sua conexão com a internet.')
-        }else if(err.response.status === 403){
-            message('error', 'Usuário ou senha inválidos!')            
+            message('error', 'Tempo para conexão esgotado. Sem resposta do servidor.')
+        }else if(err?.response?.status === 403){
+            message('error', 'Usuário ou senha inválidos!')   
+        }else if(jsonError.includes('NETWORK ERROR')){
+            message('error', 'Verifique sua conexão com a internet!')
         }else{
-            alert(`Ocorreu um erro!`)
+            message('onError', 'Ocorreu um erro!')
             console.error(err, err.stack)
         }
     }

@@ -42,9 +42,10 @@ export default function Rodape() {
 }
 
 const Estilo = styled.div`
-height: 30px;
+  height: 40px;
   border-top: 1px solid black;
   overflow: hidden;
+  padding-bottom: 5px;
 
     .geral {
       text-align: center;

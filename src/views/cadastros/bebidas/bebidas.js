@@ -48,7 +48,7 @@ export const Bebidas = () => {
 
                         <div className='img'>
                             {!misc.isNEU(e.imagem) 
-                            ? <img src={format.convertImageToBase64(e.imagem)} /> 
+                            ? <img src={e.imagem /*format.convertImageToBase64() */} /> 
                             : <FontAwesomeIcon className='icone' icon={faGlassCheers} />}
                         
                         </div>
@@ -121,7 +121,7 @@ export const Bebidas = () => {
         <form className="dir">
           <section className="picturebox-container">
             <PictureBox
-              imagem={curr && curr.imagem ? curr.imagem : ""}
+              imagem={curr && curr.imagem ? curr.imagem : ""} //format.convertImageToBase64(curr.imagem)
               nome={curr && curr.nome ? curr.nome : "bebida"}
               setImagem={(e) => setCurr({ ...curr, imagem: e })}
             />

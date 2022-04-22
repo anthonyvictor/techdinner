@@ -4,6 +4,7 @@ import { useRotas } from './rotasContext'
 import * as cores from '../util/cores'
 import { useApi } from '../api'
 import { FecharButton } from '../components/FecharButton'
+import { usePedidos } from './pedidosContext'
 
 const HomeContext = createContext()
 
@@ -13,7 +14,10 @@ function HomeProvider(props) {
   const { setCurrentRoute } = useRotas()
   const [selectBox, setSelectBox] = useState(null)
   const [entregadorPadrao, setEntregadorPadrao] = useState(null)
+  const {novo} = usePedidos()
   const {api} = useApi()
+
+  const [filtroExibicao, setFiltroExibicao] = useState('')
 
   useEffect(() => {
     let montado = true
@@ -22,7 +26,6 @@ function HomeProvider(props) {
   }, [])
 
   useEffect(() => {
-    // console.log('VERIFICA SE JÁ TEM ALGUMA TAB COM O CLICADO SE N TIVER ELE ADICIONA',curr)
     if (curr) {
       if (tabs.length === 0 || !tabs.some(e => e.id === curr.id)) {
         //se n tiver tabs ou se nenhuma tab for a current
@@ -73,11 +76,19 @@ function HomeProvider(props) {
     )
   }
 
+  async function novoPedido(){
+    const res = await novo()
+    if(res){
+      setCurr(res)
+    }
+  }
+
   return (
         <HomeContext.Provider
-      value={{
-        curr,
+        value={{
+        curr, 
         setCurr,
+        novoPedido,
         tabs,
         setTabs,
         showLista: props.showLista,
@@ -85,6 +96,7 @@ function HomeProvider(props) {
         fecharPedido,
         openSelectBox, closeSelectBox,
         entregadorPadrao,
+        filtroExibicao, setFiltroExibicao
 
       }}
     >

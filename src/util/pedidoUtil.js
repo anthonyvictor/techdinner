@@ -28,6 +28,85 @@ export function IcoTipo(tipo) {
     }
   }
 
+  export function CorImpr(impr) {
+    if (impr > 0) {
+      return "#126125";
+    } else {
+      return "#bf0f06";
+    }
+  }
+
+  export function CorValor(pedido) {
+    // let totalPago = getValorPago()
+    let diff = getValorPendente(pedido)
+    if (diff === pedido.valor) {
+      return "#bf0f06";
+    } else if (diff > 0) {
+      return "#bd7c00";
+    } else if (diff === 0) {
+      return "#126125";
+    } else {
+      return "#1e272e";
+    }
+  }
+
+  export function CorHora(dataInic) {
+    let data_atual = new Date();
+    let diff = (data_atual - dataInic) / 1000 / 60 
+
+    
+
+    if (diff < 10) {
+      return "#02fa3c";
+    } else if (diff < 20) {
+      return "#a3d609";
+    } else if (diff < 30) {
+      return '#fff700';
+    } else if (diff < 40) {
+      return "#fcb01e";
+    } else if (diff < 50) {
+      return "#fa5311";
+    } else if (diff < 60) {
+      return "#bf0f06";
+    } else if (diff < 120) {
+      return "#c20839";
+    } else if (diff <= 150) {
+      return "#8108c2";
+    } else {
+      return "#17091f";
+    }
+  }
+
+
+  export function getDuracao(dataInic) {
+    let dataATUAL = new Date();
+
+    let ms = dataATUAL - new Date(dataInic);
+
+    let m = ms / 1000 / 60;
+
+    let h = m / 60;
+
+    m = h % 1 * 60
+
+    let d = h / 24;
+
+
+
+    let dur = (d < 1 ? "" : Math.floor(d) + "d") 
+
+    if(dur === ''){
+      dur = (h < 1 ? "" : Math.floor(h) + "h")
+      if(dur === ''){
+        dur = Math.floor(m) + "m"
+    }else{
+      dur = dur + Math.floor(m)
+    }
+    }
+
+    return dur;
+  }
+
 
   export function getDataPagamentoDescrito(data){
 

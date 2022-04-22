@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisV, faGlassCheers } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { formatLitro, formatReal, convertImageToBase64 } from '../../../../../util/Format';
+import { formatLitro, formatReal } from '../../../../../util/Format';
 import { join } from '../../../../../util/misc';
 import { useContextMenu } from '../../../../../components/ContextMenu';
 import { useBebida } from '.';
@@ -29,7 +29,7 @@ export const BebidaLi = ({bebida}) => {
             <div className='img'>
             {
                 (bebida?.imagem) ? 
-                <img src={convertImageToBase64(bebida.imagem)} alt='' />
+                <img src={bebida.imagem} alt='' />
                 : <FontAwesomeIcon className='icone' icon={faGlassCheers} />
             }
         </div>

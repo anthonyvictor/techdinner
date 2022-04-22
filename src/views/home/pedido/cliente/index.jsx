@@ -24,27 +24,28 @@ export const BoxCLiente = () => {
     const { mudarCliente } = usePedido()
     const selectBoxClienteRoutes = ['/pedido/clientes/lista','/pedido/clientes/cad']
     const selectBoxClienteComponents = [
-        <Lista mudarTab={mudarTab} routes={selectBoxClienteRoutes} callback={mudarCliente} />, 
-        <Cadastro routes={selectBoxClienteRoutes} callback={mudarCliente} />
+        {type: 'lista', component: <Lista mudarTab={mudarTab} routes={selectBoxClienteRoutes} callback={mudarCliente} />}, 
+        {type: 'cadastro', component: <Cadastro routes={selectBoxClienteRoutes} callback={mudarCliente} />}
     ] 
     const {setCurrentRoute} = useRotas()
     const { curr, openSelectBox } = useHome() 
 
     useEffect(() => {
-        mudarSelectBox()
+      const tipo = selectBoxClienteCurrentComponent?.type
+      const igual = String(tipo).toUpperCase() === 'CADASTRO'
+      const currentCli = curr.cliente
+      const cli = igual ? currentCli : null
+
+      mudarSelectBox( cli )
       },[selectBoxClienteCurrentComponent])
-
-      function mudarSelectBox() {
+     
+      function mudarSelectBox(cli) {
         if(selectBoxClienteCurrentComponent){
-
-            const getCLiente = () => 
-            selectBoxClienteCurrentComponent?.type?.name === 'Cadastro' ? curr.cliente : null
-
             openSelectBox(
                 <ClientesProvider>
-                    <CadCliProvider cliente={getCLiente()}>
+                    <CadCliProvider cliente={cli}>
                         <div className='container cliente'>
-                            {selectBoxClienteCurrentComponent}
+                            {selectBoxClienteCurrentComponent?.component}
                             <div className='tabs-buttons'>
                                 <button onClick={() => setSelectBoxCurrentComponent(selectBoxClienteComponents[0])}>LISTA</button>
                                 <button onClick={() => setSelectBoxCurrentComponent(selectBoxClienteComponents[1])}>CADASTRO</button>
@@ -215,7 +216,7 @@ function getTags(){
                   {
                     curr?.cliente?.id
                     ? <label className='pedido'>{curr?.numero + 'º pedido'}</label>
-                    : curr?.cliente.nome
+                    : curr?.cliente?.nome
                     ? <label className='sem-cadastro'>Sem cadastro!!</label>
                     : <label className='sem-cliente'>Altere o cliente para liberar ações do pedido.</label>
                   }
