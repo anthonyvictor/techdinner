@@ -75,4 +75,9 @@ const Container = styled.select`
         font-size: 22px;
         flex-grow: 0;
         flex-shrink: 0;
+
+        @media (max-width: 550px){
+            padding: 3px;
+            font-size: 18px;
+        }
 `

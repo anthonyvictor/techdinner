@@ -6,12 +6,13 @@ import * as cores from '../../../../util/cores'
 import { useHome } from "../../../../context/homeContext";
 import { usePedido } from "..";
 import { useAsk } from "../../../../components/Ask";
-import { getValorPagamentosPagosOuNao, getValorPendente } from "../../../../util/pedidoUtil";
+import { getPagsDesc, getValorPagamentosPagosOuNao, getValorPago, getValorPendente } from "../../../../util/pedidoUtil";
 import { useMessage } from "../../../../components/Message";
 import { useOrderNote } from "../../../../components/OrderNote";
+import { Entregadores } from "../endereco/entregadores";
 
 export const Bottom = () => {
-    const {curr} = useHome()
+    const {curr, openSelectBox} = useHome()
     const {cancelar, finalizar} = usePedido()
     const {ask} = useAsk()
     const {message} = useMessage()
@@ -67,14 +68,36 @@ export const Bottom = () => {
         ask({
           title: 'Finalizar pedido?',
           buttons: [
-            {title: 'SIM', click: sim},
+            {title: 'SIM', click: verificarPago},
             {title: 'NÃO', click:() => {}}
         ],
         allowCancel: true
         })
-  
-        function sim(){
-          finalizar()
+
+        function verificarPago(){
+          if(getValorPago(curr) < curr.valor) {
+            
+            ask({
+              title: 'O pedido não foi pago completamente, deseja finalizar mesmo assim? O cliente ficará na lista de devedores.',
+              buttons: [
+                {title: 'SIM', click: verificarEntregador},
+                {title: 'NÃO', click:() => {}}
+            ],
+            allowCancel: true
+            })
+          }else{
+            verificarEntregador()
+          }
+        }
+
+        function verificarEntregador(){
+          if(curr.tipo === 'ENTREGA'){
+              openSelectBox(<Entregadores callback={(entregador) => {
+                finalizar(entregador)
+              }} />)
+          }else{
+            finalizar()
+          }
         }
       }catch(err){
           console.error(err, err.stack)

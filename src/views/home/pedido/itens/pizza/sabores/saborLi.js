@@ -99,7 +99,7 @@ export const SaborLi = ({sabor}) => {
                     </span>
                     <span className='nome'>{sabor.nome}</span>
                 </section>
-                <p>{getIngredientesDescritos(sabor)}</p>
+                <p className='sabores'>{getIngredientesDescritos(sabor)}</p>
             </div>
             <button className='botao' onClick={() => openContext(sabor)}>
                 <FontAwesomeIcon icon={faEllipsisV} />
@@ -144,6 +144,11 @@ const Container = styled.li`
             span {
                 font-weight: 600;
                 font-size: 17px;
+                
+                @media (max-width: 550px){
+                    font-size: 14px;
+
+                }
             }
             
             .tipo{
@@ -152,10 +157,14 @@ const Container = styled.li`
                 -webkit-text-stroke: .3px ${cores.brancoDark};
             }
 
-            p {
+            .sabores {
                 font-size: 13px;
                 font-weight: 600;
                 font-style: italic;
+                @media (max-width: 550px){
+                    font-size: 10px;
+                    font-weight: 300;
+                }
             }
         }
         button {

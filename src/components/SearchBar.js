@@ -26,6 +26,8 @@ export const SearchBar = (props) => {
         placeholder="Digite as palavras-chave da busca..."
         value={props.value}
         onChange={(e) => props.setValue(e.target.value)}
+        onFocus={e => props.onFocus && props?.onFocus(e.target.value)}
+        onBlur={e => props.onBlur && props?.onBlur(e.target.value)}
         onKeyDown={(e) => keyDown(e)}
         autoFocus={!isMobile()}
       />
@@ -82,7 +84,7 @@ const Container = styled.div`
       gap: 1px;
 
       input {
-    font-size: 16px;
+    font-size: 14px;
   }
 
       button {

@@ -162,10 +162,11 @@ const SelectBox = styled.div`
       box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
       display: flex;
       flex-direction: column;
+      flex-shrink: 0;
       justify-content: center;
       align-items: center;
       gap: 2px;
-      
+
       &.entregador{
         width: min(400px, 80%);
         height: 150px;
@@ -324,9 +325,11 @@ const SelectBox = styled.div`
         grid-auto-rows: auto;
         width: 60%;
         height: 70%;
+
         @media (max-width: 550px) {
           width: 80%;
           height: 300px;
+          min-height: 500px;
         }
         button {
           width: 100%;

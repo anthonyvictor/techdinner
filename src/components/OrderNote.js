@@ -55,13 +55,13 @@ const OrderNote = props => {
         if (user.enterprise) {
             return (
                 <div className='estabelecimento-container'>
-                    <i className='estabelecimento-nome'>{user.enterprise.name}</i>
+                    <i className='estabelecimento-nome'>{user.enterprise?.name}</i>
                     <br />
-                    <small className='super-super-small'>{user.enterprise.address}</small>
+                    <small className='super-super-small'>{user.enterprise?.address}</small>
                     <section className='cnpj-tel-container'>
-                        <small className='super-small'>CNPJ: {formatCNPJ(user.enterprise.cnpj)}, </small>
+                        <small className='super-small'>CNPJ: {formatCNPJ(user.enterprise?.cnpj)}, </small>
                         <small className='super-small'>
-                            TEL: {formatPhoneNumber(user.enterprise.phoneNumber, false)}
+                            TEL: {formatPhoneNumber(user.enterprise?.phoneNumber, false)}
                         </small>
                     </section>
                 </div>

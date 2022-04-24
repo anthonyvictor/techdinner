@@ -39,6 +39,7 @@ export default function Pizza() {
     const [saboresSelected, setSaboresSelected] = useState(getSaboresSelected())
     const [observacoes, setObservacoes] = useState(item?.observacoes ?? '')
     const [valor, setValor] = useState(item?.valor ?? 0)
+    const [isSearchFocused, setIsSearchFocused] = useState(false)
 
     const searchRef = useRef()
     const saborHoveredRef = useRef()
@@ -60,6 +61,7 @@ export default function Pizza() {
     }, [finalResults])
 
     useEffect(() => {
+        console.log('new saboresselected', saboresSelected)
         if(sabores.length > 0){
             setSaboresSelectedUpdates(prev => prev < saboresSelected.length ? saboresSelected.length : prev + 1)
         }
@@ -67,7 +69,7 @@ export default function Pizza() {
 
     useEffect(() => {
         if(sabores.length > 0){
-            setSaboresSelected(getSaboresSelected())
+            // setSaboresSelected(getSaboresSelected())
             setSearchResults(sabores.filter(e => e.visivel).filter(e => filtro({ nome: e.nome, numero: e.numero }, searchString)))
         }
     }, [searchString, sabores])
@@ -218,7 +220,6 @@ export default function Pizza() {
     }
 
     function checkUncheck(sabor, check) {
-
         const insertSabor = (novoSabor) => 
             setSaboresSelected(prev => [...prev, novoSabor])
 
@@ -228,6 +229,7 @@ export default function Pizza() {
             
             if (check) {
                 let novoSabor = { ...sabor, id: buildNewId(sabor) }
+                console.log('INSERINDO..', novoSabor)
                 insertSabor(novoSabor)
             } else {
                 removeSabor(sabor)
@@ -257,6 +259,7 @@ export default function Pizza() {
             getIsSelected, getIngredientesDescritos, getSaborId,
             abrirIngredientesComponent, fecharIngredientesComponent,
             ingredientesComponentResult, setIngredientesComponentResult,
+            isSearchFocused, setIsSearchFocused, 
 
             item, isLoaded,
             tamanhoSelected, setTamanhoSelected,
@@ -284,6 +287,7 @@ export const usePizza = () => {
 const Container = styled.div`
     width: 90%;
     height: 90%;
+    min-height: 250px;
     @media (max-width: 550px){
         height: 80%;
     }

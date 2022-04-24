@@ -259,12 +259,20 @@ export const Pedido = () => {
       }
     }
 
-    async function finalizar() {
+    async function finalizar(entregador) {
       try{
         closeSelectBox()
 
-          let ped = removeImagens(curr)
-  
+          // let ped = removeImagens(curr)
+          const ped = curr.tipo === 'ENTREGA' 
+          ? {...curr, endereco: {
+              ...curr.endereco, 
+              entregador: (entregador ?? {
+                id: curr.endereco?.entregador?.id,
+                nome: curr.endereco?.entregador?.nome
+              })}}
+          : curr
+          
           const payload = {
               pedido: ped,
               

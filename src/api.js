@@ -18,21 +18,32 @@ export default function ApiProvider({children}) {
     }, [])
 
     const getApiUrl = (where) => {
-        if(where === 'local') return process.env.REACT_APP_API_URL_LOCAL
+        
+        //EM QUALQUER LUGAR, MAS NÃO CONECTA AO BANCO PELO CELULAR
+        if(where === 'local') return process.env.REACT_APP_API_URL_LOCAL 
+
+        //SOMENTE SE O PC TIVER IP FIXO NA REDE
         if(where === 'fixed') return process.env.REACT_APP_API_URL_HOME
+        
+        //SOMENTE SE O PC TIVER IP FIXO NA REDE DA PIZZARIA
+        if(where === 'pizza') return process.env.REACT_APP_API_URL_PIZZARIA
+        
+        //SOMENTE COM INTERNET, EM PCS CONECTADOS VIA HAMACHI
         if(where === 'hamachi') return process.env.REACT_APP_API_URL_HAMACHI
+
+        //SÓ COM INTERNET, EM SERVIDOR WEB (NÃO IMPLEMENTADO)
         if(where === 'web') return process.env.REACT_APP_API_URL_WEB
+
         return process.env.REACT_APP_API_URL_LOCAL
     }
 
     const api = (user=null, password=null) => {
         const url =  process.env.NODE_ENV === 'development' 
-        ? getApiUrl('fixed') 
-        // : !user ? getApiUrl(window.prompt('Selecione o url da api backend', 'local'))
-        : getApiUrl('hamachi')
+        ? getApiUrl('local') 
+        : getApiUrl('fixed')
 
         if(!url) return null
-        return axios.create({
+        const newApi = axios.create({
             baseURL: url, 
             auth: {
               username: user ?? getStored('user'),
@@ -40,6 +51,8 @@ export default function ApiProvider({children}) {
             },
             timeout: 10000
           })
+
+          return newApi
     }
 
     function refresh(newUser=null, newPassword=null){

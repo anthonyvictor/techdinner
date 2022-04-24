@@ -16,7 +16,8 @@ export const Rodape = () => {
       observacoes, setObservacoes, valor, setValor, 
       tamanhoSelected, saboresSelected, getSaborId,
       isPriceLocked, setIsPriceLocked, getIngredientesDescritos,
-      callback, item, isLoaded
+      callback, item, isLoaded, 
+      isSearchFocused
     } = usePizza()
     const { tamanhos, bordas, valores } = usePizzas()
     const { contextMenu } = useContextMenu()
@@ -157,7 +158,7 @@ export const Rodape = () => {
     }
 
   return (
-    <Container className='bottom'>
+    <Container className={`bottom${isSearchFocused ? ' hidden' : ''}`} >
         <p className='resumo'>{saboresDescritos}</p>
         <div className='middle'>
             <div className='valor'>
@@ -197,6 +198,10 @@ const Container = styled.div`
         flex-direction: column;
         align-items: center;
         gap: 2px;
+
+        @media (max-width: 550px){
+          
+        }
 
         .resumo {
             overflow-x: auto;
@@ -247,6 +252,7 @@ const Container = styled.div`
             flex-direction: column;
             height: 80px;
             gap: 2px;
+
             .valor{
               width: 100%;
               flex-grow: 2;
