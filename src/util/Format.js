@@ -78,7 +78,6 @@ export function formatReal(valor) {
     }-${
       numero.slice(12)
     }` 
-    console.log('cnpj:',res)
     return res
   }
 

@@ -23,7 +23,6 @@ function PedidosProvider2({ children }) {
     // useEffect(() => {
     //   if(clientesImagens){
     //     setPedidos(_pedidos => _pedidos.map(p => {
-    //       console.log(clientesImagens.filter(i => i.id === p.cliente.id)[0])
     //       return{
     //       ...p,
     //       cliente: {
@@ -76,7 +75,6 @@ function PedidosProvider2({ children }) {
 
   const pedidos = useMemo(() => 
    {
-    //  console.log(_pedidos.map(e => e.valor).join(', '))
      return  _pedidos
    }
 , [_pedidos])

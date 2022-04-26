@@ -7,9 +7,6 @@ import * as Format from "../../../util/Format";
 import { isMobile, isNEU } from "../../../util/misc";
 import { useCadCli } from "../../../context/cadClientesContext";
 import { useClientes } from "../../../context/clientesContext";
-import { useContextMenu } from "../../../components/ContextMenu";
-import * as apis from '../../../apis'
-import axios from "axios";
 import { useRotas } from "../../../context/rotasContext";
 import Endereco from "./endereco";
 import { useApi } from "../../../api";
@@ -95,12 +92,8 @@ export default function Cadastro(props) {
   let img = imagem
  if(imagem){
   if(typeof img === 'string' && img.includes('blob:')) {
-    //async
-    // img = await getFileFromUrl(img, 'imagem.jpg')
-    // console.log(typeof img, img)
-    // img = await Format.convertImageToBase64(img)
   }
-  console.log(typeof img, img)
+
   if(typeof img === 'object') img = Format.convertImageToBase64(img)
  }
   return img
@@ -188,7 +181,7 @@ const Principal = styled.form`
   justify-content: stretch;
   gap: 5px;
   overflow-y: auto;
-  position: relative;
+  /* position: relative; */
   width: 100% ;
 
   @keyframes aparecer{
@@ -335,62 +328,6 @@ const Estilo = styled(Principal)`
       flex-shrink: 0;
 
       .Tagger {
-        width: 100%;
-      }
-    }
-
-    #endereco-container {
-      border: 1px solid black;
-      padding: 5px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      height: max-content;
-      max-height: max-content;
-
-      #endereco-left {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-
-        div {
-          display: flex;
-
-          label {
-            display: inline-block;
-            vertical-align: middle;
-            width: 90px;
-            min-width: 90px;
-          }
-        }
-
-        #logradouro-container {
-          width: 100%;
-          /* display: flex; */
-          height: 70px;
-          #logradouro {
-            max-width: 100%;
-            height: 100%;
-            /* max-height: 100%; */
-          }
-        }
-
-        #local-container,
-        #referencia-container {
-          height: 100px;
-
-          button {
-            display: none;
-          }
-        }
-
-        textarea {
-        }
-      }
-
-      #endereco-right {
-        display: none;
         width: 100%;
       }
     }

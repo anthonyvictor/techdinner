@@ -27,28 +27,30 @@ export default function Lista() {
   return (
         <ListaContainer>
           <FloatButton clique={novoPedido} />
-          {window.localStorage.getItem('exibicaoPedidos') === 'all' 
-          ? (  
-                <ul className={`list`}>
-                  {pedidos
-                  .filter(filtro)
-                  .sort(ordem)
-                  .map(pedido => (
-                    <Pedido key={pedido.id} 
-                    pedido={pedido} atual={curr}
-                    abrir={() => setCurr(pedido)} />
-                  ))}
-                </ul>
-          )
-          : (
-            <>
-              <ListGroup arr={semTipo} title='Desconhecido' />
-              <ListGroup arr={caixa} title='Caixa' />
-              <ListGroup arr={entrega} title='Entrega' />
-              <ListGroup arr={aplicativo} title='Aplicativo' />
-              <ListGroup arr={arquivados} title='Arquivados' aberto={false} />
-            </>
-          )}
+          {window.localStorage.getItem('exibicaoPedidos') === 'group' 
+            ? (
+              <>
+                <ListGroup arr={semTipo} title='Desconhecido' />
+                <ListGroup arr={caixa} title='Caixa' />
+                <ListGroup arr={entrega} title='Entrega' />
+                <ListGroup arr={aplicativo} title='Aplicativo' />
+                <ListGroup arr={arquivados} title='Arquivados' aberto={false} />
+              </>
+            )
+
+            : (  
+              <ul className={`list`}>
+                {pedidos
+                .filter(filtro)
+                .sort(ordem)
+                .map(pedido => (
+                  <Pedido key={pedido.id} 
+                  pedido={pedido} atual={curr}
+                  abrir={() => setCurr(pedido)} />
+                ))}
+              </ul>
+            )
+          }
           
           
         </ListaContainer>

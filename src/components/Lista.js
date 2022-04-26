@@ -82,7 +82,7 @@ const Item = (props) => {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 50px;
+  min-height: 35px;
   width: 100%;
   height: 100%;
   justify-content: stretch;
@@ -113,7 +113,7 @@ const Container = styled.div`
       display: flex;
       align-items: center;
       padding: 5px;
-      gap: 5px;
+      gap: 3px;
       border: 1px solid black;
       background-color: ${cores.brancoEscuro};
       flex-basis: 70px;

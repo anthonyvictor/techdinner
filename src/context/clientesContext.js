@@ -31,7 +31,6 @@ export default function ClientesProvider({ children }) {
         //     for(let id of ids){
         //         const img = await api().get('clientes/imagens', {params: {clienteId: id}})
         //         if(img?.data?.length > 0){
-        //             console.log(img.data)
         //             res.push({id, imagem: img.data})
         //         }
         //     }

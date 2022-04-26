@@ -21,7 +21,6 @@ import { useContextMenu } from "../../../components/ContextMenu";
 import axios from "axios";
 import { useApi } from "../../../api";
 
-
 export default function ListaCli(props) {
   const {setCurrentRoute} = useRotas()
   const {curr, setCurr, lista, setLista, images, setImages} = useCadCli();
@@ -30,8 +29,7 @@ export default function ListaCli(props) {
   const {contextMenu} = useContextMenu()
   const [filtered, setFiltered] = useState([])
   const { imageView } = useImageViewer()
-  const {api} = useApi()
-  
+  const {api, getLocalUrl} = useApi()
 
   useEffect(() => {
     window.onbeforeunload = (e) => {
@@ -172,7 +170,7 @@ export default function ListaCli(props) {
     
     imageView({
       title: cliente.nome,
-      image: cliente.imagem,
+      image: getLocalUrl(cliente.imagem),
     })
 
     //  window.open(format.convertImageToBase64(images.filter(i => i.id === cliente.id)[0].imagem));
@@ -317,7 +315,7 @@ useEffect(() => {
               <li className="cli-li" key={cliente.id}>
     
                 <div className="inicio">
-                  {cliente.imagem && <img src={cliente.imagem} alt="imagem" />}
+                  {cliente.imagem && <img src={getLocalUrl(cliente.imagem)} alt="imagem" />}
                   <label className={`id${misc.isNEU(cliente.valorGasto) ? ' novo' : ''}`}>{cliente.id}</label>
                 </div>
     
@@ -394,45 +392,44 @@ const Estilo = styled.div`
       border-radius: 50%;
       border: 2px solid black;
       width: 40px;
-      min-height: 40px;
-      min-width: 40px;
       height: 40px;
       object-fit: cover;
+      background-color: transparent;
     }
   }
-
+  
   .centro{
     user-select: none;
     .info {
       flex-grow: 2;
-      label {
+      .nome {
         font-weight: 600;
         font-size: 15px;
       }
-
+      
       .tags {
         font-size: 12px;
       }
-
+      
       .contato {
         font-weight: 600;
         font-size: 13px;
       }
-
+      
       .bottom-info {
         font-size: 12px;
         font-style: italic;
         span:after {
           content: " | ";
         }
-
+        
         span:last-child:after {
           content: "";
         }
       }
     }
   }
-
+  
   .botao {
     background-color: transparent;
     border: none;
@@ -442,22 +439,38 @@ const Estilo = styled.div`
     cursor: pointer;
     pointer-events: fill;
   }
-
+  
   @media (max-width: 550px) {
-    #lista {
-      .cli-li {
-        padding: 10px 2px;
-        .container {
-          .info {
-            .endereco {
-              font-size: 12px;
-            }
-            .bottom-info {
-              font-size: 10px;
-            }
-          }
+    padding: 3px 2px;
+
+    .inicio{
+      img{
+        width: 30px;
+      height: 30px;
+
+      }      
+    }
+
+    .centro{
+      overflow: hidden;
+      .info {
+        overflow-x: auto;
+        pointer-events: fill;
+        margin: 2px 0;
+        .nome {
+          font-size: 11px!important;
+        }
+        .endereco {
+          width: max-content;
+          font-size: 9px;
+          max-height: 10px;
+          line-height: 10px;
+          overflow-x: auto;
+        }
+        .bottom-info {
+          *{font-size: 9px;}
         }
       }
     }
   }
-`;
+  `;

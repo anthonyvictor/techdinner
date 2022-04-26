@@ -1,6 +1,6 @@
 import React, { useState, createContext, useContext, useRef, useEffect, useCallback } from 'react';
 import { usePizzas } from '../../../../../context/pizzasContext';
-import { equals, join, filtro } from '../../../../../util/misc'
+import { equals, join, filtro, isMobile } from '../../../../../util/misc'
 import styled from 'styled-components'
 import { TamanhosLista } from './tamanhos'
 import { SaboresLista } from './sabores'
@@ -36,7 +36,7 @@ export default function Pizza() {
     const [ingredientesComponentResult, setIngredientesComponentResult] = useState(null)
 
     const [tamanhoSelected, setTamanhoSelected] = useState(item.pizza?.tamanho?.id ? String(item.pizza?.tamanho?.id) : null)
-    const [saboresSelected, setSaboresSelected] = useState(getSaboresSelected())
+    const [saboresSelected, setSaboresSelected] = useState([])
     const [observacoes, setObservacoes] = useState(item?.observacoes ?? '')
     const [valor, setValor] = useState(item?.valor ?? 0)
     const [isSearchFocused, setIsSearchFocused] = useState(false)
@@ -51,6 +51,13 @@ export default function Pizza() {
     },[sabores,tamanhos])
 
     useEffect(() => {
+        if(item && sabores.length > 0){
+            const res = getSaboresSelected()
+            setSaboresSelected(res)
+        }
+    }, [item, sabores])
+
+    useEffect(() => {
         if(!isHoverLocked){
             setSaborHovered(null)
         }
@@ -61,7 +68,6 @@ export default function Pizza() {
     }, [finalResults])
 
     useEffect(() => {
-        console.log('new saboresselected', saboresSelected)
         if(sabores.length > 0){
             setSaboresSelectedUpdates(prev => prev < saboresSelected.length ? saboresSelected.length : prev + 1)
         }
@@ -69,31 +75,35 @@ export default function Pizza() {
 
     useEffect(() => {
         if(sabores.length > 0){
-            // setSaboresSelected(getSaboresSelected())
             setSearchResults(sabores.filter(e => e.visivel).filter(e => filtro({ nome: e.nome, numero: e.numero }, searchString)))
         }
     }, [searchString, sabores])
 
     useEffect(() => {
-        setFinalResults(
-            [
-                ...saboresSelected, 
-                ...searchResults
-            ].filter(filterSabor).map(mapSabor).sort(sortSabor)
-        )
+
+        const fr = [
+            ...saboresSelected, 
+            ...searchResults
+        ].filter(filterSabor).map(mapSabor).sort(sortSabor)
+        setFinalResults(fr)
+
     }, [searchResults, saboresSelected])
 
     function getSaboresSelected(){
-        if(item?.pizza?.sabores && sabores.length > 0){
+        const itemps = item?.pizza?.sabores
+        const sl = sabores.length
+        if(itemps && sl > 0){
             let res = []
+            let i = 1
            for(let sabor of item.pizza.sabores){
-            const original = sabores.find(e => equals(e.id, sabor.id))
-            const _tipo = {...original.tipo, ...sabor.tipo}
-            const _id = buildNewId(sabor)
-            const filled = {...original, ...sabor, tipo: _tipo, id: _id}
-            res.push(filled)
-        }
-           return res
+               const original = sabores.find(e => equals(e.id, sabor.id))
+               const _tipo = {...original.tipo, ...sabor.tipo}
+               const _id = buildNewId(sabor, i)
+               i++
+               const filled = {...original, ...sabor, tipo: _tipo, id: _id}
+               res.push(filled)
+            }
+            return res
         }else{
             return []
         }
@@ -138,9 +148,11 @@ export default function Pizza() {
     const mapSabor = (e) => {
         const saborFilled = {...getFullSaborFromId(getSaborId(e)), id: e.id} 
         const ingredientesIds = e.ingredientes.map(x => Number(x.id))
-        const ingredientesFilled = getFullIngredientesFromIds(ingredientesIds)
+        const tempI = getFullIngredientesFromIds(ingredientesIds)
+        const ingredientesFilled = tempI
         .map(i => {
-            return{...i, tipoAdd: e.ingredientes.filter(ei => ei.id === i.id)[0]?.tipoAdd || ''}
+            const newI = e.ingredientes.find(ei => equals(ei.id, i.id))
+            return{...i, tipoAdd: newI?.tipoAdd || ''}
         })
         const tipoFilled = getFullTipoFromId(e.tipo.id)
         const fullSabor = {...saborFilled, tipo: tipoFilled, ingredientes: ingredientesFilled}
@@ -176,17 +188,26 @@ export default function Pizza() {
     function getSaborId(sabor) {return String(sabor.id).split('s')[0]}
     function getTodosIngredientes(sabor) {return sabor.ingredientes.map(e => ingredientes.filter(i => i.id === e.id)[0].nome).join(', ')}
     function getIsSelected(sabor) {return saboresSelected.map(e => String(e.id)).includes(String(sabor.id))}
-    function buildNewId(sabor) {return getSaborId(sabor) + 's' + saboresSelectedUpdates}
+    function buildNewId(sabor, i=0) {return getSaborId(sabor) + 's' + (i > 0 ? i : saboresSelectedUpdates)}
 
     function getIngredientesDescritos(sabor, retornarTudo = true) {
         let res = ''
-        const concatRes = i => {res = join([res, `${i.tipoAdd} ${i.nome}`], ', ')}
-        const temTipoAdd = sabor.ingredientes.map(i => i.tipoAdd ?? '').join('').length > 0
+        const concatRes = i => {
+            res = join(
+                [res, `${i.tipoAdd} ${i.nome}`], ', '
+                )
+        }
+
+        const temTipoAdd = sabor.ingredientes.
+        map(i => i.tipoAdd ?? '').
+        join('').length > 0
+        
         const saborOriginal = temTipoAdd ? {
             ...getFullSaborFromId(getSaborId(sabor)),
             tipo: getFullTipoFromId(sabor.tipo.id),
             ingredientes: getFullIngredientesFromIds(sabor.ingredientes.map(e => Number(e.id)))
         } : sabor
+
         if (temTipoAdd) {
             const ingredientesModificados = sabor.ingredientes.filter(i => i.tipoAdd && i.tipoAdd !== '')
 
@@ -229,14 +250,13 @@ export default function Pizza() {
             
             if (check) {
                 let novoSabor = { ...sabor, id: buildNewId(sabor) }
-                console.log('INSERINDO..', novoSabor)
                 insertSabor(novoSabor)
             } else {
                 removeSabor(sabor)
             }
             
             setSearchString('')
-            focusSearch()
+           !isMobile() && focusSearch()
         }
 
     async function ativarDesativar(sabor){

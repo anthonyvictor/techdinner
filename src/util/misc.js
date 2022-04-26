@@ -1,3 +1,4 @@
+import { apiUrl } from "../api";
 import { formatPhoneNumber } from "./Format";
 export function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -35,7 +36,6 @@ export async function copiar(val){
 
 // export async function colarDoClipboard({obj, setObj}){
 //   await navigator.clipboard.readText().then((e) => {
-// console.log(e)
 // setObj(e.replace('"',''))
 // // // fetch(e)
 // // //   .then(response => response.blob())
@@ -127,7 +127,6 @@ export function removeImagens(obj){
 					//se a key atual do newObj for object {id: 0} ele atribui newObj = removeImagens()
               		// newObj = removeImagens(newObj)
 					  newObj[v] = removeImagens(newObj[v])
-					//   console.log('new obj', newObj)
 					}else{
 					  if(v === 'imagem'){
 						  newObj[v] = ''

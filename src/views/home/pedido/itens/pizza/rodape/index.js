@@ -190,101 +190,110 @@ export const Rodape = () => {
 }
 
 const Container = styled.div`
+    flex-shrink: 0;
+    border-top: 1px solid black;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
 
-        flex-shrink: 0;
-        border-top: 1px solid black;
+    .resumo {
+        overflow-x: auto;
         width: 100%;
+        text-align: center;
+        flex-shrink: 0;
+    }
+    .middle {
+        height: 30px;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 2px;
-
-        @media (max-width: 550px){
-          
+        gap: 10px;
+        width: 100%;
+        * {
+            font-size: 16px;
         }
 
-        .resumo {
-            overflow-x: auto;
-            width: 100%;
-            text-align: center;
-            flex-shrink: 0;
+        button {
+            padding: 0 5px;
         }
-        .middle {
-          height: 30px;
-          display: flex;
-          gap: 10px;
-          width: 100%;
-          *{font-size: 16px;}
-
-          button{padding: 0 5px;}
-          .valor{
-            display: flex;;
+        .valor {
+            display: flex;
             gap: 2px;
             align-items: center;
-            
 
-            input{
-              width: 70px;
-              height: 100%;
+            input {
+                width: 70px;
+                height: 100%;
             }
-            button{
-              height: 100%;
-              width: 40px;
-              &.true{
-                color: ${cores.vermelho};
-              }
-              &.false{
-                color: ${cores.verde};
-              }
+            button {
+                height: 100%;
+                width: 40px;
+                &.true {
+                    color: ${cores.vermelho};
+                }
+                &.false {
+                    color: ${cores.verde};
+                }
             }
-          }
-          .observacoes{
+        }
+        .observacoes {
             display: flex;
             flex-grow: 2;
             gap: 2px;
-            input{
-              flex-grow: 2;
-              width: 100%;
+            input {
+                flex-grow: 2;
+                width: 100%;
             }
-          }
+        }
+    }
+    .avancar {
+        min-height: 40px;
+        flex-grow: 2;
+        width: 60%;
+        background-color: ${cores.verde};
+        border: 2px solid black;
+        border-radius: 5px;
+        margin-top: 5px;
+    }
 
-          @media (max-width: 550px){
+    @media (max-width: 550px) {
+        .resumo {
+            display: none;
+        }
+
+        .middle {
             flex-direction: column;
-            height: 80px;
+            height: 60px;
             gap: 2px;
 
-            .valor{
-              width: 100%;
-              flex-grow: 2;
-              justify-content: center;
-              button{
-                width: 60px;
-              }
-              input{
-                /* flex-grow: 2; */
-              }
+            .observacoes {
             }
-            .observacoes{
-              button{
-                width: 80px;
-              }
-            }
-          }
 
+            .valor {
+                width: 100%;
+                flex-grow: 2;
+                justify-content: center;
+                button {
+                    width: 60px;
+                }
+                input {
+                    /* flex-grow: 2; */
+                }
+            }
+            .observacoes {
+                button {
+                    width: 80px;
+                }
+            }
+
+            * {
+                font-size: 13px;
+            }
         }
+
         .avancar {
-            min-height: 40px;
-            flex-grow: 2;
-            width: 60%;
-            background-color: ${cores.verde};
-            border: 2px solid black;
-            border-radius: 5px;
-            margin-top: 5px;
-            @media (max-width: 550px){
-              width: 100%;
-              min-height: 50px;
-            }
+            width: 100%;
+            min-height: 50px;
         }
-
-
+    }
 `

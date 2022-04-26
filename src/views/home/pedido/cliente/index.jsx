@@ -16,6 +16,7 @@ import * as cores from '../../../../util/cores'
 import styled from 'styled-components';
 import { Contato } from './contatoLi';
 import ClientesProvider from '../../../../context/clientesContext';
+import { useApi } from '../../../../api';
 
 const BoxCLienteContext = createContext()
 
@@ -90,6 +91,7 @@ const BoxCliente2 = () => {
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [fixedSize, setFixedSize] = useState('')
     const [myClassName, setMyClassName] = useState(undefined)
+    const {getLocalUrl} = useApi()
 
     useEffect(() => {
         getMyClassName()
@@ -174,8 +176,8 @@ function getAlertStyle(){
   
   const ImagemOuIcone = () => {
 
-    if(curr?.cliente?.imagem) return <img src={curr.cliente.imagem} alt='' 
-    onClick={() => imageView({title: curr.cliente.nome, image: curr.cliente.imagem})} />
+    if(curr?.cliente?.imagem) return <img src={getLocalUrl(curr.cliente.imagem)} alt='' 
+    onClick={() => imageView({title: curr.cliente.nome, image: getLocalUrl(curr.cliente.imagem)})} />
 
     if (curr?.cliente?.nome) return <FontAwesomeIcon className='icon' icon={faUser} />
     

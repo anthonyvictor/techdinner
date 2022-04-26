@@ -123,7 +123,7 @@ const SelectBox = styled.div`
     align-items: center;
     overflow: hidden;
     *{user-select: none;}
-
+    
     > .close-button{
       position: absolute;
       right: 2%;
@@ -134,15 +134,15 @@ const SelectBox = styled.div`
       height: 40px;
       cursor: pointer;
       background-color: white;
-
+      
       @media (hover: hover) and (pointer: fine){
         &:hover{
           background-color: yellow;
         }
       }
-
+      
     }
-
+    
     @keyframes baixo-cima{
       from{
         transform: translateY(100%);
@@ -153,8 +153,9 @@ const SelectBox = styled.div`
         opacity: 1;
       }
     }
-
+    
     > .container {
+      /* position: relative; */
       animation: baixo-cima 0.15s ease-out;
       background-color: ${cores.branco};
       padding: 10px;
@@ -326,10 +327,10 @@ const SelectBox = styled.div`
         width: 60%;
         height: 70%;
 
-        @media (max-width: 550px) {
+        @media (max-width: 550px){
           width: 80%;
           height: 300px;
-          min-height: 500px;
+          min-height: 250px;
         }
         button {
           width: 100%;

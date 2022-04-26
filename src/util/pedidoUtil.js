@@ -51,10 +51,9 @@ export function IcoTipo(tipo) {
   }
 
   export function CorHora(dataInic) {
-    let data_atual = new Date();
-    let diff = (data_atual - dataInic) / 1000 / 60 
-
-    
+    let dataAtual = new Date();
+    dataInic = new Date(dataInic)
+    let diff = (dataAtual - dataInic) / 1000 / 60 
 
     if (diff < 10) {
       return "#02fa3c";
@@ -223,12 +222,23 @@ export function getItensAgrupados(pedido){
 }
 
 export function getSaboresDescritos(sabores, quebra=', '){
-  const joinTipoAdd = (ingredientes) => ingredientes.map(i => i.tipoAdd ? i.tipoAdd : '').join('')
-  const getIngredientesDiferentes = (ingredientes) => ingredientes.filter(i => i.tipoAdd && i.tipoAdd !== '').map(i => `${i.tipoAdd} ${i.nome}`).join(', ')
+  const joinTipoAdd = (ingredientes) => 
+  ingredientes.map(i => i.tipoAdd ? i.tipoAdd : '').join('')
+  
+  const getIngredientesDiferentes = (ingredientes) => 
+  ingredientes.filter(i => i.tipoAdd && i.tipoAdd !== '').
+  map(i => `${i.tipoAdd} ${i.nome}`).join(', ')
 
-  let saboresDiferentes = sabores.filter(e => joinTipoAdd(e.ingredientes) !== '')
-  let outrosSabores = sabores.filter(e => joinTipoAdd(e.ingredientes) === '')
-  let r = saboresDiferentes.map(e => `${e.nome} (${getIngredientesDiferentes(e.ingredientes)})`).join(quebra)
+  let saboresDiferentes = sabores.
+  filter(e => joinTipoAdd(e.ingredientes) !== '')
+  
+  let outrosSabores = sabores.
+  filter(e => joinTipoAdd(e.ingredientes) === '')
+
+  let r = saboresDiferentes.
+  map(e => `${e.nome} (${getIngredientesDiferentes(e.ingredientes)})`).
+  join(quebra)
+
   r = join([r, outrosSabores.map(e => e.nome).join(quebra)], quebra)
   return r
 }
@@ -266,13 +276,11 @@ export function getTituloPagamento(pagamento) {
 
 export function getValorPago(pedido){
   const res = pedido?.pagamentos?.filter(e => e.status === 1).reduce((a,b) => a + b.valorPago, 0) || 0
-  // if(pedido?.cliente?.id === 1076) console.log(res)
   return res
 }
 
 export function getValorPagamentosPagosOuNao(pedido){
   const res = pedido?.pagamentos?.reduce((a,b) => a + b.valorPago, 0) || 0
-  // if(pedido?.cliente?.id === 1076) console.log(res)
   return res
 }
 
@@ -280,6 +288,5 @@ export function getValorPendente(pedido, qualquerValorNaListaConta=false){
   const res = (pedido?.valor || 0) - (qualquerValorNaListaConta 
     ? getValorPagamentosPagosOuNao(pedido)
     : getValorPago(pedido))
-    // console.log(pedido, 'valor pedido - valor pago ou n', res)
   return res
 }

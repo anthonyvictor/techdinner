@@ -21,20 +21,23 @@ import MessageProvider from './components/Message';
 import { ValuerProvider } from './components/Valuer';
 import { PayerProvider } from './views/home/pedido/pagamento/payer';
 import { HoraProvider } from './views/home/pedido/rodape/hora';
+import { InternetCheckerProvider } from './components/InternetChecker';
 
 // import { QueryClientProvider } from 'react-query';
 
 function App() {
   return (
-    <MessageProvider>
-      <BrowserRouter >
-        {/* <QueryClientProvider> */}
-          <ApiProvider>
-            <App2 />
-          </ApiProvider>
-        {/* </QueryClientProvider>   */}
-      </BrowserRouter >
-    </MessageProvider>
+    <InternetCheckerProvider>
+      <MessageProvider>
+        <BrowserRouter >
+          {/* <QueryClientProvider> */}
+            <ApiProvider>
+              <App2 />
+            </ApiProvider>
+          {/* </QueryClientProvider>   */}
+        </BrowserRouter >
+      </MessageProvider>
+    </InternetCheckerProvider>
   )
 }
 
@@ -53,29 +56,29 @@ function App2() {
 
   return(
     <Container>
-      <HoraProvider>
-        <AskProvider>
-          <ValuerProvider>
-            <ContextMenuProvider>
-              <ImageViewerProvider>
-                <PayerProvider>
-                  <RotasProvider>
-                    <MainMenuProvider>
-                      <MainMenu className="invisivel" />
-        
-                      <div className="topo-base">
-                        <Header />
-                        <Rotas className="meio" />
-                        <Globals />
-                      </div>
-                    </MainMenuProvider>
-                  </RotasProvider>
-                </PayerProvider>
-              </ImageViewerProvider>
-            </ContextMenuProvider>
-          </ValuerProvider>
-        </AskProvider>
-      </HoraProvider>
+        <HoraProvider>
+          <AskProvider>
+            <ValuerProvider>
+              <ContextMenuProvider>
+                <ImageViewerProvider>
+                  <PayerProvider>
+                    <RotasProvider>
+                      <MainMenuProvider>
+                        <MainMenu className="invisivel" />
+          
+                        <div className="topo-base">
+                          <Header />
+                          <Rotas className="meio" />
+                          <Globals />
+                        </div>
+                      </MainMenuProvider>
+                    </RotasProvider>
+                  </PayerProvider>
+                </ImageViewerProvider>
+              </ContextMenuProvider>
+            </ValuerProvider>
+          </AskProvider>
+        </HoraProvider>
     </Container>
   ) 
 }
@@ -138,7 +141,7 @@ const Container = styled.div`
   width: 100vw;
   height: 100vh ;
   overflow: hidden;
-
+  position: relative;
   @media print{
         /* :not(.print-area){
           display: none;

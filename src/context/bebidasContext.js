@@ -9,7 +9,6 @@ function BebidasProvider({children}) {
 
     useEffect(() => {            
         let montado = true
-        console.log('bebidas')
         async function getAll(){
             api().get('bebidas').then(r=>
                 {if(montado) {

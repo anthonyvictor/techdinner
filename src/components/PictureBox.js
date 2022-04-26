@@ -64,7 +64,6 @@ function PictureBox(props) {
     }
 
     const renderImageElement = () => {
-      console.log(props.imagem)
       return <img src={props.imagem} alt="Imagem" />
     }
 

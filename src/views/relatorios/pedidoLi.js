@@ -7,8 +7,11 @@ import { convertFileToBase64, convertImageToBase64, formatReal } from "../../uti
 import * as cores from "../../util/cores";
 // import { useHome } from "../../context/homeContext";
 import { CorHora, CorImpr, CorTipo, CorValor, getValorPendente, IcoTipo } from '../../util/pedidoUtil';
+import { useApi } from "../../api";
 
 export const Pedido = ({pedido, abrir}) => {
+
+  const {getLocalUrl} = useApi()
 
     return (
       <ItemContainer
@@ -26,7 +29,7 @@ export const Pedido = ({pedido, abrir}) => {
 
         <div className="img-id">
           {pedido?.cliente?.imagem
-          ? <img src={pedido.cliente.imagem} alt="Imagem do cliente" />
+          ? <img src={getLocalUrl(pedido.cliente.imagem)} alt="Imagem do cliente" />
           : pedido.cliente.nome
           ? <FontAwesomeIcon className="icon" icon={icons.faUser} />
           : <FontAwesomeIcon className="icon" icon={icons.faTimes} /> }

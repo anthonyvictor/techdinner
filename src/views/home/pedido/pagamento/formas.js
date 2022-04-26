@@ -67,8 +67,12 @@ const Button = ({texto, cor, icone, disabled}) => {
                         : `fake${pagamentosCount + 1}`
                     ),
                     tipo: tipo,
-                    dataAdicionado: new Date(),
-                    dataRecebido: (status === 1 ? new Date() : null),
+                    dataAdicionado: new Date().toLocaleString('en-CA'),
+                    dataRecebido: (
+                        status === 1 
+                        ? new Date().toLocaleString('en-CA')
+                        : null
+                        ),
                     status: status,
                     valorPago: newValor,
                     valorRecebido: Number(valorRecebido)

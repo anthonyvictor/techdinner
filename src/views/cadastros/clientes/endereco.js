@@ -89,25 +89,27 @@ function Endereco({endereco, setEndereco, children}) {
                   </CadEnderecoProvider>
               </EnderecosProvider>
             </div>
+            
           </EndLocListaContainer>
         );
       }
 
   return (
     <Container id="endereco-container">
-        {listaEnd}
         <div id="endereco-left">
         <div id="logradouro-container" className="txt">
             <label htmlFor="logradouro">Logradouro:</label>
-            <label id="logradouro">{memoEnderecoFormatted}</label>
-            <button className="logradouro-button"
-            type="button"
-            onClick={() => {
+            <div className='logradouro-button-container'>
+              <label id="logradouro">{memoEnderecoFormatted}</label>
+              <button className="logradouro-button"
+              type="button"
+              onClick={() => {
                 openListaEnd();
-            }}
-            >
-            Alterar
-            </button>
+              }}
+              >
+              Alterar
+              </button>
+            </div>
         </div>
 
         <div id="numero-container" className="txt">
@@ -123,7 +125,7 @@ function Endereco({endereco, setEndereco, children}) {
               }
             }
             onBlur={(e) => {
-                e.target.value = e.target.value.trim();
+              e.target.value = e.target.value.trim();
             }}
             />
         </div>
@@ -137,16 +139,16 @@ function Endereco({endereco, setEndereco, children}) {
             placeholder="Casa, Edifício, Apartamento, Condomínio, Hospital, Escola..."
             value={endereco?.local ?? ''}
             onChange={(e) =>
-                setEndereco({local: e.target.value.toUpperCase()})
+              setEndereco({local: e.target.value.toUpperCase()})
             }
             onBlur={(e) => {
-                e.target.value = e.target.value.trim();
+              e.target.value = e.target.value.trim();
             }}
             />
             <button disabled
             type="button"
             onClick={(e) => {
-                throw new NotImplementedError();
+              throw new NotImplementedError();
             }}
             >
             Salvar
@@ -162,10 +164,10 @@ function Endereco({endereco, setEndereco, children}) {
             placeholder="Ao lado de.. Em frente à.."
             value={endereco?.referencia ?? ''}
             onChange={(e) =>
-                setEndereco({referencia: e.target.value.toUpperCase()})
+              setEndereco({referencia: e.target.value.toUpperCase()})
             }
             onBlur={(e) => {
-                e.target.value = e.target.value.trim();
+              e.target.value = e.target.value.trim();
             }}
             />
         </div>
@@ -178,6 +180,7 @@ function Endereco({endereco, setEndereco, children}) {
             {mapa}
         </div>
         {children}
+        {listaEnd}
     </Container>
   )
 }
@@ -186,7 +189,6 @@ export default Endereco;
 
 
 const Container = styled.section`
-
     border: 1px solid black;
     padding: 5px;
     display: flex;
@@ -223,9 +225,11 @@ const Container = styled.section`
           flex-grow: 2;
           flex-shrink: 2;
           height: 100%;
-          padding: 5px 0;
+          padding: 5px;
           font-family: sans-serif;
           resize: none;
+          border-radius: 5px;
+          border: 1px solid gray;
         }
         button {
           width: 70px;
@@ -258,6 +262,7 @@ const Container = styled.section`
           flex-grow: 0;
           height: 100%;
         }
+
       }
 
       #numero-container{
@@ -270,6 +275,16 @@ const Container = styled.section`
         text-align: center;
         font-size: 20px;
         font-weight: 600;
+      }
+
+      @media (max-width: 550px){
+        .logradouro-button-container{
+        display: flex;
+        width: 100%;
+        label{
+          flex-grow: 1;
+        }
+      }
       }
     }
 
@@ -296,6 +311,86 @@ const Container = styled.section`
 
       }
 
+
+      @media (max-width: 550px){
+    
+      border: 1px solid black;
+      padding: 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      height: max-content;
+      max-height: max-content;
+
+      #endereco-left {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        height: 100%;
+
+        div {
+          display: flex;
+
+          label {
+            display: inline-block;
+            vertical-align: middle;
+            width: 90px;
+            min-width: 90px;
+            font-size: 10px;
+          }
+        }
+
+        #logradouro-container {
+          width: 100%;
+          height: 70px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1px;
+
+          #logradouro {
+            max-width: 100%;
+            height: 100%;
+            font-size: 12px;
+            /* max-height: 100%; */
+          }
+        }
+
+        #numero-container{
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1px;
+
+          input{
+            font-size: 12px;
+            width: 100%;
+          } 
+        }
+
+        #local-container,
+        #referencia-container {
+          height: 100px;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1px;
+          
+          button {
+            display: none;
+          }
+        }
+
+        textarea {
+          width: 100%;
+          font-size: 12px;
+        }
+      }
+
+      #endereco-right {
+        display: none;
+        width: 100%;
+      }
+    
+      }
   
 `
 
@@ -314,6 +409,7 @@ const EndLocListaContainer = styled.div`
     animation: aparecer .3s ease-out;
 
     .endloc-lista {
+      border-radius: 20px; 
       height: 80%;
       width: min(600px, 90%);
       flex-grow: 0;
@@ -334,11 +430,16 @@ const EndLocListaContainer = styled.div`
     @media (max-width: 550px){
       display: flex;
       position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
+      
 
       .endloc-lista{
-        height: min(60%, 600px);
+        position: relative;
+        height: 80%;
+        width: 90%;
       }
 
     }

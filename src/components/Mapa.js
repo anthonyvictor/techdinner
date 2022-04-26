@@ -40,9 +40,6 @@ export default function Mapa(props) {
 //             new maps.Marker({position: res, map, title: "Local da entrega.",})
 //             }/>
 //         )
-//         console.log("endereco: ====== ", props.endereco)
-//         console.log("resposta da api: ====== ", res)
-//         console.log("Mapa criado: ====== ", map)
 // }), [])
 
 //   const [zoom, setZoom] = useState(18)

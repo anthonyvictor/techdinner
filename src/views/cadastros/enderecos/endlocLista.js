@@ -203,16 +203,17 @@ const Container = styled.div`
   @media (max-width: 550px){
     .lista-component-li{
       .inicio{
-        font-size: 14px;
+        font-size: 12px;
       }
       .centro{
-        font-size: 13px;
+        *{font-size: 10px;}
+        
         strong,label{
           display: block;
         }
         .bottom{
           p{
-          font-size: 12px;
+          font-size: 9px;
           font-style: italic;
         }
         }

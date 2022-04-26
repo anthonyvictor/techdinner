@@ -99,7 +99,7 @@ export const SaborLi = ({sabor}) => {
                     </span>
                     <span className='nome'>{sabor.nome}</span>
                 </section>
-                <p className='sabores'>{getIngredientesDescritos(sabor)}</p>
+                <p className='ingredientes'>{getIngredientesDescritos(sabor)}</p>
             </div>
             <button className='botao' onClick={() => openContext(sabor)}>
                 <FontAwesomeIcon icon={faEllipsisV} />
@@ -116,6 +116,12 @@ const Container = styled.li`
         border: 1px solid black;
         background-color: ${cores.brancoEscuro};
         flex-basis: 70px;
+
+        @media (max-width: 550px){
+            padding: 2px;
+            gap: 2px;
+            flex-basis: 60px;
+        }
 
         * {
             pointer-events: none;
@@ -136,6 +142,10 @@ const Container = styled.li`
                 width: 30px;
                 height: 30px;
                 cursor: pointer;
+                @media (max-width: 550px){
+                    width: 20px;
+                    height: 20px;
+                }
             }
         }
         .centro {
@@ -146,7 +156,7 @@ const Container = styled.li`
                 font-size: 17px;
                 
                 @media (max-width: 550px){
-                    font-size: 14px;
+                    font-size: 13px;
 
                 }
             }
@@ -157,12 +167,12 @@ const Container = styled.li`
                 -webkit-text-stroke: .3px ${cores.brancoDark};
             }
 
-            .sabores {
+            .ingredientes {
                 font-size: 13px;
                 font-weight: 600;
                 font-style: italic;
                 @media (max-width: 550px){
-                    font-size: 10px;
+                    font-size: 9px;
                     font-weight: 300;
                 }
             }
@@ -175,6 +185,11 @@ const Container = styled.li`
             padding: 5px 15px;
             cursor: pointer;
             pointer-events: fill;
+
+            @media (max-width: 550px){
+                font-size: 15px;
+                padding: 2px 10px;
+            }
         }
         &.ativo {
             background-color: ${cores.cinzaEscuro};

@@ -169,7 +169,6 @@ export const Item2 = () => {
                 }}
                 >
                   <div className='inicio'>
-
                     <input type={'checkbox'} />
                     <ImagemOuIcone item={item} />
 
@@ -248,12 +247,13 @@ const Container = styled.li`
             @media (max-width: 550px){
               label{
                 font-weight: 600;
-                font-size: 14px;
+                font-size: 12px;
               }
               .info-secundarias{
-                font-size: 11px;
+                font-size: 9px;
                 font-style: italic;
               }
+
             }
           }
           .fim{
@@ -272,6 +272,12 @@ const Container = styled.li`
               cursor: pointer;
               pointer-events: all;
               width: 40px;
+            }
+
+            @media (max-width: 550px){
+              label{
+                font-size: 14px;
+              }
             }
           }
 

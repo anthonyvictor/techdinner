@@ -9,7 +9,6 @@ function EntregadoresProvider(props) {
 
   useEffect(() => {            
     let montado = true
-    console.log('entregadores')
     async function getAll(){
         api().get('entregadores').then(r=>
             {if(montado) {

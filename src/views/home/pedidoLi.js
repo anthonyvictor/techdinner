@@ -7,12 +7,15 @@ import { convertFileToBase64, convertImageToBase64, formatReal } from "../../uti
 import * as cores from "../../util/cores";
 // import { useHome } from "../../context/homeContext";
 import { CorHora, CorImpr, CorTipo, CorValor, getDuracao, getValorPendente, IcoTipo } from '../../util/pedidoUtil';
+import { useApi } from "../../api";
 
 export const Pedido = ({pedido, atual, abrir}) => {
 
     // const {curr, setCurr} = useHome() 
   
     const [duracao, setDuracao] = useState(getDuracao(pedido.dataInic))
+
+    const {getLocalUrl} = useApi()
   
     
 
@@ -36,7 +39,7 @@ export const Pedido = ({pedido, atual, abrir}) => {
         }}
       >
         {pedido?.cliente?.imagem
-        ? <img src={pedido.cliente.imagem} alt="Imagem do cliente" />
+        ? <img src={getLocalUrl(pedido.cliente.imagem)} alt="Imagem do cliente" />
         : pedido.cliente.nome
         ? <FontAwesomeIcon className="icon" icon={icons.faUser} />
         : <FontAwesomeIcon className="icon" icon={icons.faTimes} /> }

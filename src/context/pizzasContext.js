@@ -15,7 +15,6 @@ function PizzasProvider({children}) {
 
     useEffect(() => {            
         let montado = true
-        console.log('pizzas')
         async function getAll(){
 
             const response = await api().get('pizzas')
