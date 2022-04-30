@@ -6,17 +6,11 @@ import * as Format from '../util/Format'
 
 const PedidosContext = createContext();
 
-export default function PedidosProvider({children}){
-  return (
-      <PedidosProvider2>
-        {children}
-      </PedidosProvider2>
-  )
-}
-
-function PedidosProvider2({ children }) {
+export default function PedidosProvider({ children }) {
   const [_pedidos, set_Pedidos] = useState([]);
   const [atualizar, setAtualizar] = useState(0)
+  const [st, sst] = useState(0)
+  const [seconds, setSeconds] = useState(0)
   const {api} = useApi()
   const {message} = useMessage()
   
@@ -34,21 +28,76 @@ function PedidosProvider2({ children }) {
     //     }}))
     //   }
     // }, [clientesImagens])
+
+    useEffect(() => {
+      const montado = true
+      async function checkUpdates(){
+        try{
+          let payload = {
+            pedidos: pedidos.map(e => {
+                return {
+                  id: e.id,
+                  valor: e.valor,
+                  itens: e.itens.map(e => e.id),
+                  endereco: {cep: e?.endereco?.cep, taxa: e?.endereco?.taxa},
+                  cliente: {id: e?.cliente?.id, nome: e?.cliente?.nome},
+                  pagamentos: e.pagamentos.map(e => ({valorPago: e.valorPago, status: e.status})),
+                  impr: e.impr
+                }
+              })
+          
+          }
+          let response = await api().post('pedidos/checkupdates', payload)
+  
+          if(montado) {
+            if(response.data === true){
+             refresh()
+            }
+    
+          } 
+        }catch(err){
+          sst(1)
+        }
+      } 
+
+      if(seconds > 0 && st === 0){
+        checkUpdates()
+      }
+    }, [seconds])
     
   useEffect(() => {
       let montado = true
       async function getAll(){
-
         let response = await api().get('pedidos')
 
         if(montado) {
           let _peds = response.data
           set_Pedidos(_peds)
+    
         } 
       } 
       getAll(montado)
       return () => {montado = false}
-  }, [atualizar,])
+  }, [atualizar])
+  
+  useEffect(() => {
+      let montado = true
+      let delay, interval
+      if(montado){
+          interval = setInterval(() => {
+              setSeconds(prev => prev + 1)
+          }, 10 * 1000)
+      }
+      
+      return () => {
+        montado = false
+        clearTimeout(delay)
+        clearInterval(interval)
+      }
+
+  }, [])
+
+  
 
   async function novo(){
     const res = await api().post('pedidos/novo')

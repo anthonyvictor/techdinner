@@ -92,9 +92,13 @@ const Valuer = (props) => {
     }
     
     const DigitButton = ({myKey}) => {
-        const style = {backgroundColor: (['Limpar',','].includes(myKey) ? cores.brancoEscuro : cores.brancoDark)}
+        const style = {
+            backgroundColor: (['Limpar',','].includes(myKey) 
+            ? cores.brancoEscuro 
+            : cores.brancoDark)
+        }
         return (
-            <button className='button-digito' type='button' style={style} onClick={() => digito(myKey)}>{myKey}</button>
+            <button className={`button-digito${myKey === 'Limpar' ? ' limpar' : ''}`} type='button' style={style} onClick={() => digito(myKey)}>{myKey}</button>
             )
         }
         
@@ -213,6 +217,7 @@ const Container = styled.div`
                 display: inline-block;
                 font-size: 2rem;
                 flex-grow: 1;
+                width: 100%;
             }
 
             button{
@@ -234,7 +239,9 @@ const Container = styled.div`
             display: flex;
             width: 100%;
             gap: 10px;
-
+            @media (max-width: 550px){
+                display: none;
+            }
             .buttons{
                 display: grid;
                 grid-template-columns: repeat(3, 1fr);
@@ -248,6 +255,7 @@ const Container = styled.div`
                     font-size: 1.2rem;
                     font-weight: 600;
                     flex-grow: 1;
+                    flex-shrink: 0;
                     padding: 10px;
                     cursor: pointer;
                     transition: transform .2s;
@@ -259,6 +267,13 @@ const Container = styled.div`
                             /* background-color: ${cores.cinza}; */
                         }
                     } 
+
+                    @media (max-width: 550px){
+                        &.limpar{
+                            font-size: .7rem;
+                        }
+                    }
+
                 }
             }
 
@@ -289,9 +304,17 @@ const Container = styled.div`
                         }
                     }
 
+                    @media (max-width: 550px){
+                        width: 60px;
+                        height: 35px;
+                }
+
                 }
             }
         }
     }
 
+@media (max-width: 550px){
+    *{font-size: 1rem}
+}
 `

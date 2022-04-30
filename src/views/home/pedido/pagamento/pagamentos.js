@@ -66,7 +66,7 @@ export const Pagamentos = ({ pedido, pagamento, callback, cancel }) => {
         <PagamentosContext.Provider
             value={{
                 getTotalPago,
-                fakePedido,
+                fakePedido, pedido,
                 setFakePedido,
                 pagamento,
                 callback, cancel,
@@ -92,7 +92,7 @@ export const usePagamentos = () => {
 }
 
 const Pagamentos2 = () => {
-    const { fakePedido, callback, cancel, pagamento, setInputValue } = usePagamentos()
+    const { fakePedido, pedido, callback, cancel, pagamento, setInputValue } = usePagamentos()
 
     useEffect(() => {
       const pendente = getValorPendente(fakePedido, true)
@@ -119,11 +119,22 @@ const Pagamentos2 = () => {
 
             <div className='bottom'>
                 <AvancarButton avancar={() => {
-                  if(fakePedido.pagamentos.some(e => String(e.id).includes('fake'))){
-                    callback(fakePedido.pagamentos, pagamento)
-                  }else{
-                    cancel()
-                  }
+                    console.log('aa')
+                    const fakePagamento = 
+                    fakePedido.pagamentos.some(e => String(e.id).includes('fake'))
+                    
+                    const ordem = (a,b) => a.id > b.id ? 1 : a.id < b.id ? -1 : 0
+                    const getIds = (p) => p.sort(ordem).map(e => e.id).join()
+                    const pagamentosMudados = 
+                    getIds(fakePedido.pagamentos) !== getIds(pedido.pagamentos) 
+                    
+                    if(fakePagamento){
+                        callback(fakePedido.pagamentos, pagamento)
+                    }else if(pagamentosMudados){ 
+                        callback(fakePedido.pagamentos)
+                    }else{
+                        cancel()
+                    }
                 }} />
             </div>
         </Container>

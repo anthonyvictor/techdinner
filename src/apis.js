@@ -44,7 +44,6 @@ export function enderecoToUrl(endereco){
       .join(' ').toString()
       .replace(' ', '+')
       let url = new URL(`https://maps.google.com/maps?q=${all}`)
-      navigator.clipboard.writeText(url)
       resolve(url)
     }else{
       reject('Endereço vazio!!')

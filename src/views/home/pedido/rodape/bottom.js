@@ -130,7 +130,7 @@ export const Bottom = () => {
             throw new Error('Insira o edereço da entrega!')
         }
         if (curr.tipo === 'ENTREGA' && getValorPendente(curr, true) > 0) {
-            throw new Error('Pedidos para entrega, necessitam dos pagamentos antes de imprimir!')
+            throw new Error('Pedidos para entrega necessitam dos pagamentos antes de imprimir!')
         }
         orderNote(curr)
       }catch(err){

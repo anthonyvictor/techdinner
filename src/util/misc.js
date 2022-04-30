@@ -26,7 +26,7 @@ export function sleep(ms) {
 export async function copiar(val){
   // await navigator.clipboard.writeText(val)
 
-  navigator.clipboard.writeText("pica").then(function() {
+  navigator.clipboard.writeText(val).then(function() {
     alert('copiou')
   }, function() {
     alert('não copiou')

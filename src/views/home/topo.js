@@ -47,6 +47,7 @@ flex-shrink: 0;
       flex-direction: column;
       width: 100%;
       /* height: 60px; */
+      *{user-select: none;}
 
       >.botoes {
         display: flex;
@@ -85,7 +86,7 @@ flex-shrink: 0;
         padding: 5px;
         border-radius: 5px;
         display: block;
-        user-select: none;
+        
       }
 
       .arq-button{

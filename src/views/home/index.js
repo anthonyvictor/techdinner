@@ -46,6 +46,10 @@ const Container = styled.div`
   height: 100%;
   min-height: 100px;
 
+  @media print{
+    display: none;
+  }
+
   > .esquerda {
     width: 290px;
     flex-shrink: 0;

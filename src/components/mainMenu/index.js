@@ -79,7 +79,10 @@ export default function MainMenu(){
                     <p>Menu</p>
                 </div>
 
-                <img src={logo} alt="Logo TechDinner" title="Home - TechDinner"/>
+                <img src={logo} 
+                alt="Logo TechDinner" 
+                title="Home - TechDinner"
+                onClick={() => window.location.reload()}/>
                 
             </div>
 

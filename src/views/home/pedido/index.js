@@ -61,9 +61,10 @@ export const Pedido = () => {
       }
     
       const response = await api().post('pedidos/update/cliente', payload)  
-      
-      setCurr(response.data) 
-      refresh()
+      if(response.data){
+        setCurr(response.data) 
+        refresh()
+      }
       
     }
 
@@ -98,15 +99,9 @@ export const Pedido = () => {
                 pedido: ped,
                 novaTaxa: newTaxa,
             }
-            await api().post('pedidos/update/taxa', payload)
-
-            setCurr({
-                ...curr,
-                endereco: {
-                    ...curr.endereco,
-                    taxa: newTaxa,
-                },
-            })
+            const res = await api().post('pedidos/update/taxa', payload)
+            
+            setCurr(res.data)
             refresh()
     }
     async function mudarEntregador(newEntregador) {
@@ -192,7 +187,10 @@ export const Pedido = () => {
 
     async function mudarPagamento(newPagamentos, pagamento=null) {
       // if pagamento is set, the array (newPagamentos) will replace old pagamento
-        closeSelectBox()
+        
+      console.log('aaaa', newPagamentos, pagamento)
+
+      closeSelectBox()
         let ped = {
             id: curr.id,
         }
@@ -222,7 +220,7 @@ export const Pedido = () => {
 
           setCurr({
             ...curr,
-            observacoes: response?.data
+            observacoes: response?.data?.observacoes
           })
           refresh()
       
@@ -374,6 +372,7 @@ label,p{
     }
   }
 }
+
 `
 
 

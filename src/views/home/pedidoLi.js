@@ -8,15 +8,62 @@ import * as cores from "../../util/cores";
 // import { useHome } from "../../context/homeContext";
 import { CorHora, CorImpr, CorTipo, CorValor, getDuracao, getValorPendente, IcoTipo } from '../../util/pedidoUtil';
 import { useApi } from "../../api";
+import { useContextMenu } from "../../components/ContextMenu";
+import { usePedidos } from "../../context/pedidosContext";
+import { useHome } from "../../context/homeContext";
 
 export const Pedido = ({pedido, atual, abrir}) => {
 
     // const {curr, setCurr} = useHome() 
   
     const [duracao, setDuracao] = useState(getDuracao(pedido.dataInic))
-
-    const {getLocalUrl} = useApi()
+    const { refresh } = usePedidos()
+    const {getLocalUrl, api} = useApi()
+    const {contextMenu} = useContextMenu()
+    const {setCurr} = useHome()
   
+    function openContextMenu(){
+      contextMenu([
+        {title: 'Duplicar', click: duplicar},
+        {title: 'Arquivar', click: arquivar, visible: !!!pedido.arq},
+        {title: 'Desarquivar', click: desarquivar, visible: !!pedido.arq},
+      ])
+    }
+  
+    async function duplicar(){
+      const payload = {
+        pedido: {id: pedido.id}
+      }
+      const resp = await api().post('pedidos/duplicar', payload)
+      if(resp?.data){
+        refresh()
+        setCurr(resp.data)
+      }
+    }
+    
+    async function arquivar(){
+      const payload = {
+        pedido: {id: pedido.id}
+      }
+      const resp = await api().post('pedidos/arquivar', payload)
+      if(resp?.data){
+        refresh()
+        setCurr(null)
+      }
+      
+    }
+    
+    async function desarquivar(){
+      const payload = {
+        pedido: {id: pedido.id}
+      }
+      const resp = await api().post('pedidos/desarquivar', payload)
+      if(resp?.data){
+        refresh()
+        setCurr(null)
+      }
+  
+    }
     
 
   useEffect(() => {
@@ -27,6 +74,10 @@ export const Pedido = ({pedido, atual, abrir}) => {
   
     return (
       <ItemContainer className={(atual && pedido && pedido.id && atual.id === pedido.id) ? 'active' : undefined}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        openContextMenu()
+      }}
         pedido={{
           ...pedido,
           cortipo: CorTipo(pedido.tipo),

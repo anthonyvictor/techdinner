@@ -5,6 +5,7 @@ import * as cores from '../util/cores'
 import { useApi } from '../api'
 import { FecharButton } from '../components/FecharButton'
 import { usePedidos } from './pedidosContext'
+import { isNEU } from '../util/misc'
 
 const HomeContext = createContext()
 
@@ -36,6 +37,16 @@ function HomeProvider(props) {
       setCurrentRoute('/home')
     }
   }, [curr])
+
+  function filtro(pedido){
+    if(filtroExibicao === ''){
+      return isNEU(pedido.arq)
+    }else if(filtroExibicao === 'ARQUIVADO'){
+      return !isNEU(pedido.arq)
+    }else{
+      return pedido.tipo === filtroExibicao && isNEU(pedido.arq)
+    }
+  }
 
   function fecharPedido(tab) {
     if (curr && curr.id === tab.id) {
@@ -96,7 +107,7 @@ function HomeProvider(props) {
         fecharPedido,
         openSelectBox, closeSelectBox,
         entregadorPadrao,
-        filtroExibicao, setFiltroExibicao
+        filtroExibicao, setFiltroExibicao, filtro
 
       }}
     >
@@ -183,6 +194,12 @@ const SelectBox = styled.div`
         button{
           width: 100%;
           height: 50px;
+        }
+
+        @media (max-width: 550px){
+          h1{
+            font-size: 1.2rem;
+          }
         }
       }
 

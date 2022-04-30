@@ -1,21 +1,26 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAd, faCheck, faCheckCircle, faInfoCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faInfoCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import * as cores from '../util/cores'
-import { isNEU } from '../util/misc';
+import useSound from "use-sound";
+import errorSound from '../sounds/error01.wav';
 const MessageContext = createContext()
 
 const tempo = 5 //segundos
 export default function MessageProvider({children}){
     const [component, setComponent] = useState(null)
+    const [playError] = useSound(errorSound)
 
     useEffect(() => {
         if(component){
             const timer = setTimeout(() => {
                 setComponent(null)    
             }, tempo * 1000);
-            return () => clearTimeout(timer)
+            return () => {
+                clearTimeout(timer)
+                setComponent(null)
+            }
         }   
     }, [component])
 
@@ -26,6 +31,7 @@ export default function MessageProvider({children}){
                 icon = <FontAwesomeIcon className={`icone ${type}`} icon={faCheckCircle} />
             }if(type === 'error'){
                 icon = <FontAwesomeIcon className={`icone ${type}`} icon={faTimesCircle} />
+
             }if(type === 'info'){
                 icon = <FontAwesomeIcon className={`icone ${type}`} icon={faInfoCircle} />
             }
@@ -44,6 +50,9 @@ export default function MessageProvider({children}){
                     </button>
                 </Container>
                 )
+                if(type === 'error'){
+                    playError()
+                }
             }
         }else{
             setComponent(null)

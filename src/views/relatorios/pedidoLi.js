@@ -12,6 +12,7 @@ import { useApi } from "../../api";
 export const Pedido = ({pedido, abrir}) => {
 
   const {getLocalUrl} = useApi()
+  
 
     return (
       <ItemContainer

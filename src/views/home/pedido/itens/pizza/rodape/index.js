@@ -258,7 +258,7 @@ const Container = styled.div`
 
     @media (max-width: 550px) {
         .resumo {
-            display: none;
+            font-size: .7rem;
         }
 
         .middle {

@@ -7,22 +7,10 @@ import * as cores from "../../util/cores";
 import FloatButton from "../../components/FloatButton";
 import { Pedido } from "./pedidoLi";
 import { useHome } from "../../context/homeContext";
-import { isNEU } from "../../util/misc";
 
 export default function Lista() {
   const { pedidos, semTipo, caixa, entrega, aplicativo, arquivados } = usePedidos();
-  const {curr, setCurr, novoPedido, filtroExibicao} = useHome()
-
-  function filtro(pedido){
-    if(filtroExibicao === ''){
-      return isNEU(pedido.arq)
-    }else if(filtroExibicao === 'ARQUIVADO'){
-      return !isNEU(pedido.arq)
-    }else{
-      return pedido.tipo === filtroExibicao && isNEU(pedido.arq)
-    }
-  }
-
+  const {curr, setCurr, novoPedido, filtro} = useHome()
 
   return (
         <ListaContainer>

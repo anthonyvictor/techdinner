@@ -100,11 +100,11 @@ function EndLocLista(props) {
     }})
     
     let temp2 = locais.map(e => {return{...e,
-       ...temp1.filter(en => en.cep === e.cep)[0], 
-       id: -e.id
+      ...temp1.filter(en => en.cep === e.cep)[0], 
+      id: -e.id
     }})
-
-    let temp = [...buildTemp(temp1, 10), ...buildTemp(temp2, 5)]
+    
+    let temp = [...buildTemp(temp2, 3), ...buildTemp(temp1, 10)]
 
     function buildTemp(t, max){
       return t.filter(e => filtro(e, searchString, searchStringNumero))

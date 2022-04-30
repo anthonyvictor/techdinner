@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useApi } from '../api'
 import * as cores from '../util/cores'
@@ -8,6 +8,7 @@ import { getInfoSecundarias, getItensAgrupados, getSaboresDescritos, getTituloPa
 import { FecharButton } from './FecharButton'
 
 const OrderNoteContext = createContext()
+
 export const OrderNoteProvider = ({ children }) => {
     const [component, setComponent] = useState(<></>)
 
@@ -134,8 +135,8 @@ const OrderNote = props => {
 
         const pizza =
             item.tipo === 0
-                ? `PIZZA${item.ids ? 'S TAM.' : ''} ${item.pizza.tamanho.nome} | 
-                        ${item.pizza.sabores.length} 
+                ? `PIZZA${item.ids ? 'S TAM.' : ''} ${item.pizza.tamanho.nome} |
+                        ${item.pizza.sabores.length}
                         SABOR${item.pizza.sabores.length > 1 ? 'ES' : ''}`
                 : ''
 
@@ -253,7 +254,7 @@ const OrderNote = props => {
         return(
             <div className='impressao-container'>
                 <small className='super-super-small impresso-por'>
-                    Operador: {user.name.split(' ')[0]} 
+                    Operador: {user.name.split(' ')[0]}
                 </small>
                 <small className='super-super-small data-impressao'>
                     {new Date().toLocaleString('pt-br')}
@@ -261,6 +262,14 @@ const OrderNote = props => {
             </div>
         )
     }
+
+    useEffect(() => {
+        const docTitle = document.title
+        document.title = `TechDinner-PEDIDO_${pedido?.id ?? 0}_${pedido?.cliente?.nome ?? 'CLIENTE DESCONHECIDO'}`
+        window.print()
+        document.title = docTitle
+        fechar()
+    }, [])
 
     return (
         <Container
@@ -300,14 +309,14 @@ const Container = styled.div`
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100%;
-
+    height: 10px;//100%;
     z-index: 999;
     background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     /* justify-content: flex-start; */
     justify-content: center;
     align-items: center;
+
 
     .super-small {
         font-size: 0.8rem;
@@ -359,6 +368,8 @@ const Container = styled.div`
             height: 100%;
             background-color: #ffea8c;
             border: 1px solid black;
+
+            *{user-select: text}
 
             > *{
                 margin: 0 auto;
@@ -490,7 +501,7 @@ const Container = styled.div`
             padding: 0;
             border-radius: 0;
             align-items: flex-start;
-            
+
             .print-area {
                 padding: 0;
                 width: min(100%, 75mm);

@@ -1,5 +1,5 @@
 import axios from "axios"
-import React, { useState, createContext, useContext, useEffect } from "react"
+import React, { useState, createContext, useContext, useEffect, useCallback } from "react"
 import { useInternetChecker } from "./components/InternetChecker"
 import { useMessage } from "./components/Message"
 import { getStored, setStored } from "./util/local"
@@ -60,9 +60,9 @@ export default function ApiProvider({children}) {
         return r
     }
 
-    const api = (user=null, password=null) => {
+    const api = useCallback((user=null, password=null) => {
         const url =  process.env.NODE_ENV === 'development' 
-        ? getApiUrl('fixed' )  
+        ? getApiUrl('local' )  
         : getApiUrl('fixed')
 
         if(!url) return null
@@ -76,7 +76,7 @@ export default function ApiProvider({children}) {
           })
 
           return newApi
-    }
+    })
 
     function refresh(newUser=null, newPassword=null){
        const user = newUser || getStored('user')

@@ -60,6 +60,12 @@ const Button = ({texto, cor, icone, disabled}) => {
 
             function next(status){
                 const newValor = Number(valorInputRef.current.value)
+                const dataa = new Date().toISOString().slice(0, 19).replace('T', ' ')
+                const datar = (
+                    status === 1 
+                    ? dataa
+                    : null
+                    )
                 const newPagamento = {
                     id: (
                         newValor === pagamento?.valorPago 
@@ -67,12 +73,8 @@ const Button = ({texto, cor, icone, disabled}) => {
                         : `fake${pagamentosCount + 1}`
                     ),
                     tipo: tipo,
-                    dataAdicionado: new Date().toLocaleString('en-CA'),
-                    dataRecebido: (
-                        status === 1 
-                        ? new Date().toLocaleString('en-CA')
-                        : null
-                        ),
+                    dataAdicionado: dataa,
+                    dataRecebido: datar,
                     status: status,
                     valorPago: newValor,
                     valorRecebido: Number(valorRecebido)
@@ -108,17 +110,17 @@ export const Formas = props => {
 
 const Container = styled.div`
     width: 100%;
-    height: 50px;
     display: flex;
     gap: 5px;
     flex-wrap: wrap;
+
     @media (max-width: 760px) {
-        height: 100px;
+        gap: 3px;
     }
 `
 
 const ButtonContainer = styled.button`
-    background-color: whitesmoke;
+    background-color: white;
     border-radius: 25px;
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
     flex-grow: 1;
@@ -128,6 +130,7 @@ const ButtonContainer = styled.button`
     justify-content: center;
     align-items: center;
     gap: 3px;
+    height: 50px;
     font-size: 16px;
     transition: font-size 0.1s linear;
     * {
@@ -136,11 +139,13 @@ const ButtonContainer = styled.button`
     svg {
         font-size: 25px;
     }
-    &:not(:disabled){
-        cursor: pointer;
-        &:hover {
-            font-size: 18px;
-            font-weight: 600;
+    @media (hover: hover) and (pointer: fine){
+        &:not(:disabled){
+            cursor: pointer;
+            &:hover {
+                font-size: 18px;
+                font-weight: 600;
+            }
         }
     }
     &:disabled{
@@ -149,5 +154,16 @@ const ButtonContainer = styled.button`
 
     @media (max-width: 760px) {
             width: 30%;
+    }
+    @media (max-width: 550px){
+        border: 1px solid;
+        width: 15%;
+        flex-direction: column;
+        svg{
+            font-size: 15px;
+        }
+        label{
+            font-size: 10px;
+        }
     }
 ` 

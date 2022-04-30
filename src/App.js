@@ -151,7 +151,17 @@ const Container = styled.div`
             position: absolute;
             z-index: 999;
             border: none;
+            width: 100%;
+            top: 0;
+            left: 0;
+
         }
+    }
+
+    @media (max-width: 550px){
+      .noMobile{
+        display: none;
+      }
     }
   
   > .topo-base {

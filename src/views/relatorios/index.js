@@ -46,12 +46,20 @@ const RelatoriosElement = () => {
     const { relatorios, carregar } = useRelatorios()
 
     const [dados, setDados] = useState({})
-    const [dataDe, setDataDe] = useState(new Date().toLocaleDateString('en-CA'))
-    const [dataAte, setDataAte] = useState(new Date().toLocaleDateString('en-CA'))
+    const [dataDe, setDataDe] = useState(getDataDeInicial())
+    const [dataAte, setDataAte] = useState(dataDe)
+
 
     useEffect(() => {
         buildData()
     }, [relatorios])
+
+    function getDataDeInicial(){
+        const dataAtual = new Date()
+        if (dataAtual.getHours() >= 10) return dataAtual
+        dataAtual.setDate(dataAtual.getDate() - 1)
+        return dataAtual.toLocaleDateString('en-CA')
+    }
 
 
     function buildData(){
