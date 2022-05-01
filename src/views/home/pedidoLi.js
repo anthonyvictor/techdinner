@@ -20,7 +20,7 @@ export const Pedido = ({pedido, atual, abrir}) => {
     const { refresh } = usePedidos()
     const {getLocalUrl, api} = useApi()
     const {contextMenu} = useContextMenu()
-    const {setCurr} = useHome()
+    const {setCurr, setFiltroExibicao} = useHome()
   
     function openContextMenu(){
       contextMenu([
@@ -60,7 +60,8 @@ export const Pedido = ({pedido, atual, abrir}) => {
       const resp = await api().post('pedidos/desarquivar', payload)
       if(resp?.data){
         refresh()
-        setCurr(null)
+        setFiltroExibicao('')
+        setCurr(resp.data)
       }
   
     }

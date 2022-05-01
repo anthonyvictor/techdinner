@@ -309,9 +309,10 @@ export const usePedido = () => {
 }
 
 function Pedido2() {
-
+  const {curr} = useHome()
   return(
-    <Container>
+    <Container pedido={curr}>
+      <div className='locker' />
       <Topo />
       <div className='middle-container'>
         <BoxCLiente />
@@ -334,6 +335,20 @@ height: 100%;
 overflow: hidden;
 user-select: none;
 position: relative;
+
+${(props) => !(props?.pedido?.arq?.dataInic !== null)}{
+  .locker{
+    display: block;
+    position: absolute;
+    z-index: 999;
+    content: '';
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%:;   
+    background-color: rgba(0,0,0,.2);
+  }
+}
 
 label,p{
   pointer-events:none;

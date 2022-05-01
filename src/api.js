@@ -62,7 +62,7 @@ export default function ApiProvider({children}) {
 
     const api = useCallback((user=null, password=null) => {
         const url =  process.env.NODE_ENV === 'development' 
-        ? getApiUrl('local' )  
+        ? getApiUrl('fixed' )  
         : getApiUrl('fixed')
 
         if(!url) return null
