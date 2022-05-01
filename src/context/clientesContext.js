@@ -1,6 +1,5 @@
 import React, {useContext, useState, createContext, useEffect} from "react";
 import { useApi } from "../api";
-import * as Format from "../util/Format";
 
 const ClientesContext = createContext()
 
@@ -23,22 +22,6 @@ export default function ClientesProvider({ children }) {
             return () => {montado = false}
         },[atualizar, ])     
 
-        // async function getImages(ids){
-        //     let res = []
-        //     if(!Array.isArray(ids) || ids.length === 0){
-        //         return res
-        //     }
-        //     for(let id of ids){
-        //         const img = await api().get('clientes/imagens', {params: {clienteId: id}})
-        //         if(img?.data?.length > 0){
-        //             res.push({id, imagem: img.data})
-        //         }
-        //     }
-        //     return res
-        // }
-
-
-
         const refresh = (cliente) => {
             if(cliente){
                 setClientes(prev => [...prev.filter(c => c.id !== cliente.id), cliente])
@@ -46,8 +29,16 @@ export default function ClientesProvider({ children }) {
                 setAtualizar(prev => prev + 1)
             }
         }
+
+        async function excluir(cliente){
+                const payload ={
+                    data: {id: cliente.id}
+                  }
+                  const resp = await api().delete('clientes/excluir', payload)
+                  resp.data && setClientes(prev => prev.filter(e=> e.id !== cliente.id))
+        }
     return(
-        <ClientesContext.Provider value={{clientes, setClientes, refresh}}>
+        <ClientesContext.Provider value={{clientes, setClientes, refresh, excluir}}>
             {children}
         </ClientesContext.Provider>
     )

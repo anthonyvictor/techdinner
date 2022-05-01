@@ -7,6 +7,7 @@ import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import * as misc from '../util/misc'
 import * as cores from '../util/cores'
 import { useLista } from '../context/listaContext';
+import { Kebab } from './KebabButton';
 
 export const Lista = (props) => {
   const {allowMultiSelect, allowSelect, onConfirm, selectedDataArray, grid, setLockHover} = useLista()
@@ -71,10 +72,7 @@ const Item = (props) => {
 
                 {children}
 
-                <button className="botao" onClick={(e) => onRightClick(e, getData())}>
-                    <FontAwesomeIcon icon={faEllipsisV} />
-                </button>
-
+                <Kebab click={e => onRightClick(e, getData())} />
             </li>
   )
 }
@@ -140,16 +138,6 @@ const Container = styled.div`
 
       .centro {
         flex-grow: 2;
-      }
-
-      button {
-        background-color: transparent;
-        border: none;
-        outline: none;
-        font-size: 20px;
-        padding: 5px 15px;
-        cursor: pointer;
-        pointer-events: fill;
       }
 
       &.ativo {

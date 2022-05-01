@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
+import { isNEU, joinObj } from '../util/misc';
 
 const CadCliContext = createContext()
 
@@ -23,18 +24,6 @@ function CadCliProvider(props) {
   }
   const [lista, setLista] = useState(false)
   const [curr, setCurr] = useState(props.cliente ?? Empty)
-  const [images, setImages] = useState([])
-  const [imagem, setImagem] = useState(null)
-  
-  // const [imagemField, setImagemField] = useState(null)
-  // const [nomeField, setNomeField] = useState('')
-  // const [contatoField, setContatoField] = useState('')
-  // const [tagField, setTagField] = useState('')
-  // const [contatosArray, setContatosArray] = useState('')
-  // const [tagsArray, setTagsArray] = useState('')
-  // const [, set] = useState('')
-  // const [, set] = useState('')
-  // const [, set] = useState('')
 
   function limpar(confirm) {
     const res = confirm && window.confirm("Limpar formulário?")
@@ -42,11 +31,21 @@ function CadCliProvider(props) {
       setCurr(Empty)
     }
   }
-
+  
+  function editar(cliente) {
+    let preenchido = !isNEU(joinObj(curr))
+    const change = () => {props.changeTab ? props.changeTab() : setCurrentRoute(props.tabs[1])}
+    if (curr && curr.id === cliente.id) {
+      change()
+    } else if ((preenchido && window.confirm("Deseja cancelar a edição atual?")) ||
+      !preenchido) {
+      setCurr(cliente)
+      change()
+    }
+  }
   return (
     <CadCliContext.Provider value={{
-     curr, setCurr, limpar, lista, setLista, 
-     images, setImages, imagem, setImagem
+     curr, setCurr, limpar, editar, lista, setLista, 
     }}>
       {props.children}
     </CadCliContext.Provider>
@@ -56,7 +55,6 @@ function CadCliProvider(props) {
 
 
 export default CadCliProvider;
-
 
 export const useCadCli = () => {
   return useContext(CadCliContext)
