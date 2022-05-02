@@ -1,5 +1,5 @@
 import React from 'react'
-import ListaCli from '../../../cadastros/clientes/lista'
+import {ListaCli} from '../../../cadastros/clientes/lista'
 
 export const Lista = ({routes, callback, mudarTab}) => {
     return (

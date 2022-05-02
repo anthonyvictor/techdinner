@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 //VIEWS
-import ListaCli from "./lista";
+import {ListaCli} from "./lista";
 import Cadastro from "./cadastro";
 
 //CONTEXT
