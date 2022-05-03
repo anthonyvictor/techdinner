@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faInfoCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-import * as cores from '../util/cores'
+import { faCheckCircle, faExclamationTriangle, faInfoCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { cores } from '../util/cores'
 import useSound from "use-sound";
 import errorSound from '../sounds/error01.wav';
 const MessageContext = createContext()
@@ -29,11 +29,13 @@ export default function MessageProvider({children}){
             let icon = null
             if(type === 'ok'){
                 icon = <FontAwesomeIcon className={`icone ${type}`} icon={faCheckCircle} />
-            }if(type === 'error'){
+            }else if(type === 'error'){
                 icon = <FontAwesomeIcon className={`icone ${type}`} icon={faTimesCircle} />
 
-            }if(type === 'info'){
+            }else if(type === 'info'){
                 icon = <FontAwesomeIcon className={`icone ${type}`} icon={faInfoCircle} />
+            }else if(type === 'alert'){
+                icon = <FontAwesomeIcon className={`icone ${type}`} icon={faExclamationTriangle} />
             }
             
             if(icon){
@@ -130,6 +132,9 @@ const Container = styled.div`
             color: ${cores.vermelhoDark};
         }
         &.info{
+            color: ${cores.azulDark};
+        }
+        &.alert{
             color: ${cores.amareloDark};
         }
     }

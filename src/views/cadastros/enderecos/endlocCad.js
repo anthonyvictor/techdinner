@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { ToggleButton } from "../../../components/ToggleButton";
 import { useEnderecos } from "../../../context/enderecosContext";
 import * as Format from "../../../util/Format";
-import * as cores from '../../../util/cores'
-import { useCadEndereco } from "../../../context/cadEnderecosContext";
+import { cores } from '../../../util/cores'
+import { useCadEndereco } from ".";
 import { isMobile, isNEU } from "../../../util/misc";
 
 function EndLocCad() {
@@ -123,6 +123,9 @@ const Container = styled.div`
   justify-content: stretch;
   gap: 10px;
   overflow-y: auto;
+  padding: 5px;
+  background-color: ${cores.branco};
+  height: 100%; 
 
 
   form {

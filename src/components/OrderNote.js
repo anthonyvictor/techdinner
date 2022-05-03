@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useApi } from '../api'
-import * as cores from '../util/cores'
+import { cores } from '../util/cores'
 import { formatCNPJ, formatEndereco, formatLitro, formatPhoneNumber, formatReal } from '../util/Format'
 import { isNEU, join } from '../util/misc'
-import { getInfoSecundarias, getItensAgrupados, getSaboresDescritos, getTituloPagamento } from '../util/pedidoUtil'
+import { getInfoSecundarias, getItensAgrupados, getTituloPagamento } from '../util/pedidoUtil'
 import { FecharButton } from './FecharButton'
 
 const OrderNoteContext = createContext()

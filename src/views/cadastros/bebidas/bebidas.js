@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import ListaProvider from '../../../context/listaContext';
 import { Lista } from '../../../components/Lista';
-import * as cores from '../../../util/cores'
+import { cores } from '../../../util/cores'
 import * as format from '../../../util/Format'
 import * as misc from '../../../util/misc'
 import PictureBox from '../../../components/PictureBox';
@@ -13,16 +13,6 @@ import { faGlassCheers } from "@fortawesome/free-solid-svg-icons";
 import { useContextMenu } from '../../../components/ContextMenu';
 
 export const Bebidas = () => {
-  const Empty = {
-    id: 0, nome: '',
-    imagem: '',
-    tipo: '',
-    sabor: '',
-    tamanho: 0,
-    valor: 0,
-    ativo: true,
-    visivel: true
-}
 
     const {bebidas} = useBebidas()
     const [search, setSearch] = useState("");
@@ -48,7 +38,7 @@ export const Bebidas = () => {
 
                         <div className='img'>
                             {!misc.isNEU(e.imagem) 
-                            ? <img src={e.imagem /*format.convertImageToBase64() */} /> 
+                            ? <img src={e.imagem} alt={e?.nome ?? 'bebida.img'} /> 
                             : <FontAwesomeIcon className='icone' icon={faGlassCheers} />}
                         
                         </div>

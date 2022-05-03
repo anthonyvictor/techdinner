@@ -1,8 +1,8 @@
 import React, { createContext, useCallback, useContext} from 'react';
 import styled from 'styled-components';
 
-import * as cores from '../../../util/cores'
-import { equals, join, removeAccents, removeImagens } from '../../../util/misc';
+import { cores } from '../../../util/cores'
+import { removeAccents } from '../../../util/misc';
 
 import { useHome } from '../../../context/homeContext';
 import { usePedidos } from '../../../context/pedidosContext';

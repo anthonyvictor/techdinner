@@ -1,15 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { focusBusy } from "../util/misc";
 
-export const Keyer = ({
-    searchRef, focusSearch, finalResults, 
-    currentHovered, setCurrentHovered, currentHoveredRef,
-    canClick, click
-}) => {
+export const Keyer = ({searchRef, arr, hovered, click, canClick}) => {
 
     const specialKeys = ['ArrowDown', 'ArrowUp', 'Enter']
     const alphaNum = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('')
     const [specialKeyPressed, setSpecialKeyPressed] = useState(null)
+    const {currentHovered, setCurrentHovered, currentHoveredRef} = hovered
 
     useEffect(() => {
         addKeyPressEventHandler()
@@ -20,25 +17,29 @@ export const Keyer = ({
         keyPressHandler()
     }, [specialKeyPressed]) //eslint-disable-line
 
+    function runClick(object){
+        if(!canClick || canClick(object)) click(object)
+    }
+
     const keyPressHandler = () => {
-        if (specialKeyPressed && finalResults.length > 0 && !focusBusy()) {
-            let index = currentHovered ? finalResults.map(e => e.id).indexOf(currentHovered.id) : -1
-            const up = { is: specialKeyPressed === 'ArrowUp', val: index > 0 ? finalResults[index - 1] : finalResults[index] }
+        if (specialKeyPressed && arr.length > 0 && !focusBusy()) {
+            let index = currentHovered ? arr.map(e => e.id).indexOf(currentHovered.id) : -1
+            const up = { is: specialKeyPressed === 'ArrowUp', val: index > 0 ? arr[index - 1] : arr[index] }
             const down = {
                 is: specialKeyPressed === 'ArrowDown',
-                val: index < finalResults.length - 1 ? finalResults[index + 1] : finalResults[index],
+                val: index < arr.length - 1 ? arr[index + 1] : arr[index],
             }
-            const enter = { is: specialKeyPressed === 'Enter' && (currentHovered || finalResults.length === 1) }
-            
+            const enter = { is: specialKeyPressed === 'Enter' && (currentHovered || arr.length === 1) }
+
             if (enter.is) {
-                let current = finalResults[0]
-                if(finalResults.length > 1){
-                    current = currentHovered ?? finalResults[0]
+                let current = arr[0]
+                if(arr.length > 1){
+                    current = currentHovered ?? arr[0]
                 }
-                canClick(current) && click(current)
-                //current.ativo && checkUncheck(current, !String(current.id).includes('s'))
+                runClick(current)
             } else {
-                setCurrentHovered(up.is ? up.val : down.val)
+                const newHovered = up.is ? up.val : down.val
+                setCurrentHovered(newHovered)
             }
         }
     }
@@ -48,7 +49,8 @@ export const Keyer = ({
             [...alphaNum, 'BACKSPACE'].some(e => e === event.key.toUpperCase()) &&
             document.activeElement !== searchRef.current && !focusBusy()
         ) {
-            focusSearch()
+            console.log(searchRef)
+            searchRef.current.focus()
         } else {
             onPress(event.key, event.key)
         }

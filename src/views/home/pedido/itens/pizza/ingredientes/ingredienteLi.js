@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useContextMenu } from '../../../../../../components/ContextMenu'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons'
-import * as cores from '../../../../../../util/cores'
+import { cores } from '../../../../../../util/cores'
 
 
 export const IngredienteLi = memo(({ingrediente, changeSelected}) => {

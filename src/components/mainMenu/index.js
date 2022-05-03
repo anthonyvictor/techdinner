@@ -30,7 +30,7 @@ export default function MainMenu(){
             case 'cad':
                 arr = {
                     nome: nome, views: [
-                    {titulo: 'Clientes', link: '/cad/clientes/lista'},
+                    {titulo: 'Clientes', link: '/cad/clientes'},
                     {titulo: 'Endereços', link: '/cad/endloc/lista'},
                     {titulo: 'Pizzas', link: '/cad/pizzas/sabores'},
                     {titulo: 'Bebidas', link: '/cad/bebidas'},
@@ -58,7 +58,7 @@ export default function MainMenu(){
     }
 
     function sair(e){
-        if(e.target == e.currentTarget){
+        if(e.target === e.currentTarget){
             if(window.confirm('Deseja realmente sair?')){
                 localStorage.setItem('user',null)
                 localStorage.setItem('password',null)

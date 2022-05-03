@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { useOutro } from '.'
 import { useContextMenu } from '../../../../../components/ContextMenu'
 import { useItens } from '../itens'
-import * as cores from '../../../../../util/cores'
+import { cores } from '../../../../../util/cores'
 import { join } from '../../../../../util/misc'
 
 export const Rodape = () => {

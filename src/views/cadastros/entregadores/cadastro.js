@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import * as cores from '../../../util/cores'
+import { cores } from '../../../util/cores'
 import * as misc from '../../../util/misc'
 
 export const Cadastro = () => {

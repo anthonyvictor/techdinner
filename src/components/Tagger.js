@@ -1,10 +1,10 @@
-import React, {useRef, useState } from "react";
+import React, {useRef } from "react";
 import { formatPhoneNumber, formatNumber } from '../util/Format'
 import { useContextMenu } from './ContextMenu';
 import * as apis from '../apis' 
 import * as msg from '../util/Mensagens'
 import styled from "styled-components";
-import * as cores from "../util/cores";
+import { cores } from "../util/cores";
 
 
 function Tagger(props) {

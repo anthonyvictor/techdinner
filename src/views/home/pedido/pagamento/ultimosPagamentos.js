@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useApi } from "../../../../api";
 import { FecharButton } from "../../../../components/FecharButton";
 import { RodapeTechDinner } from "../../../../components/RodapeTechDinner";
-import * as cores from '../../../../util/cores'
+import { cores } from '../../../../util/cores'
 import { Pagamento } from "./pagamentoLi";
 
 const UltimosPagamentos2 = ({clienteId, fechar}) => {

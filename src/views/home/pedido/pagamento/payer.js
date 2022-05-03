@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react'
 import styled from 'styled-components'
 import { Pagamentos } from './pagamentos'
-import * as cores from '../../../../util/cores'
+import { cores } from '../../../../util/cores'
 import { FecharButton } from '../../../../components/FecharButton'
 
 const PayerContext = createContext()

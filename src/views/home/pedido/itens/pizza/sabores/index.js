@@ -12,7 +12,7 @@ export const SaboresLista = () => {
         saborHovered, setSaborHovered, saborHoveredRef, 
         finalResults,
         checkUncheck,
-        isSearchFocused, setIsSearchFocused
+        setIsSearchFocused
     } = usePizza()
 
 

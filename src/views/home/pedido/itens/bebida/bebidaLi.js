@@ -6,7 +6,7 @@ import { formatLitro, formatReal } from '../../../../../util/Format'
 import { join } from '../../../../../util/misc'
 import { useContextMenu } from '../../../../../components/ContextMenu'
 import { useBebida } from '.'
-import * as cores from '../../../../../util/cores'
+import { cores } from '../../../../../util/cores'
 
 export const BebidaLi = ({ bebida }) => {
     const { contextMenu } = useContextMenu()

@@ -1,16 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-
 import * as misc from '../util/misc'
-import * as cores from '../util/cores'
+import { cores } from '../util/cores'
 import { useLista } from '../context/listaContext';
 import { Kebab } from './KebabButton';
 
 export const Lista = (props) => {
-  const {allowMultiSelect, allowSelect, onConfirm, selectedDataArray, grid, setLockHover} = useLista()
+  const {allowMultiSelect, allowSelect, onConfirm, selectedDataArray, grid} = useLista()
   // mustRefresh &&
   function getIsSelected(id){
     return (allowMultiSelect || allowSelect) ? selectedDataArray.some(e => misc.equals(e.id, id)) : false
@@ -116,6 +112,9 @@ const Container = styled.div`
       background-color: ${cores.brancoEscuro};
       flex-basis: 70px;
 
+      button{
+        pointer-events: fill;
+      }
       &.selected {
         background-color: ${cores.verde};
       }

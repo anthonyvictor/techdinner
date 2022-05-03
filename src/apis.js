@@ -31,6 +31,14 @@ export function sendWhatsAppMessage(txt, phoneNumber){
   window.open("https://api.whatsapp.com/send?phone=" + phoneNumber + txt)
 }
 
+export async function getFileFromUrl(url, name, defaultType = 'image/jpeg'){
+  const response = await fetch(url);
+  const data = await response.blob();
+  return new File([data], name, {
+    type: data.type || defaultType,
+  });
+}
+
 export function enderecoToUrl(endereco){
   return new Promise((resolve, reject) => {
     if(!misc.isNEU(endereco.logradouro)){

@@ -5,7 +5,7 @@ import Rodape from "./rodape";
 import Topo from "./topo";
 import HomeProvider, { useHome } from "../../context/homeContext";
 import styled from "styled-components";
-import * as cores from "../../util/cores";
+import { cores } from "../../util/cores";
 import Pedido from "./pedido";
 import { OrderNoteProvider } from "../../components/OrderNote";
 

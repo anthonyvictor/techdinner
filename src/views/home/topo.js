@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styled from "styled-components";
 import { useHome } from "../../context/homeContext";
 import { usePedidos } from "../../context/pedidosContext";
-import * as cores from '../../util/cores'
+import { cores } from '../../util/cores'
 
 export default function Topo(){
   const {novoPedido, filtroExibicao, setFiltroExibicao} = useHome()

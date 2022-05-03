@@ -3,7 +3,7 @@ import { usePizzas } from '../../../../../../context/pizzasContext';
 import {IngredienteLi} from './ingredienteLi';
 import { usePizza } from '..';
 import { filtro } from '../../../../../../util/misc'
-import * as cores from '../../../../../../util/cores'
+import { cores } from '../../../../../../util/cores'
 import { SearchBar } from '../../../../../../components/SearchBar'
 import styled from 'styled-components';
 

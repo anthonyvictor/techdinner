@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { AvancarButton } from '../../../../components/AvancarButton'
 import { FecharButton } from '../../../../components/FecharButton'
 import { useMessage } from '../../../../components/Message'
-import * as cores from '../../../../util/cores'
+import { cores } from '../../../../util/cores'
 
 const HoraContext = createContext()
 

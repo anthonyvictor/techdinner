@@ -5,7 +5,7 @@ import { Pagamentos } from './pagamentos'
 import { formatReal } from '../../../../util/Format';
 import styled from 'styled-components';
 import { useHome } from '../../../../context/homeContext';
-import * as cores from '../../../../util/cores'
+import { cores } from '../../../../util/cores'
 import { join } from '../../../../util/misc';
 
 import { Valores } from './valores';

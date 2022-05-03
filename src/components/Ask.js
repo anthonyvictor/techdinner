@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import * as cores from '../util/cores'
+import { cores } from '../util/cores'
 
 const AskContext = createContext()
 

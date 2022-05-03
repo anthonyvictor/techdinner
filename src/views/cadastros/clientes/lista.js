@@ -2,28 +2,25 @@ import React, { createContext, useContext, useEffect, useRef, useState } from "r
 import styled from "styled-components";
 
 import { SearchBar } from "../../../components/SearchBar";
-import * as format from "../../../util/Format";
-import * as misc from "../../../util/misc";
+import { formatPhoneNumber } from "../../../util/Format";
+import { joinObj, isNEU, removeConjuncoes, removeAccents } from "../../../util/misc";
 
 import { useClientes } from "../../../context/clientesContext";
-import { useCadCli } from "../../../context/cadClientesContext";
-import { useRotas } from "../../../context/rotasContext";
 import { ClienteLi } from "./clienteLi";
 import { Keyer } from "../../../components/Keyer";
 import { nomeTags } from "../../../util/clienteUtil";
+import { useCadListaClientes } from '.'
 
 const ListaClientesContext = createContext()
 
-export const ListaCli = ({ children }) => {
+export const ListaCli = () => {
   
   const [filteredResults, setFilteredResults] = useState([])
   const [searchString, setSearchString] = useState("");
   const [finalSearchString, setFinalSearchString] = useState('') // it changes after searchString changes + 700 miliseconds
   const [currentHovered, setCurrentHovered] = useState(null)
-  
-  const {setCurrentRoute} = useRotas()
-  const {curr, setCurr, lista} = useCadCli();
-  const { clientes, setClientes, getImages, excluir } = useClientes();
+  const { clientes } = useClientes();
+  const { select } = useCadListaClientes()
 
   const searchRef = useRef()
   const currentHoveredRef = useRef()
@@ -33,8 +30,8 @@ export const ListaCli = ({ children }) => {
   },[finalSearchString, clientes])
 
   function filterResults(){
-    let pNumero = finalSearchString.replace(/[^0-9]/gi)
-    let pPhone = format.formatPhoneNumber(pNumero, false)
+    const pNumero = finalSearchString.replace(/[^0-9]/gi)
+    const pPhone = formatPhoneNumber(pNumero, false)
   
     let step1 = [...clientes].filter(e => 
       filtro({
@@ -43,7 +40,7 @@ export const ListaCli = ({ children }) => {
         contato: e.contato,
         endereco: e.endereco
       }, 
-      finalSearchString, pNumero, pPhone))
+      pNumero, pPhone))
     let maxID = step1.length > 0 
     ? step1.map(e => e.id).reduce((max, val) => max > val ? max : val)
     : 0
@@ -51,11 +48,6 @@ export const ListaCli = ({ children }) => {
     let step3 = step2.slice(0, 10)
     setFilteredResults(step3) 
   }
-
-  function focusSearch(){
-    searchRef.current.focus()
-  }
-
   
   function ordem(a,b,maxID){
   
@@ -108,24 +100,19 @@ export const ListaCli = ({ children }) => {
     return order
   }
   
-  function filtro(obj, searcString, pNumero, pPhone) {
-  if (searcString !== "") {
-  let txt = misc.joinObj(obj)     
+  function filtro(obj, pNumero, pPhone) {
+  if (finalSearchString === '') return true 
+  let txt = joinObj(obj)     
   
     let val = txt.toUpperCase().replace(/[^a-z0-9]/gi, "");
   
     const p1 = val.includes(finalSearchString)
-  
     const p2 = val.includes(pNumero)
-  
-    const p3 = !misc.isNEU(pPhone) && val.includes(pPhone)
-  
-    const p4 = misc.removeConjuncoes(val).includes(misc.removeConjuncoes(finalSearchString))
+    const p3 = !isNEU(pPhone) && val.includes(pPhone)
+    const p4 = removeConjuncoes(val).includes(removeConjuncoes(finalSearchString))
   
     return p1 || p2 || p3 || p4
-  } else {
-    return true;
-  }
+  
   }
   
   useEffect(() => {
@@ -133,7 +120,7 @@ export const ListaCli = ({ children }) => {
     
     setFinalSearchString(
       
-      misc.removeAccents(searchString)
+      removeAccents(searchString)
       .toUpperCase().replace("  ", " ")
       .replace("  ", " ")
       .replace(/[^a-z0-9]/gi, ""))
@@ -143,23 +130,19 @@ export const ListaCli = ({ children }) => {
     return() => clearTimeout(timer)
   
   }, [searchString])//eslint-disable-line
-
-
+  
   return (
     <ListaClientesContext.Provider value={{
-
-      filtered: filteredResults, currentHovered, setCurrentHovered,
-      callback, 
+      searchString, setSearchString, searchRef,
+      filteredResults, 
+      currentHovered, setCurrentHovered, currentHoveredRef,
+    
     }} >
-      {children}
 
       <Keyer 
-      searchRef={searchRef} focusSearch={focusSearch} 
-      finalResults={filteredResults} 
-      currentHovered={currentHovered} 
-      setCurrentHovered={setCurrentHovered} 
-      currentHoveredRef={currentHoveredRef}
-      canClick={true} click={handleClick} />
+      searchRef={searchRef} arr={filteredResults} click={select}
+      hovered={{currentHovered, setCurrentHovered, currentHoveredRef}}
+      />
     
       <ListaCli2 />
 
@@ -177,12 +160,13 @@ function ListaCli2() {
 
   function openFilter() {}
   
+  const {filteredResults, searchString, setSearchString, searchRef} = useListaClientes() 
 
   return (
     <Container className="lista-clientes">
-      <SearchBar value={search} setValue={setSearch} filter={openFilter} />
+      <SearchBar _ref={searchRef} value={searchString} setValue={setSearchString} filter={openFilter} />
         <ul className="clientes-ul">
-          {filteredResults.map((cliente) => <ClienteLi cliente={cliente} />)}
+          {filteredResults.map((cliente) => <ClienteLi key={cliente.id} cliente={cliente} />)}
         </ul>
     </Container>
   );
@@ -195,4 +179,15 @@ const Container = styled.div`
   width: 100% ;
   height: 100% ;
   flex-grow: 2;
+
+  ul{
+    display: flex;
+    flex-direction: column;
+    padding: 3px;
+    gap: 3px;
+    overflow-y: auto;
+    height: 100%;
+    width: 100%;
+  }
+
   `;

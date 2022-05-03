@@ -1,22 +1,24 @@
-import React from 'react'
+import React, { memo } from 'react'
 import styled from 'styled-components'
 import { sendWhatsAppMessage } from '../../../apis'
 import { useImageViewer } from '../../../components/ImageViewer'
 import { useMessage } from '../../../components/Message'
-import { useCadCli } from '../../../context/cadClientesContext'
+import { useCadListaClientes } from '.'
 import { useClientes } from '../../../context/clientesContext'
 import { formatEndereco, formatPhoneNumber, formatReal } from '../../../util/Format'
 import { Cumprimento } from '../../../util/Mensagens'
-import { isNEU, joinObj } from '../../../util/misc'
+import { isNEU } from '../../../util/misc'
 import { useListaClientes } from './lista'
-import * as cores from "../../../util/cores";
+import { cores } from "../../../util/cores";
+import { useContextMenu } from '../../../components/ContextMenu'
 
-export const ClienteLi = ({ cliente }) => {
-    const { clienteHovered } = useListaClientes()
+const ClienteLi2 = ({ cliente }) => {
+    const {edit, select} = useCadListaClientes()
+    const { currentHovered, setCurrentHovered, currentHoveredRef } = useListaClientes()
     const { message } = useMessage()
     const { imageView } = useImageViewer()
+    const { contextMenu } = useContextMenu()
     const { excluir } = useClientes()
-    const { curr, editar } = useCadCli()
 
     function handleContextMenu(e) {
         e.preventDefault()
@@ -31,7 +33,7 @@ export const ClienteLi = ({ cliente }) => {
 
     function openContextMenu() {
         contextMenu([
-            { title: 'Editar', click: () => handleEditar(cliente), enabled: true, visible: true },
+            { title: 'Editar', click: () => edit(cliente), enabled: true, visible: true },
 
             { title: 'Copiar', click: () => openContextCopiar(cliente), enabled: true, visible: true },
 
@@ -39,7 +41,7 @@ export const ClienteLi = ({ cliente }) => {
 
             { title: 'Excluir', click: () => handleExcluir(cliente), enabled: true, visible: true },
 
-            { title: 'Ver imagem', click: () => verImagem(cliente), enabled: cliente.imagem, visible: true },
+            { title: 'Ver imagem', click: () => verImagem(), enabled: cliente.imagem, visible: true },
         ])
     }
 
@@ -87,17 +89,10 @@ export const ClienteLi = ({ cliente }) => {
 
     function handleMouseEnter(e) {
         e.preventDefault()
+        setCurrentHovered(cliente)
     }
     function handleMouseLeave(e) {
         e.preventDefault()
-    }
-
-    function handleDoubleClick() {
-        if (callback) {
-            callback(cliente)
-        } else {
-            editar(cliente)
-        }
     }
 
     async function handleExcluir(cliente) {
@@ -115,7 +110,7 @@ export const ClienteLi = ({ cliente }) => {
         }
     }
 
-    function verImagem(cliente) {
+    function verImagem() {
         imageView({
             title: cliente.nome,
             image: cliente.imagem,
@@ -123,17 +118,17 @@ export const ClienteLi = ({ cliente }) => {
     }
 
     return (
-        <li
+        <Container
             key={cliente.id}
-            className={`cliente${clienteHovered?.id === cliente.id ? ' hovered' : ''}`}
+            className={`cliente${(currentHovered?.id === cliente.id) ? ' hovered' : ''}`}
             onContextMenu={handleContextMenu}
-            onDoubleClick={handleDoubleClick}
+            onDoubleClick={() => select(cliente)}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            ref={clienteHovered.id === cliente.id ? clienteHoveredRef : undefined}
-        >
+            ref={currentHovered?.id === cliente.id ? currentHoveredRef : undefined}
+            >
             <div className='inicio'>
-                {cliente.imagem && <img src={cliente.imagem} alt='imagem' />}
+                {cliente.imagem && <img src={cliente.imagem} alt='imagem' onClick={() => verImagem()} />}
                 <label className={`id${isNEU(cliente.valorGasto) ? ' novo' : ''}`}>{cliente.id}</label>
             </div>
 
@@ -158,80 +153,126 @@ export const ClienteLi = ({ cliente }) => {
                     </div>
                 </div>
             </div>
-        </li>
+        </Container>
     )
 }
 
+export const ClienteLi = memo(ClienteLi2, areEqual)
+    
+function areEqual(prevProps, nextProps) {
+   return (
+    prevProps?.cliente?.id === nextProps?.cliente?.id
+   )
+  }
+
 const Container = styled.li`
-    .inicio {
-        font-size: 10px;
-        min-width: 40px;
-
-        .id {
-            user-select: none;
-            &.novo {
-                color: ${cores.verdeEscuro};
-                font-size: 12px;
-                font-weight: 600;
-            }
+      display: flex;
+      align-items: center;
+      padding: 5px;
+      gap: 3px;
+      border: 1px solid black;
+      background-color: ${cores.brancoEscuro};
+      flex-basis: 70px;
+      flex-shrink: 1;
+      
+      * {
+          pointer-events: none;
         }
-
-        img {
-            user-select: none;
-            border-radius: 50%;
-            border: 2px solid black;
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            background-color: transparent;
+        
+        &.hovered {
+            background-color: ${cores.cinzaEscuro};
+            * {
+                color: white !important;
+            }
+            
+            
         }
-    }
-
-    .centro {
-        user-select: none;
-        .info {
-            flex-grow: 2;
-            .nome {
-                font-weight: 600;
-                font-size: 15px;
-            }
-
-            .tags {
-                font-size: 12px;
-            }
-
-            .contato {
-                font-weight: 600;
-                font-size: 13px;
-            }
-
-            .bottom-info {
-                font-size: 12px;
-                font-style: italic;
-                span:after {
-                    content: ' | ';
-                }
-
-                span:last-child:after {
-                    content: '';
-                }
-            }
-        }
-    }
-
-    @media (max-width: 550px) {
-        padding: 3px 2px;
-
+        
+        
         .inicio {
+            font-size: 10px;
+            min-width: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            
+            .id {
+                user-select: none;
+                &.novo {
+                    color: ${cores.verdeEscuro};
+                    font-size: 12px;
+                    font-weight: 600;
+                }
+            }
+            
             img {
-                width: 30px;
-                height: 30px;
+                user-select: none;
+                border-radius: 50%;
+                border: 2px solid black;
+                width: 40px;
+                height: 40px;
+                object-fit: cover;
+                background-color: transparent;
+                cursor: pointer;
+                pointer-events: fill;
             }
         }
-
+        
         .centro {
-            overflow: hidden;
+            user-select: none;
+            flex-grow: 2;
             .info {
+                flex-grow: 2;
+                .nome {
+                    font-weight: 600;
+                    font-size: 15px;
+                }
+                
+                .tags {
+                    font-size: 12px;
+                }
+                
+                .contato {
+                    font-weight: 600;
+                    font-size: 13px;
+                }
+
+                .endereco{
+                    font-size: 11px;
+                }
+                
+                .bottom-info {
+                    *{font-size: 10px;}
+                    font-style: italic;
+                    span:after {
+                        content: ' | ';
+                    }
+                    
+                    span:last-child:after {
+                        content: '';
+                    }
+                }
+            }
+        }
+        
+        @media (max-width: 550px) {
+            padding: 3px 2px;
+            /* flex-basis: 70px; */
+            flex-shrink: 0.6;
+            align-items: stretch;
+            
+            .inicio {
+                img {
+                    width: 30px;
+                    height: 30px;
+                }
+            }
+            
+            .centro {
+                overflow: hidden;
+                .info {
                 overflow-x: auto;
                 pointer-events: fill;
                 margin: 2px 0;

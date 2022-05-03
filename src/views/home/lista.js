@@ -3,7 +3,7 @@ import { usePedidos } from "../../context/pedidosContext";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as icons from "@fortawesome/free-solid-svg-icons";
-import * as cores from "../../util/cores";
+import { cores } from "../../util/cores";
 import FloatButton from "../../components/FloatButton";
 import { Pedido } from "./pedidoLi";
 import { useHome } from "../../context/homeContext";

@@ -2,11 +2,11 @@ import React, {useState,useEffect} from 'react';
 import styled from 'styled-components';
 import * as misc from '../../../util/misc'
 import * as format from '../../../util/Format'
-import * as cores from '../../../util/cores'
+import { cores } from '../../../util/cores'
 import { SearchBar } from '../../../components/SearchBar';
 import { usePizzas } from '../../../context/pizzasContext';
 import { Lista } from '../../../components/Lista';
-import CadPizzasProvider, { useCadPizzas } from '../../../context/cadPizzasContext';
+import CadPizzasProvider, { useCadPizzas } from '.';
 import Ingredientes from './ingredientes';
 import ListaProvider from '../../../context/listaContext';
 import { useContextMenu } from '../../../components/ContextMenu';
@@ -266,6 +266,7 @@ const IngrListContainer = styled.div`
 `
 
 const Container = styled.div`
+background-color: ${cores.branco};
 position: relative;
   display: flex;
   justify-content: stretch;
@@ -281,6 +282,7 @@ position: relative;
 
     .lista-component{
     li{
+     
       div{
         flex-grow: 2;
 

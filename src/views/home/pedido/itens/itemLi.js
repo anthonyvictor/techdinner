@@ -1,18 +1,18 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPizzaSlice, faGlassCheers, faIceCream, 
     faHamburger, faUtensils, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { convertImageToBase64, formatLitro, formatReal } from '../../../../util/Format';
-import { equals, isNEU, join } from "../../../../util/misc";
+import { isNEU, join } from "../../../../util/misc";
 import styled from "styled-components";
-import * as cores from '../../../../util/cores'
+import { cores } from '../../../../util/cores'
 import { useContextMenu } from '../../../../components/ContextMenu';
 import { useBoxItens } from ".";
 import { usePedido } from "..";
 import { useHome } from "../../../../context/homeContext";
 import { useMessage } from "../../../../components/Message";
 import { useAsk } from '../../../../components/Ask'
-import { getOnly1Item, getSaboresDescritos, getInfoSecundarias } from "../../../../util/pedidoUtil";
+import { getOnly1Item, getInfoSecundarias } from "../../../../util/pedidoUtil";
 
 const ItemContext = createContext()
 

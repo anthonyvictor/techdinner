@@ -1,10 +1,10 @@
-import React, { memo, useState, useMemo, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { usePizza } from '..'
 import { useContextMenu } from '../../../../../../components/ContextMenu'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons'
 import { formatAbrev } from '../../../../../../util/Format'
-import * as cores from '../../../../../../util/cores'
+import { cores } from '../../../../../../util/cores'
 import { equals } from '../../../../../../util/misc'
 import styled from 'styled-components'
 
@@ -14,7 +14,7 @@ export const SaborLi = ({sabor}) => {
         saborHovered, setSaborHovered, saborHoveredRef, 
         checkUncheck, getIsSelected,
         isHoverLocked, setIsHoverLocked,
-        replaceSabor, getIngredientesDescritos, saboresSelected,
+        replaceSabor, getIngredientesDescritos, 
         ingredientesComponentResult, setIngredientesComponentResult,
         abrirIngredientesComponent, fecharIngredientesComponent, 
         ativarDesativar
@@ -153,7 +153,7 @@ const Container = styled.li`
 
             span {
                 font-weight: 600;
-                font-size: 17px;
+                font-size: 15px;
                 
                 @media (max-width: 550px){
                     font-size: 13px;
@@ -168,7 +168,7 @@ const Container = styled.li`
             }
 
             .ingredientes {
-                font-size: 13px;
+                font-size: 11px;
                 font-weight: 600;
                 font-style: italic;
                 @media (max-width: 550px){

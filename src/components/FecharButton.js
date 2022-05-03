@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import { branco } from '../util/cores'
 
 export const FecharButton = ({ fechar }) => {
     return (

@@ -36,6 +36,29 @@ function PizzasProvider({children}) {
     function refresh(){
         setAtualizar(prev => prev + 1)
     }
+    async function refreshTamanhos(){
+        const response = await api().get('pizzas/tamanhos')
+        setTamanhos(response.data)
+        refreshValores()
+        refreshBordas()
+    }
+    async function refreshSabores(){
+        const response = await api().get('pizzas/sabores')
+        setSabores(response.data)
+        refreshValores()
+    }
+    async function refreshIngredientes(){
+        const response = await api().get('pizzas/ingredientes')
+        setIngredientes(response.data)
+    }
+    async function refreshValores(){
+        const response = await api().get('pizzas/valores')
+        setValores(response.data)
+    }
+    async function refreshBordas(){
+        const response = await api().get('pizzas/bordas')
+        setBordas(response.data)
+    }
 
   return (
       <PizzasContext.Provider value={{
@@ -45,7 +68,8 @@ function PizzasProvider({children}) {
           tipos, setTipos,
           valores, setValores,
           bordas, setBordas,
-          refresh
+          refresh, refreshTamanhos,
+          refreshSabores, refreshIngredientes,
         }}>
             {children}
         </PizzasContext.Provider>

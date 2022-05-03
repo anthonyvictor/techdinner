@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import { usePedido } from '..';
 import { useHome } from '../../../../context/homeContext';
 import EnderecoLista from '../../../cadastros/clientes/endereco';
 

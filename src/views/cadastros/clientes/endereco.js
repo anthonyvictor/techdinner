@@ -3,61 +3,76 @@ import {formatEndereco, formatReal} from "../../../util/Format";
 import { isNEU } from "../../../util/misc";
 import { enderecoToUrl } from '../../../apis'
 import styled from 'styled-components';
-import CadEnderecoProvider from "../../../context/cadEnderecosContext";
+import Enderecos from '../enderecos';
 import EndLocLista from "../enderecos/endlocLista";
-import EnderecosProvider from "../../../context/enderecosContext";
-import * as cores from "../../../util/cores";
+import { cores } from "../../../util/cores";
 import { useAsk } from "../../../components/Ask";
 import { NotImplementedError } from '../../../exceptions/notImplementedError';
 
-// import { Container } from './styles';
-
 function Endereco({endereco, setEndereco, children}) {
-
-    // const memoNumero = () => endereco?.numero ?? '', [endereco?.numero])
-    const memoTaxa = useMemo(() => formatReal(endereco?.bairro?.taxa ? endereco.bairro.taxa : 0), [endereco?.bairro?.taxa])
-    const memoTemCep = useMemo(() => isNEU(endereco?.cep), [endereco?.cep])
-    const memoEnderecoFormatted = useMemo(() => formatEndereco(endereco, false, false), [endereco?.cep])
-    // const memoLocal = useMemo(() => endereco?.local ?? '', [endereco?.local])
-    // const memoReferencia = useMemo(() => endereco?.referencia ?? '', [endereco?.referencia])
-
+  
+  // const memoNumero = () => endereco?.numero ?? '', [endereco?.numero])
+  const memoTaxa = useMemo(() => formatReal(endereco?.bairro?.taxa ? endereco.bairro.taxa : 0), [endereco?.bairro?.taxa])
+  const memoTemCep = useMemo(() => isNEU(endereco?.cep), [endereco?.cep])
+  const memoEnderecoFormatted = useMemo(() => formatEndereco(endereco, false, false), [endereco?.cep])
+  // const memoLocal = useMemo(() => endereco?.local ?? '', [endereco?.local])
+  // const memoReferencia = useMemo(() => endereco?.referencia ?? '', [endereco?.referencia])
+  
+    const [listaEnd, setListaEnd] = useState(null)
     const {ask} = useAsk()
-    const [mapa, setMapa] = useState(null)
+    const [mapa, setMapa] = useState(<></>)
+
+
+    const MapaComponent = ({url}) => {
+      // return <></>
+      return (
+          <div className='mapa'>
+              <div className='mapouter'>
+                  <div className='gmap_canvas'>
+                      <iframe
+                          title='mapa'
+                          id='gmap_canvas'
+                          src={`${url}&t=&z=16&ie=UTF8&iwloc=A&output=embed`}
+                          frameBorder='0'
+                          scrolling='no'
+                          marginHeight='0'
+                          marginWidth='0'
+                          align='middle'
+                      />
+                  </div>
+              </div>
+          </div>
+      )
+    } 
+
+    function loadMap(url){
+      setMapa(<MapaComponent url={url} />)
+    }
+
+    function errorMap(err){
+      setMapa(<></>)
+      throw new Error(err)
+    }
     
     useEffect(() => {
-        if(!memoTemCep){
-            {enderecoToUrl(endereco)
-              .then(url => setMapa(
-                <div className='mapa'>
-                  <div className="mapouter">
-                    <div className="gmap_canvas">
-                      <iframe title='mapa' id="gmap_canvas"
-                        src={`${url}&t=&z=16&ie=UTF8&iwloc=A&output=embed`} 
-                        frameBorder="0" 
-                        scrolling="no" 
-                        marginHeight="0" 
-                        marginWidth="0"
-                        align="middle">
-                      </iframe>
-                    </div>
-                  </div>
-                </div>
-            ))
-          .catch((e) => {
-              setMapa(null)
-              throw new Error(e)
-          })} 
-          }else{
-            setMapa(null)
-          }
-      },[memoEnderecoFormatted])
+        if(!memoTemCep && !listaEnd){
+            try{
+              enderecoToUrl(endereco).then(loadMap).catch(errorMap)
+            }catch(err){
+              console.error(err, err.stack)
+            }
+
+        }else{
+          setMapa(<></>)
+        }
+      },[memoEnderecoFormatted, listaEnd]) //eslint-disable-line
 
 
     const [selecionado, setSelecionado] = useState({})
     useEffect(() => {
         !isNEU(listaEnd) && closeListaEnd(null)
         if(!isNEU(selecionado)){
-        if(([endereco.numero, endereco.local, endereco.referencia].join('') !== '')){
+        if(([endereco?.numero, endereco?.local, endereco?.referencia].join('') !== '')){
             ask({
             title: 'Substituir antigas informações de local da entrega, e número pelas novas também?',
             buttons: [
@@ -72,22 +87,19 @@ function Endereco({endereco, setEndereco, children}) {
         }
     }, [selecionado]) //eslint-disable-line
 
-    const [listaEnd, setListaEnd] = useState(<></>);
     function closeListaEnd(e){
       if(!e || e.currentTarget === e.target){
-        setListaEnd(<></>)
+        setListaEnd(null)
+        
       }
     }
     function openListaEnd() {
+      const tabs = [ { title: "Enderecos", component: <EndLocLista /> } ]
         setListaEnd(
           <EndLocListaContainer 
           onClick={(e) => closeListaEnd(e)}>
             <div className="endloc-lista">
-              <EnderecosProvider>
-                  <CadEnderecoProvider>
-                    <EndLocLista itemClick={setSelecionado} />
-                  </CadEnderecoProvider>
-              </EnderecosProvider>
+                  <Enderecos tabs={tabs} callback={setSelecionado} />
             </div>
             
           </EndLocListaContainer>
@@ -180,7 +192,7 @@ function Endereco({endereco, setEndereco, children}) {
             {mapa}
         </div>
         {children}
-        {listaEnd}
+        {listaEnd && listaEnd} 
     </Container>
   )
 }
@@ -198,6 +210,7 @@ const Container = styled.section`
     box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
     overflow: auto;
     width: 100%;
+  
 
     #endereco-left {
       width: 100%;
@@ -231,10 +244,12 @@ const Container = styled.section`
           border-radius: 5px;
           border: 1px solid gray;
         }
-        button {
+        button{
           width: 70px;
           height: 100%;
-          cursor: pointer;
+          &:not(:disabled){
+            cursor: pointer;
+          }
         }
       }
 
@@ -302,7 +317,7 @@ const Container = styled.section`
       .gmap_canvas {
         height: 100%;
         overflow:hidden;
-        background:none!important;
+        background:white;
       }
       iframe{
         height: 100% ;
@@ -406,7 +421,6 @@ const EndLocListaContainer = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    animation: aparecer .3s ease-out;
 
     .endloc-lista {
       border-radius: 20px; 
@@ -414,16 +428,13 @@ const EndLocListaContainer = styled.div`
       width: min(600px, 90%);
       flex-grow: 0;
       flex-shrink: 0;
-      background-color: ${cores.branco};
+      /* background-color: ${cores.branco}; */
       padding: 5px;
       border: 2px solid black;
       display: flex;
       flex-direction: column;
       justify-content: stretch;
-      > div{
-        position: relative;
-        height: 100%;
-      }
+  
     }
 
 

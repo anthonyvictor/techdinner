@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import { formatReal } from '../../../../../util/Format';
 import { useContextMenu } from '../../../../../components/ContextMenu';
 import { useOutro } from '.';
-import * as cores from '../../../../../util/cores'
+import { cores } from '../../../../../util/cores'
 
 export const OutroLi = ({outro}) => {
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import { isMobile, isNEU } from "../util/misc";
 
-export const SearchBar = (props) => {
+const SearchBar2 = (props) => {
 
   function keyDown(e){
     if(e.key === 'ArrowUp' || e.key === 'ArrowDown'){
@@ -39,6 +39,12 @@ export const SearchBar = (props) => {
     </Container>
   );
 };
+
+export const SearchBar = memo(SearchBar2, areEqual)
+
+function areEqual(prevProps, nextProps) {
+ return prevProps.value === nextProps.value
+}
 
 SearchBar.propTypes = {
   value: PropTypes.string.isRequired,

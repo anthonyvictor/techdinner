@@ -1,8 +1,6 @@
-import axios from "axios";
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useApi } from "../api";
 import { useMessage } from "../components/Message";
-import * as Format from '../util/Format'
 
 const PedidosContext = createContext();
 

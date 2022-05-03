@@ -8,6 +8,7 @@ import { IngredientesLista } from './ingredientes'
 import { Rodape } from './rodape'
 import { useItens } from '../itens';
 import { useApi } from '../../../../../api';
+import { useMessage } from '../../../../../components/Message';
 
 
 const PizzaContext = createContext()
@@ -24,25 +25,27 @@ export default function Pizza() {
     const [saboresSelectedUpdates, setSaboresSelectedUpdates] = useState(0)
     const [saborHovered, setSaborHovered] = useState(null)
     
-
+    
     const [searchString, setSearchString] = useState('') //string containing keywords to find in objects 
     const [searchResults, setSearchResults] = useState([]) //array after filtering by keywords 
     const [finalResults, setFinalResults] = useState([]) //array merged with othes arrays and getting adjustments
-
+    
     const [isHoverLocked, setIsHoverLocked] = useState(false)
     const [isPriceLocked, setIsPriceLocked] = useState(false)
-
+    
     const [ingredientesComponent, setIngredientesComponent] = useState(<></>)
     const [ingredientesComponentResult, setIngredientesComponentResult] = useState(null)
-
+    
     const [tamanhoSelected, setTamanhoSelected] = useState(item.pizza?.tamanho?.id ? String(item.pizza?.tamanho?.id) : null)
     const [saboresSelected, setSaboresSelected] = useState([])
     const [observacoes, setObservacoes] = useState(item?.observacoes ?? '')
     const [valor, setValor] = useState(item?.valor ?? 0)
     const [isSearchFocused, setIsSearchFocused] = useState(false)
-
+    
     const searchRef = useRef()
     const saborHoveredRef = useRef()
+    
+    const {message} = useMessage()
     
     useEffect(() => {
         if(sabores.length > 0 && tamanhos.length > 0){
@@ -198,9 +201,10 @@ export default function Pizza() {
                 )
         }
 
-        const temTipoAdd = sabor.ingredientes.
-        map(i => i.tipoAdd ?? '').
-        join('').length > 0
+        const temTipoAdd = 
+        sabor.ingredientes
+        .map(i => i.tipoAdd ?? '')
+        .join('').length > 0
         
         const saborOriginal = temTipoAdd ? {
             ...getFullSaborFromId(getSaborId(sabor)),
@@ -236,7 +240,7 @@ export default function Pizza() {
             ])
 
         }else{
-            console.error('Sabor sem id!')
+            message('error', 'Sabor sem ID')
         }
     }
 

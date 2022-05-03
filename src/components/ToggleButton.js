@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from "prop-types";
-import * as cores from '../util/cores'
+import { cores } from '../util/cores'
 
 export const ToggleButton = (props) => {
   return (

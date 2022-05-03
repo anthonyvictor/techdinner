@@ -9,7 +9,7 @@
 // } from "@fortawesome/free-solid-svg-icons";
 // import React, { useState } from "react";
 // import styled from "styled-components";
-// import * as cores from "../util/cores";
+// import { cores } from "../util/cores";
 // import { loadImage, sleep } from "../util/misc";
 // import { saveAs } from "file-saver";
 
@@ -180,9 +180,9 @@
     
     import React, { createContext, useContext, useEffect, useState } from 'react';
     import styled from 'styled-components';
-    import * as cores from '../util/cores'
-    import { loadImage } from "../util/misc";
-    import { saveAs } from "file-saver";
+    import { cores } from '../util/cores'
+    // import { loadImage } from "../util/misc";
+    // import { saveAs } from "file-saver";
     import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
     import {faDownload, faSearch, faShare, faTrash,
     } from "@fortawesome/free-solid-svg-icons";
@@ -232,7 +232,7 @@ export const useImageViewer = () => {
 function ImageViewer() {
 
     const {obj, fechar} = useImageViewer()
-    const [image, setImage] = useState(obj.image)
+    const [image] = useState(obj.image)
 
     function carregar(){
       // loadImage(setImage);

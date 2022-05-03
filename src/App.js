@@ -11,7 +11,7 @@ import styled from "styled-components";
 import RotasProvider from "./context/rotasContext";
 import MainMenuProvider from "./context/mainMenuContext";
 import Globals from "./globals";
-import * as cores from './util/cores'
+import { cores } from './util/cores'
 import ApiProvider, { useApi } from './api';
 
 import ContextMenuProvider from "./components/ContextMenu";
@@ -141,7 +141,7 @@ const Container = styled.div`
   width: 100vw;
   height: 100vh ;
   overflow: hidden;
-  position: relative;
+  /* position: relative; */
   @media print{
         /* :not(.print-area){
           display: none;
@@ -168,7 +168,7 @@ const Container = styled.div`
     width: 100% ;
     display: flex;
     flex-direction: column;
-    
+    /* position: relative; */
   }
 
   

@@ -1,37 +1,93 @@
-import React from "react";
+import React, { createContext, useContext, useState } from "react";
 
 //VIEWS
 import ELList from "./endlocLista";
 import ELCad from "./endlocCad";
 import Bairros from "./bairros";
 
-//CONTEXT
-import CadEnderecoProvider from "../../../context/cadEnderecosContext";
-import TabControlProvider from "../../../context/tabControlContext";
-
 //COMPONENTS
-import { TabControl } from "../../../components/TabControl";
+import { TabControl, useTabControl } from "../../../components/TabControl";
 import EnderecosProvider from "../../../context/enderecosContext";
 
-function Enderecos(props) {
 
-
-  const links = ["/cad/endloc/lista", "/cad/endloc/cad", "/cad/endloc/bairros"]
-  const tabs = [
-    { link: links[0], titulo: "E/L Lista", elemento: <ELList tabs={links} /> },
-    { link: links[1], titulo: "E/L Cadastro", elemento: <ELCad /> },
-    { link: links[2], titulo: "Bairros", elemento: <Bairros /> },
+export default function Enderecos({tabs, callback}) {
+  const newTabs = tabs ?? [
+    { title: "E/L Lista", component: <ELList /> },
+    { title: "E/L Cadastro", component: <ELCad /> },
+    { title: "Bairros", component: <Bairros /> },
   ];
 
   return (
-    <TabControlProvider tabs={tabs} tabInicial={props.tabInicial}>
         <EnderecosProvider>
-            <CadEnderecoProvider>
-              <TabControl />
-            </CadEnderecoProvider>
+              <TabControl tabs={newTabs} index={0}>
+                <Enderecos2 callback={callback} />
+              </TabControl>
         </EnderecosProvider>
-    </TabControlProvider>
   );
 }
 
-export default Enderecos;
+const CadEnderecoContext = createContext(null);
+
+function Enderecos2({callback}) {
+  const [currEL, setCurrEL] = useState(getDefaultEL());
+  const [tiposEL] = useState(["Endereço", "Local"]);
+  const [currBai, setCurrBai] = useState(getDefaultBai())
+  const [tipoEL, setTipoEL] = useState(tiposEL[0]);
+
+  const {currentTab} = useTabControl() 
+
+  function getDefaultEL() {
+    return {
+      id: "",
+      cep: "",
+      logradouro: "",
+      bairro: "",
+      local: "",
+      numero: "",
+    };
+  };
+
+  function limparEL(confirm) {
+    const res = confirm && window.confirm("Limpar formulário?");
+    if (res) {
+        setTipoEL(tiposEL[0])
+        setCurrEL(getDefaultEL());
+    }
+  }
+
+
+
+
+  function getDefaultBai(){
+      return{
+          nome: '',
+          taxa: ''
+      }
+  }
+
+  function limparBai(confirm) {
+    const res = confirm && window.confirm("Limpar formulário?");
+    if (res) {
+        setCurrBai(getDefaultBai());
+    }
+  }
+
+  return (
+    <CadEnderecoContext.Provider
+      value={{
+        currEL, setCurrEL,
+        limparEL,
+        tiposEL,
+        tipoEL, setTipoEL, 
+        currBai, setCurrBai,
+        limparBai, callback
+      }}
+    >
+      {currentTab.component}
+    </CadEnderecoContext.Provider>
+  );
+}
+
+export const useCadEndereco = () => {
+  return useContext(CadEnderecoContext);
+};

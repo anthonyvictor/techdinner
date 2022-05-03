@@ -1,33 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import Tagger from "../../../components/Tagger";
-import * as cores from "../../../util/cores";
+import { cores } from "../../../util/cores";
 import PictureBox from "../../../components/PictureBox";
 import * as Format from "../../../util/Format";
 import { isMobile, isNEU } from "../../../util/misc";
-import { useCadCli } from "../../../context/cadClientesContext";
+import { useCadListaClientes } from '.'
 import { useClientes } from "../../../context/clientesContext";
-import { useRotas } from "../../../context/rotasContext";
 import Endereco from "./endereco";
 import { useApi } from "../../../api";
+import { useMessage } from "../../../components/Message";
 
 
 
-export default function Cadastro(props) {
-  const {setCurrentRoute} = useRotas()
-  const [contato, setContato] = useState('')
-  const [tag, setTag] = useState('')
-  const {curr, setCurr, limpar, images, setImages, imagem, setImagem} = useCadCli()
+export const CadastroCli = () => {
   const {clientes, refresh} = useClientes()
   const {api} = useApi()
-
+  const { select, currentCliente, setCurrentCliente, clearForm, contato, setContato, tag, setTag } = useCadListaClientes()
+  const {message} = useMessage()
+  
   async function salvar() {
-    let ctt = [...curr.contato.map(c => Format.formatNumber(c))]
-    let tg = [...curr.tags]
-    if(isNEU(curr?.nome)){
-      alert('Insira o nome do cliente')
-    }else if(isNEU(curr.contato)){
-      alert('Adicione um número para contato')
+    let ctt = [...currentCliente?.contato.map(c => Format.formatNumber(c))]
+    let tg = [...currentCliente?.tags]
+    if(isNEU(currentCliente?.nome)){
+      message('alert','Insira o nome do cliente')
+    }else if(isNEU(currentCliente?.contato)){
+      message('alert','Adicione um número para contato')
     }else{
       if(contato.length > 7){
         if(window.confirm(`Adicionar o número ${Format.formatPhoneNumber(contato)}?`)){
@@ -42,12 +40,11 @@ export default function Cadastro(props) {
           tg.push(tag)
         }
       }
-      let _img = null //await validateImage()
       const payload = {
         cliente: {
-          ...curr,
-          nome: curr.nome.toUpperCase(),
-          imagem: _img, //Format.convertFileToBase64(imagem), 
+          ...currentCliente,
+          nome: currentCliente?.nome.toUpperCase(),
+          imagem: currentCliente?.imagem,
           contato: ctt,
           tags: tg,
 
@@ -56,11 +53,7 @@ export default function Cadastro(props) {
       api().post('clientes/salvar', payload)
       .then((e) => {
           refresh(e.data)
-          if(props.retorno){
-            props.retorno(e.data)
-          }else{
-            listar()
-          }  
+          select(e.data)
       }).catch(e => {
         alert(`Erro: ${e} stack: ${e.stack}`)
       })
@@ -69,10 +62,7 @@ export default function Cadastro(props) {
 
   }
 
-  function listar() {
-    limpar()
-    setCurrentRoute(props.tabs[0])
-  }
+
 
   function checarCttExiste(txt){
     const jatem = clientes.filter(e => e.contato.some(x => Format.formatPhoneNumber(x) === Format.formatPhoneNumber(txt)))
@@ -84,39 +74,27 @@ export default function Cadastro(props) {
     }
   }
 
-  useEffect(() => {
-    (curr && curr.id) && setImagem(images.filter(e => e.id === curr.id)[0]?.imagem ?? curr.imagem)
-  },[curr])
+//  function validateImage(){
+//   let img = imagem
+//  if(imagem){
+//   if(typeof img === 'string' && img.includes('blob:')) {
+//   }
 
- function validateImage(){
-  let img = imagem
- if(imagem){
-  if(typeof img === 'string' && img.includes('blob:')) {
-  }
-
-  if(typeof img === 'object') img = Format.convertImageToBase64(img)
- }
-  return img
-}
-
-async function getFileFromUrl(url, name, defaultType = 'image/jpeg'){
-  const response = await fetch(url);
-  const data = await response.blob();
-  return new File([data], name, {
-    type: data.type || defaultType,
-  });
-}
+//   if(typeof img === 'object') img = Format.convertImageToBase64(img)
+//  }
+//   return img
+// }
 
   return (
     <Estilo className="cadastro-clientes">
       <div id="top-container">
         <div className="picturebox-container">
-          <PictureBox imagem={validateImage()} nome={curr.nome}
-          setImagem={(e) => setImagem(e)}  />  
+          <PictureBox imagem={currentCliente?.imagem ?? ''} nome={currentCliente?.nome}
+          setImagem={newImagem => setCurrentCliente(prev => { return{...prev, imagem: newImagem}})}  />  
         </div>
 
         <div className="id-nome">
-          <label>{curr.id > 0 ? `Id: ${curr.id}` : "Cliente Novo!"}</label>
+          <label>{currentCliente?.id > 0 ? `Id: ${currentCliente?.id}` : "Cliente Novo!"}</label>
           <div className="txt nome-section">
             <label htmlFor="nome">Nome:</label>
             <input
@@ -124,8 +102,8 @@ async function getFileFromUrl(url, name, defaultType = 'image/jpeg'){
               name="nome"
               type="text"
               autoFocus={!isMobile()}
-              value={curr.nome}
-              onChange={(e) => setCurr({...curr, nome: e.target.value})}
+              value={currentCliente?.nome ?? ''}
+              onChange={(e) => setCurrentCliente(prev => {return {...prev, nome: e.target.value}})}
               onBlur={(e) => {
                 e.target.value = e.target.value.trim();
               }}
@@ -140,8 +118,10 @@ async function getFileFromUrl(url, name, defaultType = 'image/jpeg'){
           label={"Contato"}
           state={contato}
           setState={setContato}
-          array={curr.contato ? curr.contato : []}
-          setArray={e => setCurr({...curr, contato: e})}
+          array={currentCliente?.contato ? currentCliente?.contato : []}
+          setArray={e => {
+            setCurrentCliente(prev => {return {...prev, contato: e}})
+          }}
           validate={checarCttExiste}
         />
 
@@ -149,12 +129,14 @@ async function getFileFromUrl(url, name, defaultType = 'image/jpeg'){
           label={"Apelidos"}
           state={tag}
           setState={setTag}
-          array={curr.tags ? curr.tags : []}
-          setArray={e => setCurr({...curr, tags: e})}
+          array={currentCliente?.tags ? currentCliente?.tags : []}
+          setArray={e => setCurrentCliente(prev => {return {...prev, tags: e}})}
         />
       </div>
 
-      <Endereco endereco={curr.endereco} setEndereco={(obj) => setCurr({...curr, endereco: { ...curr.endereco, ...obj }})} />
+      <Endereco endereco={currentCliente?.endereco} 
+      setEndereco={(obj) => 
+      setCurrentCliente(prev => {return {...prev, endereco: { ...prev?.endereco, ...obj }}})} />
 
       <section id="bottom-container">
         <button id="salvar" type="button" 
@@ -163,8 +145,7 @@ async function getFileFromUrl(url, name, defaultType = 'image/jpeg'){
         </button>
         <button id="limpar" type="button" 
         onClick={() => {
-          setImagem(null)
-          limpar(true)
+          clearForm(true)
         }}>
           Limpar
         </button>
@@ -183,6 +164,7 @@ const Principal = styled.form`
   overflow-y: auto;
   /* position: relative; */
   width: 100% ;
+  height: 100%;
 
   @keyframes aparecer{
     from{opacity: 0}

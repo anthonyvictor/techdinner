@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useMainMenu } from '../../context/mainMenuContext';
-import * as cores from '../../util/cores'
+import { cores } from '../../util/cores'
 
 function SubMenu(props) {
     const { changeRoute } = useMainMenu()

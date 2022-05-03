@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import styled from 'styled-components';
 import { usePizzas } from '../../../../../../context/pizzasContext';
 import { usePizza } from '..'
@@ -6,10 +6,17 @@ import { equals } from '../../../../../../util/misc';
 import { formatReal } from '../../../../../../util/Format';
 
 export const TamanhosLista = () => {
-    const { temBorda, isFidelidade, tamanhoSelected, setTamanhoSelected } = usePizza() 
+    const { tamanhoSelected, setTamanhoSelected } = usePizza() 
     const { tamanhos, valores } = usePizzas()
     const [finalResults, setFinalResults] = useState([]) //array after filtering and getting adjustments
-
+    
+    const [specialKeyPressed, setSpecialKeyPressed] = useState(null)
+    const specialKeys = '+-'.split('')
+    
+    useEffect(() => {
+        specialKeyAction()
+    }, [specialKeyPressed])
+    
     useEffect(() => {
         if(valores.length > 0 && tamanhos.length > 0){
             fillSelect()
@@ -28,28 +35,64 @@ export const TamanhosLista = () => {
         return r
     }
 
-    const getValores = (tamanhoId) => {
-        let r = '' 
-        if(isAllLoaded() && tamanhoId){
-            r = [...new Set(
-                valores.filter(v => equals(v.tamanho.id, tamanhoId))
-                .sort((a, b) => a.valor < b.valor ? -1 : 1)
-                .map(e => e.valor)
-            )]
-            .map(e => formatReal(e.valor)).join(' - ')
-        }
-        return r
+    // const getValores = (tamanhoId) => {
+    //     let r = '' 
+    //     if(isAllLoaded() && tamanhoId){
+    //         r = [...new Set(
+    //             valores.filter(v => equals(v.tamanho.id, tamanhoId))
+    //             .sort((a, b) => a.valor < b.valor ? -1 : 1)
+    //             .map(e => e.valor)
+    //         )]
+    //         .map(e => formatReal(e.valor)).join(' - ')
+    //     }
+    //     return r
+    // }
+
+    function getFilteredAndSorted(){
+       return [...tamanhos]
+                .filter(e => e.ativo && e.visivel)
+                .sort((a, b) => getMinValor(a.id) < getMinValor(b.id) ? -1 : 1)
     }
 
     function fillSelect(){
         if(isAllLoaded()){
             setFinalResults(
-                [...tamanhos]
-                .filter(e => e.ativo && e.visivel)
-                .sort((a, b) => getMinValor(a.id) < getMinValor(b.id) ? -1 : 1)
-            )
+               getFilteredAndSorted() 
+               )
+            }
         }
-    }
+        
+        function specialKeyAction(){
+            if(specialKeyPressed){
+                const filtered = getFilteredAndSorted() 
+                const currentIndex = tamanhoSelected === null 
+                ? -1 
+                : filtered.map(e => e.id).indexOf(tamanhoSelected)
+                
+                const nextIndex = currentIndex + 1 <= (filtered.length - 1) ? currentIndex + 1 : currentIndex
+            const prevIndex = currentIndex - 1 >= 0 ? currentIndex - 1 : currentIndex
+            
+            if(specialKeyPressed === '+'){
+                setTamanhoSelected(filtered[nextIndex].id)
+            }else if(specialKeyPressed === '-'){
+                setTamanhoSelected(filtered[prevIndex].id)
+            }
+            setSpecialKeyPressed(null)
+        }
+        }
+
+
+    const handleKeyDown = useCallback(event => {
+        if(specialKeys.some(e => equals(event.key,e))){
+        event.preventDefault()
+        setSpecialKeyPressed(event.key)
+     }
+    })
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyDown)
+        return () => window.removeEventListener('keydown', handleKeyDown)
+    }, [])
 
   return (
     <Container

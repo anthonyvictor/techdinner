@@ -3,10 +3,10 @@ import React from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as icons from "@fortawesome/free-solid-svg-icons";
-import { convertFileToBase64, convertImageToBase64, formatReal } from "../../util/Format";
-import * as cores from "../../util/cores";
+import { formatReal } from "../../util/Format";
+import { cores } from "../../util/cores";
 // import { useHome } from "../../context/homeContext";
-import { CorHora, CorImpr, CorTipo, CorValor, getValorPendente, IcoTipo } from '../../util/pedidoUtil';
+import { CorHora, CorImpr, CorTipo, CorValor, IcoTipo } from '../../util/pedidoUtil';
 import { useApi } from "../../api";
 
 export const Pedido = ({pedido, abrir}) => {

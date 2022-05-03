@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useRotas } from './rotasContext'
-import * as cores from '../util/cores'
+import {cores} from '../util/cores'
 import { useApi } from '../api'
 import { FecharButton } from '../components/FecharButton'
 import { usePedidos } from './pedidosContext'
@@ -273,6 +273,23 @@ const SelectBox = styled.div`
       &.cliente {
         width: 85%;
         height: 90%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        animation: baixo-cimaMeio 0.15s ease-out;
+        top: 50%;
+        left: 50%;
+
+        @keyframes baixo-cimaMeio{
+          from{
+            transform: translate(-50%, -100%);
+            opacity: 0;
+          }
+          to{
+            transform: translate(-50%, -50%);
+            opacity: 1;
+          }
+        }
+
         @media (max-width: 760px) {
           height: 80%;
           width: 95%;

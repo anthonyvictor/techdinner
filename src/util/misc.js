@@ -1,4 +1,3 @@
-import { apiUrl } from "../api";
 import { formatPhoneNumber } from "./Format";
 export function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -183,7 +182,6 @@ export function equals(a,b){
 export function filtro(obj, search, longNumber = false, phoneNumber = false) {
   if (search !== "") {
   let txt = joinObj(obj)  
-  
   
   let valConj = txt.toUpperCase().replace(/[^a-z0-9]/gi, "");
   

@@ -6,8 +6,10 @@ const CostumeUltimoPagamento2 = ({ clienteId }) => {
     const { api } = useApi()
     const [costumeUltimoPagamento, setCostumeUltimoPagamento] = useState(null)
 
-    useEffect(async () => {
-        setCostumeUltimoPagamento(await getCostumeUltimoPagamento())
+    useEffect(() => {
+        getCostumeUltimoPagamento().then(data => {
+            setCostumeUltimoPagamento(data)
+        })
     }, [])
 
     async function getCostumeUltimoPagamento() {

@@ -186,7 +186,7 @@ export function getItensAgrupados(pedido){
             }
             if(!achou){bebidasGrupo.push({...item})}    
           }else if(item.tipo === 2){
-            const a = 'hamburguer'
+            // const a = 'hamburguer'
           }else if(item.tipo === 3){
             //outro
             let achou = false
@@ -226,18 +226,18 @@ export function getSaboresDescritos(sabores, quebra=', '){
   ingredientes.map(i => i.tipoAdd ? i.tipoAdd : '').join('')
   
   const getIngredientesDiferentes = (ingredientes) => 
-  ingredientes.filter(i => i.tipoAdd && i.tipoAdd !== '').
-  map(i => `${i.tipoAdd} ${i.nome}`).join(', ')
+  ingredientes.filter(i => i.tipoAdd && i.tipoAdd !== '')
+  .map(i => `${i.tipoAdd} ${i.nome}`).join(', ')
 
-  let saboresDiferentes = sabores.
-  filter(e => joinTipoAdd(e.ingredientes) !== '')
+  let saboresDiferentes = sabores
+  .filter(e => joinTipoAdd(e.ingredientes) !== '')
   
-  let outrosSabores = sabores.
-  filter(e => joinTipoAdd(e.ingredientes) === '')
+  let outrosSabores = sabores
+  .filter(e => joinTipoAdd(e.ingredientes) === '')
 
-  let r = saboresDiferentes.
-  map(e => `${e.nome} (${getIngredientesDiferentes(e.ingredientes)})`).
-  join(quebra)
+  let r = saboresDiferentes
+  .map(e => `${e.nome} (${getIngredientesDiferentes(e.ingredientes)})`)
+  .join(quebra)
 
   r = join([r, outrosSabores.map(e => e.nome).join(quebra)], quebra)
   return r

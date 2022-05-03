@@ -39,7 +39,7 @@ const Rotas = () => {
 
       <Route
         exact
-        path="/cad/clientes/*"
+        path="/cad/clientes"
         element={<Clientes />}
       />
 

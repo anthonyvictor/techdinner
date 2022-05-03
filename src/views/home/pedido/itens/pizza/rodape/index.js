@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { usePizzas } from '../../../../../../context/pizzasContext';
-import * as cores from '../../../../../../util/cores'
-import { equals, isNEU, join } from '../../../../../../util/misc';
+import { cores } from '../../../../../../util/cores'
+import { equals, join } from '../../../../../../util/misc';
 import { usePizza } from '..';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons'

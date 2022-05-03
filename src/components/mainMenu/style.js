@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import * as cores from '../../util/cores'
+import { cores } from '../../util/cores'
 
 export const Sidebar = styled.div `
   height: 100vh;

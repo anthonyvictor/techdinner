@@ -6,7 +6,7 @@ import { CorTipo, IcoTipo } from '../../../../util/pedidoUtil'
 import { isNEU, isMobile } from '../../../../util/misc'
 import { useHome } from '../../../../context/homeContext'
 import { usePedido } from '..'
-import * as cores from '../../../../util/cores'
+import { cores } from '../../../../util/cores'
 
 export const Topo = () => {
     const { curr, fecharPedido, openSelectBox } = useHome()

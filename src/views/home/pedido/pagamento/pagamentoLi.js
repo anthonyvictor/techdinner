@@ -4,9 +4,9 @@ import { faMoneyBillWaveAlt, faCreditCard, faGlobe,
     faExchangeAlt, faCalendarCheck, faQuestion, 
     faCommentDollar, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { formatReal } from '../../../../util/Format';
-import { isNEU, join } from "../../../../util/misc";
+import { join } from "../../../../util/misc";
 import styled from "styled-components";
-import * as cores from '../../../../util/cores'
+import { cores } from '../../../../util/cores'
 import { useContextMenu } from '../../../../components/ContextMenu';
 import { getDataPagamentoDescrito, getTituloPagamento } from '../../../../util/pedidoUtil';
 import { usePayer } from "./payer";
@@ -46,7 +46,7 @@ const Icone = () => {
   const Pagamento2 = () => {
     
     const {pagamento, setPagamento, readOnly} = usePagamento()
-    const [pagamentosEditor, setPagamentosEditor] = useState(<></>)
+    const [pagamentosEditor] = useState(<></>)
     const {payer} = usePayer()
 
     const {contextMenu} = useContextMenu()

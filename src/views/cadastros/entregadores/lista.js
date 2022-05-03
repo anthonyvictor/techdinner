@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import ListaProvider from '../../../context/listaContext';
 import { Lista } from '../../../components/Lista';
-import * as cores from '../../../util/cores'
+import { cores } from '../../../util/cores'
 import { SearchBar } from '../../../components/SearchBar';
 import { useContextMenu } from '../../../components/ContextMenu';
 import { useEntregadores } from '../../../context/entregadoresContext';

@@ -1,11 +1,11 @@
-import { faBan, faCheck, faExchangeAlt, faHandHolding, faHandHoldingUsd, faMoneyBill, faMoneyCheckAlt, faTruck } from '@fortawesome/free-solid-svg-icons'
+import { faBan, faCheck, faHandHoldingUsd, faTruck } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { createContext, memo, useContext, useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { RelatoriosProvider, useRelatorios } from '../../context/relatoriosContext'
 import { formatReal } from '../../util/Format'
 import { Pedido } from './pedidoLi'
-import * as cores from '../../util/cores'
+import { cores } from '../../util/cores'
 
 export const Relatorios = () => {
     return (

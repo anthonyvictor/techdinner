@@ -1,37 +1,36 @@
-export const dark = '#0d1114'
+export const cores = {
+    dark: '#0d1114',
+    cinza: '#808e9b',
+    cinzaEscuro: '#485460',
+    cinzaDark: '#1e272e',
 
-export const cinza = '#808e9b'
-export const cinzaEscuro = '#485460'
-export const cinzaDark = '#1e272e'
+    branco: '#e3e3e3',
+    brancoEscuro: '#d2dae2',
+    brancoDark: '#c6c9cc',
 
+    amarelo: '#ffd726',
+    amareloEscuro: '#ffd60a',
+    amareloDark: '#fcb100',
 
-export const branco = '#e3e3e3'
-export const brancoEscuro = '#d2dae2'
-export const brancoDark = '#c6c9cc'
+    laranja: '#fc8803',
+    laranjaEscuro: '#d17102',
+    laranjaDark: '#b04804',
 
+    vermelho: '#ff3f34',
+    vermelhoEscuro: '#ff0e00',
+    vermelhoDark: '#570803',
 
-export const amarelo = '#ffd726'
-export const amareloEscuro = '#ffd60a'
-export const amareloDark = '#fcb100'
+    verde: '#05c46b',
+    verdeEscuro: '#067d45',
+    verdeDark: '#01240d',
 
-export const laranja = '#fc8803'
-export const laranjaEscuro = '#d17102'
-export const laranjaDark = '#b04804'
+    azul: '#0fbcf9',
+    azulEscuro: '#2e61bf',
+    azulDark: '#0d3c91',
 
-export const vermelho = '#ff3f34'
-export const vermelhoEscuro = '#ff0e00'
-export const vermelhoDark = '#570803'
-
-export const verde = '#05c46b'
-export const verdeEscuro = '#067d45'
-export const verdeDark = '#01240d'
-
-export const azul = '#0fbcf9'
-export const azulEscuro = '#2e61bf'
-export const azulDark = '#0d3c91'
-
-export const roxo = '#ad1be3'
-export const roxoEscuro = '#833471'
-export const roxoDark = '#6F1E51'
+    roxo: '#ad1be3',
+    roxoEscuro: '#833471',
+    roxoDark: '#6F1E51',
+}
 
 ///https://flatuicolors.com/palette/se

@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { verde } from '../util/cores'
+import { cores } from '../util/cores'
 
 export const AvancarButton = ({ avancar, disabled, type }) => {
     return (
@@ -14,7 +14,7 @@ const Container = styled.button`
     min-height: 40px;
     flex-grow: 2;
     width: 100%;
-    background-color: ${verde};
+    background-color: ${cores.verde};
     border: 2px solid black;
     border-radius: 5px;
     margin-top: 5px;

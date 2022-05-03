@@ -3,30 +3,32 @@ import styled from "styled-components";
 import { SearchBar } from "../../../components/SearchBar";
 import { useEnderecos } from "../../../context/enderecosContext";
 import * as Format from "../../../util/Format";
-import * as cores from '../../../util/cores'
+import { cores } from '../../../util/cores'
 import * as misc from '../../../util/misc'
-import { useCadEndereco } from "../../../context/cadEnderecosContext";
+import { useCadEndereco } from '.';
 import { useRotas } from "../../../context/rotasContext";
 import * as apis from '../../../apis'
 import ListaProvider from "../../../context/listaContext";
 import { Lista } from "../../../components/Lista";
 import { useContextMenu } from "../../../components/ContextMenu";
-function EndLocLista(props) {
+import { useTabControl } from "../../../components/TabControl";
+
+function EndLocLista() {
   
   const [search, setSearch] = useState("");
-
+  const {tabs, currentTab, setCurrentTab} = useTabControl()
   function openFilter() {}
 
   const { enderecos, locais, bairros } = useEnderecos();
   const [filtered, setFiltered] = useState([])
   const [lista, setLista] = useState();
-  const {currEL, setCurrEL, setTipoEL, tiposEL} = useCadEndereco()
+  const {currEL, setCurrEL, setTipoEL, tiposEL, callback} = useCadEndereco()
   const { setCurrentRoute } = useRotas()
 
   const {contextMenu} = useContextMenu()
 
   function editar(e){
-    if(props.tabs){
+    if(tabs.length === 1) return
       let preenchido = !misc.isNEU(misc.joinObj(currEL))
 
       const getEmpty = (obj) => {return obj ? obj : ''}
@@ -35,7 +37,7 @@ function EndLocLista(props) {
         currEL.id && currEL.id === e.id && 
         (misc.isNEU(getEmpty(currEL.local)) === misc.isNEU(getEmpty(e.local)))
         ) {
-        setCurrentRoute(props.tabs[1].link)
+        setCurrentTab(tabs[1])
       } else if ((preenchido && window.confirm("Deseja cancelar a edição atual?")) || !preenchido) {
         setCurrEL(e)
         
@@ -43,9 +45,9 @@ function EndLocLista(props) {
         ? setTipoEL(tiposEL[0])
         : setTipoEL(tiposEL[1])
   
-        setCurrentRoute(props.tabs[1].link)
+        setCurrentTab(tabs[1])
       }
-    }
+    
   }
 
   function maps(e){
@@ -163,7 +165,7 @@ function EndLocLista(props) {
     <Container>
       <SearchBar value={search} setValue={setSearch} filter={openFilter} />
 
-        <ListaProvider fullDataArray={filtered} itemDoubleClick={props.itemClick ?? itemClick} itemRightClick={openContext} >
+        <ListaProvider fullDataArray={filtered} itemDoubleClick={callback ?? itemClick} itemRightClick={openContext} >
          <Lista>
             {lista}
         </Lista>
@@ -178,6 +180,9 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: stretch;
+  padding: 5px;
+  background-color: ${cores.branco};
+  height: calc(100% - 50px);
 
   .lista-component-li{
     user-select: none;

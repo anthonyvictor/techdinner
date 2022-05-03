@@ -2,8 +2,8 @@ import axios from "axios"
 import React, { useState, createContext, useContext, useEffect, useCallback } from "react"
 import { useInternetChecker } from "./components/InternetChecker"
 import { useMessage } from "./components/Message"
-import { getStored, setStored } from "./util/local"
-import { isConnected, isNEU } from "./util/misc" 
+import { getStored } from "./util/local"
+import { isNEU } from "./util/misc" 
 
 const ApiContext = createContext()
 
@@ -12,8 +12,6 @@ export default function ApiProvider({children}) {
     const [user, setUser] = useState({})
     const [isLoading, setIsLoading] = useState(false)
     const {message} = useMessage()
-    const [fixedHost, setFixedHost] = useState('')
-    const {isOnline} = useInternetChecker()
     const [apiUrl, setApiUrl] = useState('')
 
     useEffect(() => {

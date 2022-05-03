@@ -163,7 +163,6 @@ export  function convertImageToBase64(imagem){
       let i = `data:image/png;base64, ${convertArrayToBase64(imagem.data)}`   
         //.toString('base64') //convertFileToBase64(imagem)
         if(i && i.length > 0) return i
-      }else if(typeof imagem === 'blob'){
         // let i = await convertFileToBase64(imagem)
         // return i
       }else if(typeof imagem === 'string'){

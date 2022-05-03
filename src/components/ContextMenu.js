@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import styled from 'styled-components';
-import * as cores from '../util/cores'
+import { cores } from '../util/cores'
 import { RodapeTechDinner } from './RodapeTechDinner';
 
 const ContextMenuContext = createContext()
