@@ -1,9 +1,8 @@
-import React, { createContext, useContext} from 'react';
+import React, { createContext, useCallback, useContext} from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 
-import * as cores from '../../../util/cores'
-import { equals, isNEU, join, removeAccents } from '../../../util/misc';
+import { cores } from '../../../util/cores'
+import { removeAccents } from '../../../util/misc';
 
 import { useHome } from '../../../context/homeContext';
 import { usePedidos } from '../../../context/pedidosContext';
@@ -15,24 +14,18 @@ import { BoxItens } from './itens';
 import { BoxPagamentos } from './pagamento';
 import { Rodape } from './rodape';
 import { useApi } from '../../../api';
+import { useMessage } from '../../../components/Message';
+import { getOnly1Id } from '../../../util/pedidoUtil';
 
 
 const PedidoContext = createContext()
 
 export const Pedido = () => {
 
-    const { curr, setCurr, closeSelectBox } = useHome()
+    const { curr, setCurr, fecharPedido, closeSelectBox } = useHome()
     const { refresh } = usePedidos();
     const { api } = useApi()
-
-    function getOnly1Id(item){
-      return item?.id ? item.id
-      : item?.ids?.length > 0 ? item.ids[0] 
-      : null
-    }
-    function getOnly1Item(item){
-      return curr.itens.find(e => equals(e.id, getOnly1Id(item)))
-    }
+    const { message } = useMessage()
 
     async function mudarTipo(newTipo){
       closeSelectBox()
@@ -68,9 +61,10 @@ export const Pedido = () => {
       }
     
       const response = await api().post('pedidos/update/cliente', payload)  
-      
-      setCurr(response.data) 
-      refresh()
+      if(response.data){
+        setCurr(response.data) 
+        refresh()
+      }
       
     }
 
@@ -105,15 +99,9 @@ export const Pedido = () => {
                 pedido: ped,
                 novaTaxa: newTaxa,
             }
-            await api().post('pedidos/update/taxa', payload)
-
-            setCurr({
-                ...curr,
-                endereco: {
-                    ...curr.endereco,
-                    taxa: newTaxa,
-                },
-            })
+            const res = await api().post('pedidos/update/taxa', payload)
+            
+            setCurr(res.data)
             refresh()
     }
     async function mudarEntregador(newEntregador) {
@@ -197,31 +185,29 @@ export const Pedido = () => {
       }
   }
 
-    async function mudarPagamento(newPagamento) {
-        closeSelectBox()
+    async function mudarPagamento(newPagamentos, pagamento=null) {
+      // if pagamento is set, the array (newPagamentos) will replace old pagamento
+        
+      console.log('aaaa', newPagamentos, pagamento)
+
+      closeSelectBox()
         let ped = {
             id: curr.id,
         }
         const payload = {
             pedido: ped,
-            novoPagamento: newPagamento,
+            novosPagamentos: newPagamentos,
+            pagamentoAntigo: pagamento
         }
         const response = await api().post('pedidos/update/pagamento', payload) 
 
         if(response?.data){
-          setCurr({
-            ...curr,
-            itens: [
-                ...curr.itens.filter(e => e.id !== response.data.item.id),
-                response.data.item,
-            ],
-            valor: response.data.valor
-          })
+          setCurr(response.data)
           refresh()
         }
     }
 
-    async function mudarObservacoes(newObservacoes){
+    const mudarObservacoes = useCallback(async (newObservacoes) => {
       closeSelectBox()
         let ped = {
             id: curr.id,
@@ -232,25 +218,75 @@ export const Pedido = () => {
         }
         const response = await api().post('pedidos/update/observacoes', payload) 
 
-        if(response?.data){
           setCurr({
             ...curr,
-            observacoes: response.data
+            observacoes: response?.data?.observacoes
           })
           refresh()
-        }
+      
+    })
+
+    
+    async function cancelar() { //motivo
+      try{
+        closeSelectBox()
+        // if(!motivo || String(motivo).replace(/[\s]+/g,'') === ''){
+        //   message('error', 'Motivo não definido!')
+        //   return
+        // }
+          let ped = {
+              id: curr.id,
+              tipo: curr.tipo,
+          }
+  
+          const payload = {
+              pedido: ped,
+              // motivo: motivo
+          }
+          const response = await api().put('pedidos/cancelar', payload) 
+  
+          if(response.status === 200){
+            fecharPedido(curr)
+            refresh()
+          }else{
+            throw new Error('Erro no servidor!')
+          }
+        }catch(err){
+          console.error(err, err.stack)
+          message('error', 'Ocorreu algum erro no servidor!')
+      }
     }
 
+    async function finalizar(entregador) {
+      try{
+        closeSelectBox()
 
-    function getSaboresDescritos(sabores, quebra=', '){
-      const joinTipoAdd = (ingredientes) => ingredientes.map(i => i.tipoAdd ? i.tipoAdd : '').join('')
-      const getIngredientesDiferentes = (ingredientes) => ingredientes.filter(i => i.tipoAdd && i.tipoAdd !== '').map(i => `${i.tipoAdd} ${i.nome}`).join(', ')
-    
-      let saboresDiferentes = sabores.filter(e => joinTipoAdd(e.ingredientes) !== '')
-      let outrosSabores = sabores.filter(e => joinTipoAdd(e.ingredientes) === '')
-      let r = saboresDiferentes.map(e => `${e.nome} (${getIngredientesDiferentes(e.ingredientes)})`).join(quebra)
-      r = join([r, outrosSabores.map(e => e.nome).join(quebra)], quebra)
-      return r
+          // let ped = removeImagens(curr)
+          const ped = curr.tipo === 'ENTREGA' 
+          ? {...curr, endereco: {
+              ...curr.endereco, 
+              entregador: (entregador ?? {
+                id: curr.endereco?.entregador?.id,
+                nome: curr.endereco?.entregador?.nome
+              })}}
+          : curr
+          
+          const payload = {
+              pedido: ped,
+              
+          }
+          const response = await api().put('pedidos/finalizar', payload) 
+  
+          if(response.status === 200){
+            fecharPedido(curr)
+            refresh()
+          }else{
+            throw new Error('Erro no servidor!')
+          }
+        }catch(err){
+          console.error(err, err.stack)
+          message('error', err.message)
+      }
     }
 
     return (
@@ -260,8 +296,7 @@ export const Pedido = () => {
         mudarEndereco, mudarTaxa, mudarEntregador, 
         mudarItem, copiarItem, excluirItem, 
         mudarPagamento, mudarObservacoes,
-        getSaboresDescritos, 
-        getOnly1Id, getOnly1Item,
+        cancelar, finalizar, 
 
       }}>
           {curr ? <Pedido2 /> : <></>}
@@ -274,9 +309,10 @@ export const usePedido = () => {
 }
 
 function Pedido2() {
-
+  const {curr} = useHome()
   return(
-    <Container>
+    <Container pedido={curr}>
+      <div className='locker' />
       <Topo />
       <div className='middle-container'>
         <BoxCLiente />
@@ -300,6 +336,20 @@ overflow: hidden;
 user-select: none;
 position: relative;
 
+${(props) => !(props?.pedido?.arq?.dataInic !== null)}{
+  .locker{
+    display: block;
+    position: absolute;
+    z-index: 999;
+    content: '';
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%:;   
+    background-color: rgba(0,0,0,.2);
+  }
+}
+
 label,p{
   pointer-events:none;
 }
@@ -322,20 +372,6 @@ label,p{
 
 }
 
-
-@media print{
-  img{display: none}
-  .box{
-    min-height: 0;
-  }
-  *{
-    box-shadow: none!important;
-  }
-  .middle-container{
-    gap: 5px;
-  }
-}
-
 @media (max-width: 760px){
   > .top-container{
     height: 60px;
@@ -351,6 +387,7 @@ label,p{
     }
   }
 }
+
 `
 
 

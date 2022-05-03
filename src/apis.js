@@ -17,8 +17,6 @@ export async function getLatLng(endereco) {
     "|&country:Brazil&key=" +
     local.GoogleApiKey()
 
-    console.log('url', url)
-
     await fetch(url, {method: 'GET'}).then((resp) => resp.json())
     .then((json) =>(res = json.results.length > 0 ? json.results[0].geometry.location : {}))
   }
@@ -33,6 +31,14 @@ export function sendWhatsAppMessage(txt, phoneNumber){
   window.open("https://api.whatsapp.com/send?phone=" + phoneNumber + txt)
 }
 
+export async function getFileFromUrl(url, name, defaultType = 'image/jpeg'){
+  const response = await fetch(url);
+  const data = await response.blob();
+  return new File([data], name, {
+    type: data.type || defaultType,
+  });
+}
+
 export function enderecoToUrl(endereco){
   return new Promise((resolve, reject) => {
     if(!misc.isNEU(endereco.logradouro)){
@@ -43,9 +49,9 @@ export function enderecoToUrl(endereco){
       let numero = endereco.numero ?? ''
       let all = [logradouro, numero, cidade, estado, cep]
       .filter(txt => !misc.isNEU(txt))
-      .join(' ')
+      .join(' ').toString()
       .replace(' ', '+')
-      let url = `https://maps.google.com/maps?q=${all}`
+      let url = new URL(`https://maps.google.com/maps?q=${all}`)
       resolve(url)
     }else{
       reject('Endereço vazio!!')

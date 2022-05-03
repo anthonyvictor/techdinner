@@ -7,7 +7,7 @@ import { Endereco } from './endereco'
 import { Mapa } from './mapa'
 import { useHome } from '../../../../context/homeContext'
 import { box } from '../box'
-import * as cores from '../../../../util/cores'
+import { cores } from '../../../../util/cores'
 import { usePedido } from "..";
 import styled from 'styled-components'
 

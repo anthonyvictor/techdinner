@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import * as cores from '../../util/cores'
+import { cores } from '../../util/cores'
 export default styled.div`
     height: 50px;
     max-height: 50px;

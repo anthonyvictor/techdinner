@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { useBebida } from '.'
 import { useContextMenu } from '../../../../../components/ContextMenu'
 import { useItens } from '../itens'
-import * as cores from '../../../../../util/cores'
+import { cores } from '../../../../../util/cores'
 import { join } from '../../../../../util/misc'
 
 export const Rodape = () => {

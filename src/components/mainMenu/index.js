@@ -30,7 +30,7 @@ export default function MainMenu(){
             case 'cad':
                 arr = {
                     nome: nome, views: [
-                    {titulo: 'Clientes', link: '/cad/clientes/lista'},
+                    {titulo: 'Clientes', link: '/cad/clientes'},
                     {titulo: 'Endereços', link: '/cad/endloc/lista'},
                     {titulo: 'Pizzas', link: '/cad/pizzas/sabores'},
                     {titulo: 'Bebidas', link: '/cad/bebidas'},
@@ -58,7 +58,7 @@ export default function MainMenu(){
     }
 
     function sair(e){
-        if(e.target == e.currentTarget){
+        if(e.target === e.currentTarget){
             if(window.confirm('Deseja realmente sair?')){
                 localStorage.setItem('user',null)
                 localStorage.setItem('password',null)
@@ -79,7 +79,10 @@ export default function MainMenu(){
                     <p>Menu</p>
                 </div>
 
-                <img src={logo} alt="Logo TechDinner" title="Home - TechDinner"/>
+                <img src={logo} 
+                alt="Logo TechDinner" 
+                title="Home - TechDinner"
+                onClick={() => window.location.reload()}/>
                 
             </div>
 
@@ -97,8 +100,9 @@ export default function MainMenu(){
                     <p>Cadastros</p>
                 </div>
 
+                {/* changeRoute/*.bind(this) */}
                 <div className="botao" name='rel' title="Relatórios" 
-                onClick={changeRoute/*.bind(this)*/}>
+                onClick={e => openView(e)}>
                     <FontAwesomeIcon className='icone' icon={faChartPie}/>
                     <p>Relatórios</p>
                 </div>
@@ -121,7 +125,7 @@ export default function MainMenu(){
                 <FontAwesomeIcon className='icone' icon={faUser}/>
                 <div>
                     <p className='title'>{user.name}</p>
-                    <p>{user.enterprise}</p>
+                    <p>{user?.enterprise?.name}</p>
                 </div>
                 <button className='sair' onClick={sair}>
                     <FontAwesomeIcon className='icone icone-sair' icon={faSignOutAlt} />

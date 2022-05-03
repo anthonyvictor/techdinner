@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import * as cores from '../../util/cores'
+import { cores } from '../../util/cores'
 
 export const Sidebar = styled.div `
   height: 100vh;
@@ -11,10 +11,10 @@ export const Sidebar = styled.div `
   justify-content: stretch;
   transition: 0.5s;
 
-  @media print{
-      display: none;
-  }
-
+    @media print{
+        display: none;
+    }
+    
     *{
         margin: 0;
         padding: 0;
@@ -105,7 +105,8 @@ export const Sidebar = styled.div `
             width: 100%;
             overflow: hidden;
             user-select: none;
-            pointer-events: none;
+            cursor: pointer;
+            /* pointer-events: none; */
         }
     }
 

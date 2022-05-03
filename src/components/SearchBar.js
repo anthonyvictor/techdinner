@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter } from "@fortawesome/free-solid-svg-icons";
 import { isMobile, isNEU } from "../util/misc";
 
-export const SearchBar = (props) => {
+const SearchBar2 = (props) => {
 
   function keyDown(e){
     if(e.key === 'ArrowUp' || e.key === 'ArrowDown'){
@@ -26,6 +26,8 @@ export const SearchBar = (props) => {
         placeholder="Digite as palavras-chave da busca..."
         value={props.value}
         onChange={(e) => props.setValue(e.target.value)}
+        onFocus={e => props.onFocus && props?.onFocus(e.target.value)}
+        onBlur={e => props.onBlur && props?.onBlur(e.target.value)}
         onKeyDown={(e) => keyDown(e)}
         autoFocus={!isMobile()}
       />
@@ -37,6 +39,12 @@ export const SearchBar = (props) => {
     </Container>
   );
 };
+
+export const SearchBar = memo(SearchBar2, areEqual)
+
+function areEqual(prevProps, nextProps) {
+ return prevProps.value === nextProps.value
+}
 
 SearchBar.propTypes = {
   value: PropTypes.string.isRequired,
@@ -82,7 +90,7 @@ const Container = styled.div`
       gap: 1px;
 
       input {
-    font-size: 16px;
+    font-size: 14px;
   }
 
       button {

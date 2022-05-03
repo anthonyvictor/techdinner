@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useMainMenu } from '../../context/mainMenuContext';
-import * as cores from '../../util/cores'
+import { cores } from '../../util/cores'
 
 function SubMenu(props) {
     const { changeRoute } = useMainMenu()
@@ -78,7 +78,7 @@ const Container = styled.div`
     }
     }
 
-    @media (max-width: 550px){
+    @media (max-width: 760px){
         background-color: rgba(0,0,0,.8);
         width: 100vw;
         left: 0;

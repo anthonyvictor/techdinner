@@ -25,7 +25,7 @@ export function sleep(ms) {
 export async function copiar(val){
   // await navigator.clipboard.writeText(val)
 
-  navigator.clipboard.writeText("pica").then(function() {
+  navigator.clipboard.writeText(val).then(function() {
     alert('copiou')
   }, function() {
     alert('não copiou')
@@ -35,7 +35,6 @@ export async function copiar(val){
 
 // export async function colarDoClipboard({obj, setObj}){
 //   await navigator.clipboard.readText().then((e) => {
-// console.log(e)
 // setObj(e.replace('"',''))
 // // // fetch(e)
 // // //   .then(response => response.blob())
@@ -119,6 +118,26 @@ export function joinObj(obj){
   return txt
 }
 
+export function removeImagens(obj){
+	let newObj = obj
+    	if(newObj){
+      	for(let v of Object.keys(newObj)){
+        		if(typeof newObj[v] === 'object'){
+					//se a key atual do newObj for object {id: 0} ele atribui newObj = removeImagens()
+              		// newObj = removeImagens(newObj)
+					  newObj[v] = removeImagens(newObj[v])
+					}else{
+					  if(v === 'imagem'){
+						  newObj[v] = ''
+					  }
+
+              		// let tempObj = newObj.
+          		}
+      	}
+    	}
+  return newObj
+}
+
 export function join(arr, separator){
   return arr.map(e => String(e)).filter(e => e !== '').join(separator)
 }
@@ -162,16 +181,20 @@ export function equals(a,b){
  */
 export function filtro(obj, search, longNumber = false, phoneNumber = false) {
   if (search !== "") {
-  let txt = joinObj(obj)     
-
+  let txt = joinObj(obj)  
+  
+  let valConj = txt.toUpperCase().replace(/[^a-z0-9]/gi, "");
+  
   txt = removeConjuncoes(txt)
-  search = removeConjuncoes(search)
- 
+  
   let pesqTexto = removeAccents(search)
-      .toUpperCase()
-      .replace("  ", " ")
-      .replace("  ", " ")
-      .replace(/[^a-z0-9]/gi, "");
+  .toUpperCase()
+  .replace("  ", " ")
+  .replace("  ", " ")
+  .replace(/[^a-z0-9]/gi, "");
+  
+  let pesqTextoConj = pesqTexto.toUpperCase().replace(/[^a-z0-9]/gi, "");
+  pesqTexto = removeConjuncoes(pesqTexto)
 
     let pesqNumero = longNumber 
     ? pesqTexto.replace(/[^0-9]/gi) : ''
@@ -179,15 +202,18 @@ export function filtro(obj, search, longNumber = false, phoneNumber = false) {
     let pesqPhone = phoneNumber 
     ? formatPhoneNumber(pesqNumero, false) : ''
 
+
     let val = txt.toUpperCase().replace(/[^a-z0-9]/gi, "");
 
     const p1 = val.includes(pesqTexto)
-
+    
     const p2 = (longNumber && val.includes(pesqNumero))
-
+    
     const p3 = (phoneNumber && !isNEU(pesqPhone) && val.includes(pesqPhone))
+    
+    const p4 = valConj.includes(pesqTextoConj)
 
-    return p1 || p2 || p3
+    return p1 || p2 || p3 || p4
   } else {
     return true;
   }

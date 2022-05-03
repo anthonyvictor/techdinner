@@ -5,15 +5,18 @@ import Rodape from "./rodape";
 import Topo from "./topo";
 import HomeProvider, { useHome } from "../../context/homeContext";
 import styled from "styled-components";
-import * as cores from "../../util/cores";
+import { cores } from "../../util/cores";
 import Pedido from "./pedido";
+import { OrderNoteProvider } from "../../components/OrderNote";
 
 const Home = () => {
   return (
         <PedidosProvider>
-          <HomeProvider>
-            <HomeElement />
-          </HomeProvider>
+          <OrderNoteProvider>
+            <HomeProvider>
+              <HomeElement />
+            </HomeProvider>
+          </OrderNoteProvider>
         </PedidosProvider>
   );
 };
@@ -42,6 +45,10 @@ const Container = styled.div`
   overflow: hidden;
   height: 100%;
   min-height: 100px;
+
+  @media print{
+    display: none;
+  }
 
   > .esquerda {
     width: 290px;

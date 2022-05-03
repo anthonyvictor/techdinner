@@ -19,7 +19,7 @@ export const Contato = ({contato}) => {
           alert('Há pagamentos que excedem o valor total do pedido!')  
           return ''
         }
-        let ms = '`' + '`' + '`' //monoespaçado
+        let ms = '`'.repeat(3) //monoespaçado
         let inicio = 'CONFIRMANDO '
         let fim =`\n\n${ms}CONFIRMA AS INFORMAÇÕES ACIMA?${ms}`
         let _endereco = false, _itens = false
@@ -46,6 +46,8 @@ export const Contato = ({contato}) => {
             inicio += 'NÚMEROS PARA CONTATO:'
             _contato = true
             break;
+          default:
+            inicio += '-------'
         }
       
         if(_contato && !isNEU(curr?.cliente) && !isNEU(curr.cliente.contato)){
@@ -129,6 +131,8 @@ export const Contato = ({contato}) => {
                   break;
                 case 5: //NÃO CONFIRMADO
                   _pagamento += ' - _NÃO INFORMADO_ ❓'
+                  break;
+                default:
                   break;
               }
       

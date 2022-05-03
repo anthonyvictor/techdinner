@@ -1,74 +1,26 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { usePedido } from '..';
-import CadCliProvider from '../../../../context/cadClientesContext'
 import { useHome } from '../../../../context/homeContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { Lista } from './lista';
-import { Cadastro } from './cadastro';
 import { join } from '../../../../util/misc';
-import { useRotas } from '../../../../context/rotasContext';
 import { useContextMenu } from '../../../../components/ContextMenu';
 import { SemCadastro } from './semCadastro';
 import { useImageViewer } from '../../../../components/ImageViewer';
 import { box } from '../box';
-import * as cores from '../../../../util/cores'
+import { cores } from '../../../../util/cores'
 import styled from 'styled-components';
 import { Contato } from './contatoLi';
 import ClientesProvider from '../../../../context/clientesContext';
+import { useApi } from '../../../../api';
+import CadListaClientes from '../../../cadastros/clientes';
 
 const BoxCLienteContext = createContext()
 
 export const BoxCLiente = () => {
-    const [selectBoxClienteCurrentComponent, setSelectBoxCurrentComponent] = useState(null)
-    const { mudarCliente } = usePedido()
-    const selectBoxClienteRoutes = ['/pedido/clientes/lista','/pedido/clientes/cad']
-    const selectBoxClienteComponents = [
-        <Lista mudarTab={mudarTab} routes={selectBoxClienteRoutes} callback={mudarCliente} />, 
-        <Cadastro routes={selectBoxClienteRoutes} callback={mudarCliente} />
-    ] 
-    const {setCurrentRoute} = useRotas()
-    const { curr, openSelectBox } = useHome() 
 
-    useEffect(() => {
-        mudarSelectBox()
-      },[selectBoxClienteCurrentComponent])
-
-      function mudarSelectBox() {
-        if(selectBoxClienteCurrentComponent){
-
-            const getCLiente = () => 
-            selectBoxClienteCurrentComponent?.type?.name === 'Cadastro' ? curr.cliente : null
-
-            openSelectBox(
-                <ClientesProvider>
-                    <CadCliProvider cliente={getCLiente()}>
-                        <div className='container cliente'>
-                            {selectBoxClienteCurrentComponent}
-                            <div className='tabs-buttons'>
-                                <button onClick={() => setSelectBoxCurrentComponent(selectBoxClienteComponents[0])}>LISTA</button>
-                                <button onClick={() => setSelectBoxCurrentComponent(selectBoxClienteComponents[1])}>CADASTRO</button>
-                            </div>
-                        </div>
-                    </CadCliProvider>
-                </ClientesProvider>
-            )
-        }
-      }
-
-      function mudarTab(newTab){
-        if(newTab === 'cadastro') {
-            setCurrentRoute(selectBoxClienteRoutes[1])
-            setSelectBoxCurrentComponent(selectBoxClienteComponents[1])
-        }
-        if(newTab === 'lista') {
-            setCurrentRoute(selectBoxClienteRoutes[0])
-            setSelectBoxCurrentComponent(selectBoxClienteComponents[0])
-        }
-      }
     return (
         <BoxCLienteContext.Provider value={{
-            selectBoxClienteRoutes, mudarTab
         }}>
             <BoxCliente2 />
         </BoxCLienteContext.Provider>
@@ -83,12 +35,15 @@ const BoxCliente2 = () => {
     const {curr, openSelectBox} = useHome()
     const { contextMenu } = useContextMenu()
     const {imageView} = useImageViewer()
-    const {mudarCliente, getSaboresDescritos} = usePedido()
-    const {mudarTab} = useBoxCliente()
+    const {mudarCliente} = usePedido()
+    // const {mudarTab} = useBoxCliente()
 
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [fixedSize, setFixedSize] = useState('')
     const [myClassName, setMyClassName] = useState(undefined)
+    const {getLocalUrl} = useApi()
+
+    
 
     useEffect(() => {
         getMyClassName()
@@ -120,6 +75,8 @@ function removerCliente(){
     }
   }
 
+  
+
 function openMenu(){
     contextMenu([
       {title: 'Alterar', 
@@ -145,17 +102,34 @@ function openMenu(){
   }
 
 function openSelectBoxCliente(tipo){
+
   switch (tipo){
     case 'alterar':
-      mudarTab('lista')
-      break
+      openCadListaCliente(0)
+      break;
     case 'editar':
-      mudarTab('cadastro')
-      break
+      openCadListaCliente(1)
+      break;
     case 'semcadastro':
       openSelectBox(<SemCadastro callback={mudarCliente} />)
-      break
+      break;
+    default:
+      break;
   }
+}
+
+
+function openCadListaCliente(index){
+
+  openSelectBox(
+    <ClientesProvider>
+        <div className='container cliente'>
+            <CadListaClientes 
+            defaultCliente={index === 1 ? curr.cliente : null} 
+            callback={mudarCliente} />
+        </div>
+    </ClientesProvider>
+  )
 }
     
 function getAlertStyle(){
@@ -173,8 +147,8 @@ function getAlertStyle(){
   
   const ImagemOuIcone = () => {
 
-    if(curr?.cliente?.imagem) return <img src={curr.cliente.imagem} alt='' 
-    onClick={() => imageView({title: curr.cliente.nome, image: curr.cliente.imagem})} />
+    if(curr?.cliente?.imagem) return <img src={getLocalUrl(curr.cliente.imagem)} alt='' 
+    onClick={() => imageView({title: curr.cliente.nome, image: getLocalUrl(curr.cliente.imagem)})} />
 
     if (curr?.cliente?.nome) return <FontAwesomeIcon className='icon' icon={faUser} />
     
@@ -215,7 +189,7 @@ function getTags(){
                   {
                     curr?.cliente?.id
                     ? <label className='pedido'>{curr?.numero + 'º pedido'}</label>
-                    : curr?.cliente.nome
+                    : curr?.cliente?.nome
                     ? <label className='sem-cadastro'>Sem cadastro!!</label>
                     : <label className='sem-cliente'>Altere o cliente para liberar ações do pedido.</label>
                   }

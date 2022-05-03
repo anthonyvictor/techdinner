@@ -11,7 +11,8 @@ export const SaboresLista = () => {
         searchString, setSearchString, 
         saborHovered, setSaborHovered, saborHoveredRef, 
         finalResults,
-        checkUncheck
+        checkUncheck,
+        setIsSearchFocused
     } = usePizza()
 
 
@@ -41,8 +42,9 @@ export const SaboresLista = () => {
             if (enter.is) {
                 let current = finalResults[0]
                 if(finalResults.length > 1){
-                    current = saborHovered ? saborHovered : finalResults[0]
+                    current = saborHovered ?? finalResults[0]
                 }
+
                 current.ativo && checkUncheck(current, !String(current.id).includes('s'))
             } else {
                 setSaborHovered(up.is ? up.val : down.val)
@@ -85,7 +87,12 @@ export const SaboresLista = () => {
 
     return (
         <Container>
-            <SearchBar _ref={searchRef} value={searchString} setValue={setSearchString} />
+            <SearchBar _ref={searchRef} 
+            value={searchString} 
+            setValue={setSearchString}
+            onFocus={() => {setIsSearchFocused(true)}}
+            onBlur={() => {setIsSearchFocused(false)}}
+            />
             <ul onMouseLeave={() => setSaborHovered(null)}>
                 {finalResults.map(sabor => {
                     return (
@@ -104,6 +111,7 @@ const Container = styled.div`
         flex-direction: column;
         width: 100%;
         min-height: 50px;
+        overflow-y: auto;
         > ul{
             display: flex;
             flex-direction: column;

@@ -1,12 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { box } from '../box'
 import { Pagamento } from './pagamentoLi'
+import { Pagamentos } from './pagamentos'
 import { formatReal } from '../../../../util/Format';
 import styled from 'styled-components';
 import { useHome } from '../../../../context/homeContext';
-import * as cores from '../../../../util/cores'
+import { cores } from '../../../../util/cores'
 import { join } from '../../../../util/misc';
-import { getValorPago, getValorPendente } from '../../../../util/pedidoUtil';
+
+import { Valores } from './valores';
+import { usePedido } from '..';
 
 const BoxPagamentosContext = createContext()
 
@@ -26,7 +29,7 @@ export const useBoxPagamentos = () => {
 const BoxPagamentos2 = () => {
 
     const {curr, openSelectBox, closeSelectBox} = useHome()
-    
+    const {mudarPagamento} = usePedido()
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [fixedSize, setFixedSize] = useState('')
     const [myClassName, setMyClassName] = useState(undefined)
@@ -49,7 +52,9 @@ const BoxPagamentos2 = () => {
         const newSize = 
         pagamentosCount > 5 ? 'superlarge'
         : pagamentosCount > 2 ? 'large'
-        : pagamentosCount > 0 ? 'big' : ''
+        : pagamentosCount > 1 ? 'bigger'
+        : pagamentosCount > 0 ? 'big' 
+        : ''
 
         setFixedSize(newSize) 
     }
@@ -63,7 +68,7 @@ const BoxPagamentos2 = () => {
 
     function openMenu(pagamento){
         openSelectBox(
-          <Pagamento fechar={closeSelectBox} pedido={curr} pagamento={pagamento} />
+          <Pagamentos pedido={curr} callback={mudarPagamento} cancel={closeSelectBox} pagamento={pagamento} />
         )
       }
 
@@ -76,22 +81,12 @@ const BoxPagamentos2 = () => {
             </div>
 
             <div className='content'>
-                <div className='valores'>
-                    <span>
-                        <h3 className='pago'>{formatReal(getValorPago(curr))}</h3>
-                        <h6>Valor Pago</h6>
-                    </span>
-                    <span>
-                        <h2 className='pendente'>{formatReal(getValorPendente(curr))}</h2>
-                        <h6>Valor Pendente</h6>
-                    </span>
-                    <span>
-                        <h3 className='total'>{formatReal(curr.valor)}</h3>
-                        <h6>Valor Total</h6>
-                    </span>
-                </div>
+                <Valores pedido={curr} />
                 <ul className='pagamentos-ul'>
-                    {curr?.pagamentos?.map(pagamento => <Pagamento key={pagamento.id} pagamento={pagamento} />)}
+                    {curr?.pagamentos?.map(pagamento => 
+                    <Pagamento key={pagamento.id} 
+                    pagamento={pagamento} 
+                    setPagamento={mudarPagamento} />)}
                 </ul>
             </div>
 
@@ -113,13 +108,16 @@ const Container = styled(box)`
 display: flex; 
     min-height: 90px;
     &.big:not(.collapsed){
-      min-height: 180px;
+      min-height: 190px;
+    }
+    &.bigger:not(.collapsed){
+      min-height: 250px;
     }
     &.large:not(.collapsed){
-      min-height: 280px;
+      min-height: 380px;
     }
     &.superlarge:not(.collapsed){
-      min-height: 400px;
+      min-height: 420px;
     }
     .content{
       display: flex;
@@ -127,23 +125,7 @@ display: flex;
       flex-grow: 2;
       overflow-y: auto;
       gap: 5px;
-      .valores{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6% ;
 
-        >span{
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          *{text-align: center;}
-        }
-
-        .pago{color: ${cores.verdeEscuro}}
-        .pendente{color: darkred}
-        /* .total{color: ${cores.cinzaDark}} */
-      }
       .pagamentos-ul{
         display: flex;
         flex-direction: column;

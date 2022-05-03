@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import { usePedido } from '..';
 import EntregadoresProvider, { useEntregadores } from '../../../../context/entregadoresContext';
 import { useHome } from '../../../../context/homeContext';
 import { equals } from '../../../../util/misc';

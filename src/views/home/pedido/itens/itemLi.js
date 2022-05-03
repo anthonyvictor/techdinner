@@ -1,16 +1,18 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPizzaSlice, faGlassCheers, faIceCream, 
     faHamburger, faUtensils, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { convertImageToBase64, formatLitro, formatReal } from '../../../../util/Format';
-import { equals, isNEU, join } from "../../../../util/misc";
+import { isNEU, join } from "../../../../util/misc";
 import styled from "styled-components";
-import * as cores from '../../../../util/cores'
+import { cores } from '../../../../util/cores'
 import { useContextMenu } from '../../../../components/ContextMenu';
 import { useBoxItens } from ".";
 import { usePedido } from "..";
 import { useHome } from "../../../../context/homeContext";
 import { useMessage } from "../../../../components/Message";
+import { useAsk } from '../../../../components/Ask'
+import { getOnly1Item, getInfoSecundarias } from "../../../../util/pedidoUtil";
 
 const ItemContext = createContext()
 
@@ -51,8 +53,10 @@ export const Item2 = () => {
 
     const {item} = useItem()
     const {openSelectBoxItens} = useBoxItens()
-    const {getSaboresDescritos, copiarItem, excluirItem, getOnly1Item} = usePedido()
+    const {copiarItem, excluirItem} = usePedido()
     const {message} = useMessage()
+    const {ask} = useAsk()
+    const {curr} = useHome()
 
     const {contextMenu} = useContextMenu()
 
@@ -78,25 +82,13 @@ export const Item2 = () => {
         return isNEU(res) ? 'ITEM DESCONHECIDO' : x + res
     }
 
-    function getInfoSecundarias() {
-
-        if(item.tipo === 0) return getSaboresDescritos(item.pizza.sabores)
-        
-        if(item.tipo === 1) return item.bebida.tipo
-            
-        if(item.tipo === 2) return 'HAMBURGUER'
-        
-        return ''
-
-    }
-
     function editar(){
-      openSelectBoxItens(getOnly1Item(item))
+      openSelectBoxItens(getOnly1Item(curr.itens, item))
     }
 
       function copiar(){
         const cp = (qtd) => {
-          const itemOne = getOnly1Item(item)
+          const itemOne = getOnly1Item(curr.itens, item)
             copiarItem({
               ...itemOne, 
               bebida: {...itemOne?.bebida, imagem: ''},
@@ -113,36 +105,46 @@ export const Item2 = () => {
 
       function excluir(){
         try{
-          if(window.confirm('Deseja realmente excluir este item?')){
-            const maxItensContextMenu = item.ids.slice(0, 5)
-            if(item.ids?.length > 1){
-              contextMenu(
-                maxItensContextMenu.map((e, i) => {
-                 const isLast =  i + 1 === maxItensContextMenu.length
-                  return {
+          ask({
+            title: 'Deseja realmente excluir este item?',
+            buttons: [
+                {title: 'SIM', click:() => askTrue()},
+                {title: 'CANCELAR', click:() => {}}
+            ],
+            allowCancel: true
+            })
+   
+            function askTrue(){
+              const maxItensContextMenu = item?.ids?.slice(0, 5)
+              if(item?.ids?.length > 1){
+                contextMenu(
+                  maxItensContextMenu.map((e, i) => {
+                  const isLast =  i + 1 === maxItensContextMenu.length
+                    return {
 
-                    title: isLast 
-                    ? `TODOS (${item.ids.length} unidades)` 
-                    : `${i + 1} unidade${(i + 1) > 1 ? 's' : ''}`,
+                      title: isLast 
+                      ? `TODOS (${item.ids.length} unidades)` 
+                      : `${i + 1} unidade${(i + 1) > 1 ? 's' : ''}`,
 
-                    click: () => isLast 
-                    ? next(item.ids) 
-                    : next(item.ids.slice(0, i + 1))
+                      click: () => isLast 
+                      ? next(item.ids.map(e => {return{id: e}})) 
+                      : next(item.ids.slice(0, i + 1).map(e => {return{id: e}}))
 
+                    }
                   }
-                }
+                  )
                 )
-              )
-            }else if(item.id){
-              next([item.id])
-            }else{
-              message('error', 'Ocorreu um erro!')
-              throw new Error('Ids não definidos para o escopo de exclusão')
+              }else if(item.id){
+                next([item])
+              }else{
+                message('error', 'Ocorreu um erro!')
+                throw new Error('Ids não definidos para o escopo de exclusão')
+              }
+              function next(itens){
+                if(itens && itens?.length > 0) excluirItem(itens)
+              }
             }
-            function next(itens){
-              if(itens && itens?.length > 0) excluirItem(getOnly1Item(item))
-            }
-          }
+
         }catch(err){
           console.error(err, err.stack)
         } 
@@ -156,7 +158,7 @@ export const Item2 = () => {
         ])
       }
 
-    const Secundarias = () => <p className='info-secundarias'>{getInfoSecundarias()}</p>
+    const Secundarias = () => <p className='info-secundarias'>{getInfoSecundarias(item)}</p>
 
     return (
         <Container 
@@ -167,7 +169,6 @@ export const Item2 = () => {
                 }}
                 >
                   <div className='inicio'>
-
                     <input type={'checkbox'} />
                     <ImagemOuIcone item={item} />
 
@@ -246,12 +247,13 @@ const Container = styled.li`
             @media (max-width: 550px){
               label{
                 font-weight: 600;
-                font-size: 14px;
+                font-size: 12px;
               }
               .info-secundarias{
-                font-size: 11px;
+                font-size: 9px;
                 font-style: italic;
               }
+
             }
           }
           .fim{
@@ -270,6 +272,12 @@ const Container = styled.li`
               cursor: pointer;
               pointer-events: all;
               width: 40px;
+            }
+
+            @media (max-width: 550px){
+              label{
+                font-size: 14px;
+              }
             }
           }
 

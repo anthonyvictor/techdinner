@@ -3,12 +3,14 @@ import styled from "styled-components";
 import { faSearch, faTimes} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useImageViewer } from "./ImageViewer";
-import * as cores from '../util/cores'
+import { cores } from '../util/cores'
 import { isNEU, loadImage } from "../util/misc";
-import * as Format from '../util/Format'
+import { useContextMenu } from "./ContextMenu";
 
 function PictureBox(props) {
 
+  const {contextMenu} = useContextMenu()
+  
   function remove() {
         props.setImagem('')
     }
@@ -64,8 +66,33 @@ function PictureBox(props) {
     }
 
     const renderImageElement = () => {
-      console.log(props.imagem)
       return <img src={props.imagem} alt="Imagem" />
+    }
+
+    async function colarImagem(url){
+      props.setImagem(url)
+    }
+
+    async function openContextMenu(e){
+      e.preventDefault()
+      const texto = await navigator.clipboard.readText()
+      const containUrl = (
+        (texto).includes('http://') ||
+        (texto).includes('https://') ||
+        (texto).includes('www.')
+       )
+
+       const containImage = !isNEU(props.imagem)
+
+       if(
+         !containImage &&
+         !containUrl
+       ) return
+
+      contextMenu([
+        {title: 'Colar imagem', click: () => colarImagem(texto), visible: containUrl},
+        {title: 'Remover', click: remove, visible: containImage}
+      ])
     }
 
   return (
@@ -73,7 +100,8 @@ function PictureBox(props) {
       <div className="img-container" 
       onDragEnter={handleDragEnter} onDragLeave={handleDragLeave}
       onDragOver={handleDragOver} onDrop={handleOnDrop}
-      onTouchEnd={openOrLoadImage}>
+      onTouchEnd={openOrLoadImage}
+      onContextMenu={openContextMenu}>
         {showDragArea && renderDropAreaElement()}
         {props.imagem && renderImageElement()} 
       </div>
@@ -140,7 +168,7 @@ padding: 5px;
         user-select: none;
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: scale-down;
     }
 }
 

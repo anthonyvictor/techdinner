@@ -1,16 +1,15 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import * as cores from '../util/cores'
+import { cores } from '../util/cores'
 
 const AskContext = createContext()
 
 function AskProvider({children}) {
     const [obj, setObj] = useState(null)
-    const [component, setComponent] = useState(null)
+    const [component, setComponent] = useState(<></>)
 
     function fechar(e){
         if(e === true || e.target === e.currentTarget){
-            setComponent(null);
             setObj(null)
         }
     }
@@ -28,7 +27,7 @@ function AskProvider({children}) {
     }
 
     useEffect(() => {
-            setComponent(obj ? <Ask /> : null);
+            setComponent(obj ? <Ask /> : <></>);
     }, [obj])
     return (
         <AskContext.Provider value={{obj, ask, fechar}}>
@@ -49,6 +48,7 @@ function Ask(){
 
     const {obj, fechar} = useAsk()
 
+    if(!obj) return <></>
     return(
         <Container onMouseDown={(e) => {obj.allowCancel && fechar(e)}}>
             <div className='ask-container'>
@@ -60,8 +60,8 @@ function Ask(){
                 <div className='botoes'>
                     {obj.buttons.map((e,i) => (
                         <button key={i} onClick={() => {
-                            e.click()
                             fechar(true)
+                            e.click()
                         }}>{e.title}</button>
                     ))}
                 </div>

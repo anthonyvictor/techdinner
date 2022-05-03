@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, createContext, useContext } from 'r
 import styled from 'styled-components';
 import { SearchBar } from '../../../../../components/SearchBar';
 import { filtro, equals, isNEU } from '../../../../../util/misc';
-import * as cores from '../../../../../util/cores'
+import { cores } from '../../../../../util/cores'
 import { useItens } from '../itens';
 import { Rodape } from './rodape';
 import { OutrosLista } from './outros';
@@ -146,10 +146,10 @@ export default function Outro(){
     }}>
       <Outro2 />
 
-      <Keyer searchRef={searchRef} focusSearch={focusSearch} finalResults={searchResults} 
-            currentHovered={currentHovered} setCurrentHovered={setCurrentHovered} 
-            currentHoveredRef={currentHoveredRef}
-            canClick={isActive} click={avancar} />
+      <Keyer 
+      searchRef={searchRef} arr={searchResults} 
+      hovered={{currentHovered, setCurrentHovered, currentHoveredRef}}
+      canClick={isActive} click={avancar} />
 
     </OutroContext.Provider>
   )

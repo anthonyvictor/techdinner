@@ -2,9 +2,10 @@ import { MyDDD } from './local'
 import * as misc from './misc';
 
 export function formatReal(valor) {
-    return Number.parseFloat(valor).toLocaleString("pt-br", {
-      style: "currency",
-      currency: "BRL",})
+  const res = !isNaN(valor) ? Number.parseFloat(valor).toLocaleString("pt-br", {
+    style: "currency",
+    currency: "BRL",}) : 'R$ 0,00'
+    return res
   }
 
   export function formatCurrency(valor) {
@@ -62,6 +63,22 @@ export function formatReal(valor) {
     
     valor = _ddi + _ddd + _num
     return valor
+  }
+
+  export function formatCNPJ(numero){
+    numero = numero.replace(/[^0-9]/g, '')
+    const res = `${
+      numero.slice(0, 2)
+    }.${
+      numero.slice(2, 5)
+    }.${
+      numero.slice(5, 8)
+    }/${
+      numero.slice(8, 12)
+    }-${
+      numero.slice(12)
+    }` 
+    return res
   }
 
   export function formatEndereco(endereco, withTaxa = false, withLocal = true, withCep = true){
@@ -146,7 +163,6 @@ export  function convertImageToBase64(imagem){
       let i = `data:image/png;base64, ${convertArrayToBase64(imagem.data)}`   
         //.toString('base64') //convertFileToBase64(imagem)
         if(i && i.length > 0) return i
-      }else if(typeof imagem === 'blob'){
         // let i = await convertFileToBase64(imagem)
         // return i
       }else if(typeof imagem === 'string'){

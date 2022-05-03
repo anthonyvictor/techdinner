@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { SearchBar } from '../../../components/SearchBar';
 import { useEnderecos } from '../../../context/enderecosContext';
-import { useCadEndereco } from '../../../context/cadEnderecosContext';
+import { useCadEndereco } from '.';
 import * as misc from '../../../util/misc'
 import * as Format from "../../../util/Format";
-import * as cores from '../../../util/cores'
+import { cores } from '../../../util/cores'
 import { useContextMenu } from '../../../components/ContextMenu';
 import ListaProvider from '../../../context/listaContext';
 import { Lista } from '../../../components/Lista';
@@ -124,6 +124,9 @@ const Container = styled.div`
   justify-content: stretch;
   gap: 10px;
   overflow-y: auto;
+  padding: 5px;
+  background-color: ${cores.branco};
+  height: 100%; 
 
   .esq{
     border: 1px solid black;
@@ -131,6 +134,7 @@ const Container = styled.div`
     flex-grow: 2;
     display: flex;
     flex-direction: column;
+    user-select: none;
 
       label{
         flex-grow: 2;

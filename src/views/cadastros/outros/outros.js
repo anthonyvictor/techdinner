@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import ListaProvider from '../../../context/listaContext';
 import { Lista } from '../../../components/Lista';
-import * as cores from '../../../util/cores'
+import { cores } from '../../../util/cores'
 import * as format from '../../../util/Format'
 import * as misc from '../../../util/misc'
 import PictureBox from '../../../components/PictureBox';
@@ -13,14 +13,6 @@ import { faIceCream } from "@fortawesome/free-solid-svg-icons";
 import { useContextMenu } from '../../../components/ContextMenu';
 
 export const Outros = () => {
-  const Empty = {
-    id: 0, nome: '',
-    imagem: '',
-    tamanho: 0,
-    valor: 0,
-    ativo: true,
-    visivel: true
-}
 
     const {outros} = useOutros()
     const [search, setSearch] = useState("");
@@ -45,7 +37,7 @@ export const Outros = () => {
 
                     <div className='img'>
                         {!misc.isNEU(e.imagem) 
-                        ? <img src={format.convertImageToBase64(e.imagem)} /> 
+                        ? <img src={e.imagem} alt={e?.nome ?? 'outro.img'} /> 
                         : <FontAwesomeIcon className='icone' icon={faIceCream} />}
                     
                     </div>

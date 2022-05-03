@@ -5,14 +5,17 @@ import { usePizzas } from '../../../context/pizzasContext';
 import * as Format from '../../../util/Format';
 import * as misc from '../../../util/misc'
 import { Lista } from '../../../components/Lista';
-import * as cores from '../../../util/cores'
-import { useCadPizzas } from '../../../context/cadPizzasContext';
+import { cores } from '../../../util/cores'
+import { useCadPizzas } from '.';
 import { SearchBar } from '../../../components/SearchBar';
 import { useContextMenu } from '../../../components/ContextMenu';
+import { useMessage } from '../../../components/Message';
+import { useApi } from '../../../api';
 
 function Tamanhos() {
-  const {tamanhos, tipos, valores} = usePizzas()
-
+  const {tamanhos, tipos, valores, refreshTamanhos} = usePizzas()
+  const {message} = useMessage()
+  const {api} = useApi()
 
   const {searchTam: search, setSearchTam: setSearch,
     listaTam: lista, setListaTam: setLista,
@@ -25,7 +28,7 @@ function Tamanhos() {
 
   useEffect(() => {
     setFiltered(tamanhos.filter(e => misc.filtro(e, search)))
-  }, [search]) //eslint-disable-line
+  }, [search, tamanhos, valores]) //eslint-disable-line
 
   useEffect(() => {
     if (filtered) {
@@ -65,6 +68,7 @@ function Tamanhos() {
                 </section>
                 <ul className='valores-container'>
                     {valores.filter(v => v.tamanho.id === e.id)
+                    .sort((a, b) => a.valor > b.valor ? 1 : a.valor > b.valor ? -1 : 0)
                     .map(v => {return{
                       ...v, 
                       tamanho: tamanhos.filter(t => t.id === v.tamanho.id)[0],
@@ -140,6 +144,29 @@ function contem(i) {
       return [...arr1, obj]})
   }
 
+  async function salvar(){
+    try{
+      if(misc.isNEU(curr.nome)) throw new Error('Insira um nome')
+      const newTamanho = {
+        ...curr,
+        nome: curr.nome.toUpperCase(),
+        valores: valoresDoCurrTamanho
+      }
+      const payload = {
+        tamanho: newTamanho
+      }
+      const resp = await api().post('pizzas/salvar/tamanho', payload)
+
+      if(resp.data){
+        message('ok', 'Tamanho salvo com sucesso!')
+        refreshTamanhos()
+        
+      }
+    }catch(err){
+      message('error', err.message)
+    }
+  }
+
   return (
     <Container tipos={tipos}>
       <div className='esq'>
@@ -205,7 +232,7 @@ function contem(i) {
         </section>
 
         <div className="botoes">
-          <button type="button" id='salvar'>Salvar</button>
+          <button type="button" id='salvar' onClick={() => salvar()}>Salvar</button>
           <button type="button" id="limpar" onClick={() => limpar(true)}>Limpar</button>
         </div>
       </div>
@@ -218,6 +245,7 @@ export default Tamanhos;
 
 
 const Container = styled.div`
+background-color: ${cores.branco};
   position: relative;
   display: flex;
   justify-content: stretch;
@@ -232,6 +260,7 @@ const Container = styled.div`
     flex-direction: column;
 
     .lista-component {
+
       .item-li {
         .inicio {
         }

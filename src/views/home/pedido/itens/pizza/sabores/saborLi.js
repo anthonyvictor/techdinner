@@ -1,10 +1,10 @@
-import React, { memo, useState, useMemo, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { usePizza } from '..'
 import { useContextMenu } from '../../../../../../components/ContextMenu'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons'
 import { formatAbrev } from '../../../../../../util/Format'
-import * as cores from '../../../../../../util/cores'
+import { cores } from '../../../../../../util/cores'
 import { equals } from '../../../../../../util/misc'
 import styled from 'styled-components'
 
@@ -14,7 +14,7 @@ export const SaborLi = ({sabor}) => {
         saborHovered, setSaborHovered, saborHoveredRef, 
         checkUncheck, getIsSelected,
         isHoverLocked, setIsHoverLocked,
-        replaceSabor, getIngredientesDescritos, saboresSelected,
+        replaceSabor, getIngredientesDescritos, 
         ingredientesComponentResult, setIngredientesComponentResult,
         abrirIngredientesComponent, fecharIngredientesComponent, 
         ativarDesativar
@@ -99,7 +99,7 @@ export const SaborLi = ({sabor}) => {
                     </span>
                     <span className='nome'>{sabor.nome}</span>
                 </section>
-                <p>{getIngredientesDescritos(sabor)}</p>
+                <p className='ingredientes'>{getIngredientesDescritos(sabor)}</p>
             </div>
             <button className='botao' onClick={() => openContext(sabor)}>
                 <FontAwesomeIcon icon={faEllipsisV} />
@@ -116,6 +116,12 @@ const Container = styled.li`
         border: 1px solid black;
         background-color: ${cores.brancoEscuro};
         flex-basis: 70px;
+
+        @media (max-width: 550px){
+            padding: 2px;
+            gap: 2px;
+            flex-basis: 60px;
+        }
 
         * {
             pointer-events: none;
@@ -136,6 +142,10 @@ const Container = styled.li`
                 width: 30px;
                 height: 30px;
                 cursor: pointer;
+                @media (max-width: 550px){
+                    width: 20px;
+                    height: 20px;
+                }
             }
         }
         .centro {
@@ -143,7 +153,12 @@ const Container = styled.li`
 
             span {
                 font-weight: 600;
-                font-size: 17px;
+                font-size: 15px;
+                
+                @media (max-width: 550px){
+                    font-size: 13px;
+
+                }
             }
             
             .tipo{
@@ -152,10 +167,14 @@ const Container = styled.li`
                 -webkit-text-stroke: .3px ${cores.brancoDark};
             }
 
-            p {
-                font-size: 13px;
+            .ingredientes {
+                font-size: 11px;
                 font-weight: 600;
                 font-style: italic;
+                @media (max-width: 550px){
+                    font-size: 9px;
+                    font-weight: 300;
+                }
             }
         }
         button {
@@ -166,6 +185,11 @@ const Container = styled.li`
             padding: 5px 15px;
             cursor: pointer;
             pointer-events: fill;
+
+            @media (max-width: 550px){
+                font-size: 15px;
+                padding: 2px 10px;
+            }
         }
         &.ativo {
             background-color: ${cores.cinzaEscuro};

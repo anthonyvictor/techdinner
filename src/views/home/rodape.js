@@ -1,24 +1,30 @@
-import React from "react";
+import React, {useState,useEffect} from "react";
 import { usePedidos } from "../../context/pedidosContext";
 import { formatReal } from "../../util/Format";
 import styled from "styled-components";
 import * as misc from "../../util/misc";
-
+import { useHome } from '../../context/homeContext'
 export default function Rodape() {
   const { pedidos } = usePedidos();
+  const [_pedidos, set_Pedidos] = useState([])
+  const { filtro, filtroExibicao } = useHome()
+
+  useEffect(() => {
+    set_Pedidos(pedidos.filter(filtro))
+  }, [pedidos, filtroExibicao])
 
   function getTotal() {
-    return pedidos.reduce((a, b) => a + b.valor, 0)
+    return _pedidos.reduce((a, b) => a + b.valor, 0)
   }
 
   function getTaxas() {
-    const enderecos = pedidos.filter(e => !misc.isNEU(e.endereco)).map(e => e.endereco)
+    const enderecos = _pedidos.filter(e => !misc.isNEU(e.endereco)).map(e => e.endereco)
     const taxas = enderecos.filter(e => !misc.isNEU(e.taxa)).map(e => e.taxa).reduce((a,b) => a + b, 0)
     return taxas
   }
 
   function getPago() {
-    let pags = pedidos
+    let pags = _pedidos
     .map(e => e.pagamentos).flat()
     let totalPago = pags
     .map(e => e.valorPago)
@@ -29,7 +35,7 @@ export default function Rodape() {
   return (
     <Estilo>
       <div className="geral">
-        <p>Pedidos: {pedidos.length}</p>
+        <p>Pedidos: {_pedidos.length}</p>
         <p className="adm"> | Total: {formatReal(getTotal())}</p>
       </div>
       <div className="detalhes">
@@ -42,9 +48,12 @@ export default function Rodape() {
 }
 
 const Estilo = styled.div`
-height: 30px;
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
   border-top: 1px solid black;
   overflow: hidden;
+  padding-bottom: 5px;
 
     .geral {
       text-align: center;

@@ -1,21 +1,26 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAd, faCheck, faCheckCircle, faInfoCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-import * as cores from '../util/cores'
-import { isNEU } from '../util/misc';
+import { faCheckCircle, faExclamationTriangle, faInfoCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { cores } from '../util/cores'
+import useSound from "use-sound";
+import errorSound from '../sounds/error01.wav';
 const MessageContext = createContext()
 
 const tempo = 5 //segundos
 export default function MessageProvider({children}){
     const [component, setComponent] = useState(null)
+    const [playError] = useSound(errorSound)
 
     useEffect(() => {
         if(component){
             const timer = setTimeout(() => {
                 setComponent(null)    
             }, tempo * 1000);
-            return () => clearTimeout(timer)
+            return () => {
+                clearTimeout(timer)
+                setComponent(null)
+            }
         }   
     }, [component])
 
@@ -24,10 +29,13 @@ export default function MessageProvider({children}){
             let icon = null
             if(type === 'ok'){
                 icon = <FontAwesomeIcon className={`icone ${type}`} icon={faCheckCircle} />
-            }if(type === 'error'){
+            }else if(type === 'error'){
                 icon = <FontAwesomeIcon className={`icone ${type}`} icon={faTimesCircle} />
-            }if(type === 'info'){
+
+            }else if(type === 'info'){
                 icon = <FontAwesomeIcon className={`icone ${type}`} icon={faInfoCircle} />
+            }else if(type === 'alert'){
+                icon = <FontAwesomeIcon className={`icone ${type}`} icon={faExclamationTriangle} />
             }
             
             if(icon){
@@ -44,6 +52,9 @@ export default function MessageProvider({children}){
                     </button>
                 </Container>
                 )
+                if(type === 'error'){
+                    playError()
+                }
             }
         }else{
             setComponent(null)
@@ -79,6 +90,11 @@ const Container = styled.div`
     justify-content: center;
     align-items: center;
     padding: 5px;
+
+    @media (max-width: 550px){
+        height: auto;
+        width: 80vw;
+    }
 
     @keyframes getinout{
         0%{
@@ -116,6 +132,9 @@ const Container = styled.div`
             color: ${cores.vermelhoDark};
         }
         &.info{
+            color: ${cores.azulDark};
+        }
+        &.alert{
             color: ${cores.amareloDark};
         }
     }

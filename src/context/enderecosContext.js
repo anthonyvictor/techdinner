@@ -12,7 +12,6 @@ function EnderecosProvider(props) {
 
   useEffect(() => {            
     let montado = true
-    console.log('enderecos')
     async function getAll(){
         api().get('enderecos').then(r=>
             {if(montado) {

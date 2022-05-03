@@ -13,6 +13,7 @@ import { useRotas } from "./context/rotasContext";
 import Bebidas from "./views/cadastros/bebidas";
 import Outros from "./views/cadastros/outros";
 import Configuracoes from "./views/configuracoes";
+import { Relatorios } from "./views/relatorios";
 
 
 const Rotas = () => {
@@ -38,7 +39,7 @@ const Rotas = () => {
 
       <Route
         exact
-        path="/cad/clientes/*"
+        path="/cad/clientes"
         element={<Clientes />}
       />
 
@@ -76,6 +77,12 @@ const Rotas = () => {
         exact
         path="/conf"
         element={<Configuracoes />}
+      />
+
+      <Route
+        exact
+        path="/rel"
+        element={<Relatorios />}
       />
     </Routes>
   );

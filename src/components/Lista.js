@@ -1,15 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-
 import * as misc from '../util/misc'
-import * as cores from '../util/cores'
+import { cores } from '../util/cores'
 import { useLista } from '../context/listaContext';
+import { Kebab } from './KebabButton';
 
 export const Lista = (props) => {
-  const {allowMultiSelect, allowSelect, onConfirm, selectedDataArray, grid, setLockHover} = useLista()
+  const {allowMultiSelect, allowSelect, onConfirm, selectedDataArray, grid} = useLista()
   // mustRefresh &&
   function getIsSelected(id){
     return (allowMultiSelect || allowSelect) ? selectedDataArray.some(e => misc.equals(e.id, id)) : false
@@ -71,10 +68,7 @@ const Item = (props) => {
 
                 {children}
 
-                <button className="botao" onClick={(e) => onRightClick(e, getData())}>
-                    <FontAwesomeIcon icon={faEllipsisV} />
-                </button>
-
+                <Kebab click={e => onRightClick(e, getData())} />
             </li>
   )
 }
@@ -82,7 +76,7 @@ const Item = (props) => {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 50px;
+  min-height: 35px;
   width: 100%;
   height: 100%;
   justify-content: stretch;
@@ -113,11 +107,14 @@ const Container = styled.div`
       display: flex;
       align-items: center;
       padding: 5px;
-      gap: 5px;
+      gap: 3px;
       border: 1px solid black;
       background-color: ${cores.brancoEscuro};
       flex-basis: 70px;
 
+      button{
+        pointer-events: fill;
+      }
       &.selected {
         background-color: ${cores.verde};
       }
@@ -140,16 +137,6 @@ const Container = styled.div`
 
       .centro {
         flex-grow: 2;
-      }
-
-      button {
-        background-color: transparent;
-        border: none;
-        outline: none;
-        font-size: 20px;
-        padding: 5px 15px;
-        cursor: pointer;
-        pointer-events: fill;
       }
 
       &.ativo {

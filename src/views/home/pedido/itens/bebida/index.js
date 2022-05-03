@@ -3,11 +3,10 @@ import styled from 'styled-components';
 import { SearchBar } from '../../../../../components/SearchBar';
 import { useBebidas } from '../../../../../context/bebidasContext';
 import { filtro, join, equals, isNEU } from '../../../../../util/misc';
-import * as cores from '../../../../../util/cores'
+import { cores } from '../../../../../util/cores'
 import { useItens } from '../itens';
 import { Rodape } from './rodape';
 import { BebidasLista } from './bebidas';
-import axios from 'axios';
 import { Keyer } from '../../../../../components/Keyer';
 import { useApi } from '../../../../../api';
 
@@ -157,10 +156,11 @@ export default function Bebida(){
     }}>
       <Bebida2 />
 
-      <Keyer searchRef={searchRef} focusSearch={focusSearch} finalResults={searchResults} 
-            currentHovered={currentHovered} setCurrentHovered={setCurrentHovered} 
-            currentHoveredRef={currentHoveredRef}
-            canClick={isActive} click={avancar} />
+      <Keyer 
+      searchRef={searchRef} arr={searchResults} 
+      hovered={{currentHovered, setCurrentHovered, currentHoveredRef}}
+      canClick={isActive} click={avancar} />
+
 
     </BebidaContext.Provider>
   )

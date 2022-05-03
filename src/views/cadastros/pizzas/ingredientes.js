@@ -4,8 +4,8 @@ import { usePizzas } from '../../../context/pizzasContext';
 import styled from 'styled-components';
 import { SearchBar } from '../../../components/SearchBar';
 import * as misc from '../../../util/misc'
-import * as cores from '../../../util/cores'
-import { useCadPizzas } from '../../../context/cadPizzasContext';
+import { cores } from '../../../util/cores'
+import { useCadPizzas } from '.';
 import ListaProvider from '../../../context/listaContext';
 import { useContextMenu } from '../../../components/ContextMenu';
 
@@ -124,42 +124,46 @@ export const Container = styled.div`
   display: flex;
   justify-content: stretch;
   gap: 10px;
-  overflow-y: auto;
+  /* overflow-y: auto; */
   height: 100% ;
+  background-color: ${cores.branco};
 
   .esq{
     border: 1px solid black;
     padding: 10px;
     flex-grow: 2;
+    flex-shrink: 2;
     display: flex;
     flex-direction: column;
 
     width: 100% ;
     height: 100% ;
-
-
-
+    
+    .lista-component{
+      height: 100%;
     }
-
-    .dir{
+    
+  }
+  
+  .dir{
     flex-grow: 1;
     display: flex;
-
+    
     &.hidden{
       display: none;
     }
-
+    
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 10px;
     padding: 20px;
-
-      section{
-        width: 100% ;
-        display:flex;
-        flex-direction: column;
-        label{
+    
+    section{
+      width: 100% ;
+      display:flex;
+      flex-direction: column;
+      label{
         display: block;
       }
       input{
@@ -170,19 +174,19 @@ export const Container = styled.div`
         min-width: 350px;
       }
     }
-
+    
     .botoes{
       display: flex;
       height: 50px;
       gap: 20px;
       width: 100% ;
-
+      
       button{
         border: 2px solid black;
         font-size: 18px;
         cursor: pointer;
       }
-
+      
       #salvar{
         flex-grow: 3;
         background-color: ${cores.verde};
@@ -192,10 +196,26 @@ export const Container = styled.div`
         background-color: ${cores.vermelho};
       }
     }
-
+    
   }
-
+  
   @media (max-width: 550px){
     flex-direction: column;
+    height: 100%;
+    justify-content: flex-start;
+    overflow-y: hidden;
+    .esq{
+      max-height: 75% ;
+      flex-grow: 2;
+    }
+    
+    .dir{
+      flex-grow: 0;
+      flex-shrink: 0;
+      gap: 5px;
+      padding: 5px;
+      height: max-content;
+    }
+    
   }
-`;
+  `;

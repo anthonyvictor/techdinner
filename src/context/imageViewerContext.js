@@ -9,7 +9,7 @@
 // } from "@fortawesome/free-solid-svg-icons";
 // import React, { createContext, useState } from "react";
 // import styled from "styled-components";
-// import * as cores from "../util/cores";
+// import { cores } from "../util/cores";
 // import { loadImage, sleep } from "../util/misc";
 // import { saveAs } from "file-saver";
 // import { useContextMenu } from "./ContextMenu";

@@ -1,8 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useRotas } from './rotasContext'
-import * as cores from '../util/cores'
+import {cores} from '../util/cores'
 import { useApi } from '../api'
+import { FecharButton } from '../components/FecharButton'
+import { usePedidos } from './pedidosContext'
+import { isNEU } from '../util/misc'
 
 const HomeContext = createContext()
 
@@ -12,7 +15,10 @@ function HomeProvider(props) {
   const { setCurrentRoute } = useRotas()
   const [selectBox, setSelectBox] = useState(null)
   const [entregadorPadrao, setEntregadorPadrao] = useState(null)
+  const {novo} = usePedidos()
   const {api} = useApi()
+
+  const [filtroExibicao, setFiltroExibicao] = useState('')
 
   useEffect(() => {
     let montado = true
@@ -21,7 +27,6 @@ function HomeProvider(props) {
   }, [])
 
   useEffect(() => {
-    // console.log('VERIFICA SE JÁ TEM ALGUMA TAB COM O CLICADO SE N TIVER ELE ADICIONA',curr)
     if (curr) {
       if (tabs.length === 0 || !tabs.some(e => e.id === curr.id)) {
         //se n tiver tabs ou se nenhuma tab for a current
@@ -32,6 +37,16 @@ function HomeProvider(props) {
       setCurrentRoute('/home')
     }
   }, [curr])
+
+  function filtro(pedido){
+    if(filtroExibicao === ''){
+      return isNEU(pedido.arq)
+    }else if(filtroExibicao === 'ARQUIVADO'){
+      return !isNEU(pedido.arq)
+    }else{
+      return pedido.tipo === filtroExibicao && isNEU(pedido.arq)
+    }
+  }
 
   function fecharPedido(tab) {
     if (curr && curr.id === tab.id) {
@@ -66,18 +81,25 @@ function HomeProvider(props) {
     setSelectBox(
       <SelectBox className='absolute-black' 
       onDoubleClick={e => askForCloseSelectBox(e, true)}>
-        <button className='close-button'
-        onClick={e => askForCloseSelectBox(e, true)}>X</button>
+        <FecharButton fechar={e => askForCloseSelectBox(e, true)} />
         {element}
       </SelectBox>
     )
   }
 
+  async function novoPedido(){
+    const res = await novo()
+    if(res){
+      setCurr(res)
+    }
+  }
+
   return (
         <HomeContext.Provider
-      value={{
-        curr,
+        value={{
+        curr, 
         setCurr,
+        novoPedido,
         tabs,
         setTabs,
         showLista: props.showLista,
@@ -85,6 +107,7 @@ function HomeProvider(props) {
         fecharPedido,
         openSelectBox, closeSelectBox,
         entregadorPadrao,
+        filtroExibicao, setFiltroExibicao, filtro
 
       }}
     >
@@ -109,8 +132,9 @@ const SelectBox = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
     *{user-select: none;}
-
+    
     > .close-button{
       position: absolute;
       right: 2%;
@@ -121,27 +145,40 @@ const SelectBox = styled.div`
       height: 40px;
       cursor: pointer;
       background-color: white;
-
+      
       @media (hover: hover) and (pointer: fine){
         &:hover{
           background-color: yellow;
         }
       }
-
+      
     }
-
+    
+    @keyframes baixo-cima{
+      from{
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      to{
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
     > .container {
-      animation: aparecer 0.2s linear;
+      /* position: relative; */
+      animation: baixo-cima 0.15s ease-out;
       background-color: ${cores.branco};
       padding: 10px;
       border-radius: 20px;
       box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.5);
       display: flex;
       flex-direction: column;
+      flex-shrink: 0;
       justify-content: center;
       align-items: center;
       gap: 2px;
-      
+
       &.entregador{
         width: min(400px, 80%);
         height: 150px;
@@ -157,6 +194,12 @@ const SelectBox = styled.div`
         button{
           width: 100%;
           height: 50px;
+        }
+
+        @media (max-width: 550px){
+          h1{
+            font-size: 1.2rem;
+          }
         }
       }
 
@@ -230,6 +273,23 @@ const SelectBox = styled.div`
       &.cliente {
         width: 85%;
         height: 90%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        animation: baixo-cimaMeio 0.15s ease-out;
+        top: 50%;
+        left: 50%;
+
+        @keyframes baixo-cimaMeio{
+          from{
+            transform: translate(-50%, -100%);
+            opacity: 0;
+          }
+          to{
+            transform: translate(-50%, -50%);
+            opacity: 1;
+          }
+        }
+
         @media (max-width: 760px) {
           height: 80%;
           width: 95%;
@@ -300,9 +360,11 @@ const SelectBox = styled.div`
         grid-auto-rows: auto;
         width: 60%;
         height: 70%;
-        @media (max-width: 550px) {
+
+        @media (max-width: 550px){
           width: 80%;
           height: 300px;
+          min-height: 250px;
         }
         button {
           width: 100%;

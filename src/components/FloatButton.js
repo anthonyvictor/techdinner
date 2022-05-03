@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import * as cores from "../util/cores";
+import { cores } from "../util/cores";
 
 const Botao = styled.button`
   display: none;
