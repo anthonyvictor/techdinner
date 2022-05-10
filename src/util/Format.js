@@ -170,3 +170,10 @@ export  function convertImageToBase64(imagem){
       }
   }else{ return null }
 }
+
+export function formatDateIso(d){
+  const date=new Date(d);
+  const res=new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
+  .toISOString().replace(/T/, ' ').replace(/\..+/, '');
+  return res
+}

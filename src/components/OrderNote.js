@@ -12,14 +12,21 @@ const OrderNoteContext = createContext()
 export const OrderNoteProvider = ({ children }) => {
     const [component, setComponent] = useState(<></>)
 
-    function orderNote(pedido) {
-        try {
-            if (!pedido) throw new Error()
-            setComponent(<OrderNote pedido={pedido} fechar={orderNote} />)
-        } catch {
-            setComponent(<></>)
-            return null
-        }
+   function orderNote(pedido) {
+        const p = new Promise((resolve, reject) => {
+            try {
+                if (!pedido) throw new Error()
+                setComponent(<OrderNote pedido={pedido} fechar={orderNote} imprimir={() => {
+                    setComponent(<></>)
+                    resolve(true)
+                }} />)
+            } catch {
+                setComponent(<></>)
+                resolve(false)
+            }
+        })
+
+        return p
     }
 
     return (
@@ -35,7 +42,7 @@ export const useOrderNote = () => {
 }
 
 const OrderNote = props => {
-    const { pedido, fechar } = props
+    const { pedido, fechar, imprimir} = props
     const { user } = useApi()
 
     const [itensAgrupados] = useState(getItensAgrupados(pedido))
@@ -209,6 +216,18 @@ const OrderNote = props => {
         }
     }
 
+    function getInfoObservacoes(){
+        if(isNEU(pedido.observacoes)) return <></>
+        return(
+            <div className='observacoes-container'>
+                <section className='sessao observacoes-section'>
+                        <h5>OBSERVAÇÕES</h5>
+                    </section>
+                <h5>{pedido.observacoes}</h5>
+            </div>
+        )
+    }
+
     function getInfoTotal() {
         return (
             <div className='total-container'>
@@ -268,7 +287,7 @@ const OrderNote = props => {
         document.title = `TechDinner-PEDIDO_${pedido?.id ?? 0}_${pedido?.cliente?.nome ?? 'CLIENTE DESCONHECIDO'}`
         window.print()
         document.title = docTitle
-        fechar()
+        imprimir()
     }, [])
 
     return (
@@ -290,6 +309,7 @@ const OrderNote = props => {
                     {getInfoTipo()}
                     {getInfoPizzas()}
                     {getInfoBebidasOutros()}
+                    {getInfoObservacoes()}
                     {getInfoTotal()}
                     {getInfoPagamentos()}
                     {getInfoImpressao()}

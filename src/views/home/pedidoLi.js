@@ -42,6 +42,9 @@ export const Pedido = ({pedido, atual, abrir}) => {
     }
     
     async function arquivar(){
+
+      // const dataFim = getData()
+
       const payload = {
         pedido: {id: pedido.id}
       }

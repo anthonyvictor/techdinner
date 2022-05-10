@@ -49,7 +49,6 @@ export const Keyer = ({searchRef, arr, hovered, click, canClick}) => {
             [...alphaNum, 'BACKSPACE'].some(e => e === event.key.toUpperCase()) &&
             document.activeElement !== searchRef.current && !focusBusy()
         ) {
-            console.log(searchRef)
             searchRef.current.focus()
         } else {
             onPress(event.key, event.key)

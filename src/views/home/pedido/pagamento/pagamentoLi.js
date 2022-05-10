@@ -62,12 +62,12 @@ const Icone = () => {
 
     }
 
-    function getInfoSecundariasBottom() {
+    function getInfoSecundariasBottom(parte) {
         
         const trocoPara = `Troco p/${formatReal(pagamento.valorRecebido)} `
         const deTroco = `(${formatReal(pagamento.valorRecebido - pagamento.valorPago)} de troco)`
 
-        return trocoPara + deTroco
+        return parte === 1 ? trocoPara : parte === 2 ? deTroco : trocoPara + deTroco
 
     }
 
@@ -117,7 +117,10 @@ const Icone = () => {
             <p className='info-secundarias'>{getInfoSecundarias()}</p>
             <label className='titulo'>{getTituloPagamento(pagamento)}</label>
             {pagamento.valorRecebido && pagamento.valorPago < pagamento.valorRecebido && (
-                <p className='info-secundarias bottom'>{getInfoSecundariasBottom()}</p>
+                <p className='info-secundarias bottom'>
+                  {getInfoSecundariasBottom(1)}
+                  <b>{getInfoSecundariasBottom(2)}</b>
+                </p>
             )}
 
         </div>
@@ -172,8 +175,12 @@ const Container = styled.li`
               gap: 5px;
 
               
-                font-size: 10px;
+                font-size: .7rem;
                 font-style: italic;
+
+                &.bottom{
+                  font-size: 12px;
+                }
             
               @media (max-width: 550px){ 
                 &:not(.bottom){

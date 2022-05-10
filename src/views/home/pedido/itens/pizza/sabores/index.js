@@ -12,25 +12,31 @@ export const SaboresLista = () => {
         saborHovered, setSaborHovered, saborHoveredRef, 
         finalResults,
         checkUncheck,
-        setIsSearchFocused
+        avancar,
+        setIsSearchFocused,
+        ingredientesComponent
     } = usePizza()
 
 
-    const specialKeys = ['ArrowDown', 'ArrowUp', 'Enter']
+    const specialKeys = ['ArrowDown', 'ArrowUp', 'Enter', 'F1']
     const alphaNum = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('')
     const [specialKeyPressed, setSpecialKeyPressed] = useState(null)
 
     useEffect(() => {
-        addKeyPressEventHandler()
+        if(!ingredientesComponent){
+            addKeyPressEventHandler()
+        }
         return () => removeKeyPressEventHandler()
-    }, []) //eslint-disable-line
+    }, [ingredientesComponent, ]) //eslint-disable-line
 
     useEffect(() => {
         keyPressHandler()
     }, [specialKeyPressed]) //eslint-disable-line
 
     const keyPressHandler = () => {
-        if (specialKeyPressed && finalResults.length > 0 && !focusBusy()) {
+        if(specialKeyPressed === 'F1'){
+            avancar()
+        } else if (specialKeyPressed && finalResults.length > 0 && !focusBusy()) {
             let index = saborHovered ? finalResults.map(e => e.id).indexOf(saborHovered.id) : -1
             const up = { is: specialKeyPressed === 'ArrowUp', val: index > 0 ? finalResults[index - 1] : finalResults[index] }
             const down = {
@@ -53,6 +59,7 @@ export const SaboresLista = () => {
     }
 
     const onPressValidator = useCallback(event => {
+        
         if (event.type === 'keydown') {
             if (
                 [...alphaNum, 'BACKSPACE'].some(e => e === event.key.toUpperCase()) &&
@@ -60,6 +67,9 @@ export const SaboresLista = () => {
             ) {
                 focusSearch()
             } else {
+                if(['F1'].some(e => e === event.key)){
+                    event.preventDefault()
+                }
                 onPress(event.key, event.key)
             }
         } else if (event.type === 'keyup') {

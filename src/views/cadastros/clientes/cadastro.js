@@ -20,8 +20,8 @@ export const CadastroCli = () => {
   const {message} = useMessage()
   
   async function salvar() {
-    let ctt = [...currentCliente?.contato.map(c => Format.formatNumber(c))]
-    let tg = [...currentCliente?.tags]
+    let ctt = [...currentCliente?.contato?.map(c => Format.formatNumber(c))]
+    let tg = currentCliente?.tags ? [...currentCliente?.tags] : []
     if(isNEU(currentCliente?.nome)){
       message('alert','Insira o nome do cliente')
     }else if(isNEU(currentCliente?.contato)){
@@ -43,10 +43,10 @@ export const CadastroCli = () => {
       const payload = {
         cliente: {
           ...currentCliente,
-          nome: currentCliente?.nome.toUpperCase(),
+          nome: currentCliente?.nome?.toUpperCase(),
           imagem: currentCliente?.imagem,
           contato: ctt,
-          tags: tg,
+          tags: tg.map(e => e = e.toUpperCase()),
 
         }
       }
@@ -166,10 +166,10 @@ const Principal = styled.form`
   width: 100% ;
   height: 100%;
 
-  @keyframes aparecer{
+  /* @keyframes aparecer{
     from{opacity: 0}
     to{opacity: 1}
-  }
+  } */
 
   #top-container {
     display: flex;
@@ -244,7 +244,6 @@ const Principal = styled.form`
     button {
       font-size: 20px;
       cursor: pointer;
-      outline: none;
       border: 1.5px solid black;
     }
     #salvar {

@@ -8,6 +8,7 @@ import { useAsk } from '../../../../components/Ask'
 import { useMessage } from '../../../../components/Message'
 import { useValuer } from '../../../../components/Valuer'
 import { getValorPendente } from '../../../../util/pedidoUtil'
+import { formatDateIso } from '../../../../util/Format'
 
 const Button = ({texto, cor, icone, disabled}) => {
     const {addPagamento, pagamentosCount, valorInputRef, inputValue, fakePedido, pagamento} = usePagamentos()
@@ -60,12 +61,13 @@ const Button = ({texto, cor, icone, disabled}) => {
 
             function next(status){
                 const newValor = Number(valorInputRef.current.value)
-                const dataa = new Date().toISOString().slice(0, 19).replace('T', ' ')
+                const dataa =  formatDateIso(new Date()) //new Date().toISOString().slice(0, 19).replace('T', ' ')
                 const datar = (
                     status === 1 
                     ? dataa
                     : null
                     )
+
                 const newPagamento = {
                     id: (
                         newValor === pagamento?.valorPago 
@@ -79,6 +81,7 @@ const Button = ({texto, cor, icone, disabled}) => {
                     valorPago: newValor,
                     valorRecebido: Number(valorRecebido)
                 }
+
                 addPagamento(newPagamento)
             }     
     }

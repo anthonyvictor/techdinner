@@ -13,7 +13,7 @@ import { Entregadores } from "../endereco/entregadores";
 
 export const Bottom = () => {
     const {curr, openSelectBox} = useHome()
-    const {cancelar, finalizar} = usePedido()
+    const {cancelar, finalizar, acrescentarImpressao} = usePedido()
     const {ask} = useAsk()
     const {message} = useMessage()
     const {orderNote} = useOrderNote()
@@ -132,7 +132,9 @@ export const Bottom = () => {
         if (curr.tipo === 'ENTREGA' && getValorPendente(curr, true) > 0) {
             throw new Error('noLog Pedidos para entrega necessitam dos pagamentos antes de imprimir!')
         }
-        orderNote(curr)
+        if(orderNote(curr)){
+          acrescentarImpressao(curr)
+        }
       }catch(err){
           !err.message.startsWith('noLog ') && console.error(err, err.stack)
           message('error', err.message.replace('noLog ', ''))

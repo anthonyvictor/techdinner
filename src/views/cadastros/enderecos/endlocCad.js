@@ -11,7 +11,7 @@ function EndLocCad() {
   const { bairros } = useEnderecos();
 
   const { 
-    currEL, setCurrEL, limparEL, tiposEL, tipoEL, setTipoEL
+    currentEndereco, setCurrentEndereco, limparEL, tiposEndereco, tipoEndereco, setTipoEndereco
  } = useCadEndereco()
 
 
@@ -26,16 +26,16 @@ function EndLocCad() {
 
   return (
     <Container>
-      <div className={!isNEU(currEL.id) ? 'disabled' : undefined}>
+      <div className={!isNEU(currentEndereco.id) ? 'disabled' : undefined}>
         <div className="overlay" />
         <ToggleButton 
-        items={tiposEL} currentItem={tipoEL} 
-        setCurrentItem={setTipoEL} />
+        items={tiposEndereco} currentItem={tipoEndereco} 
+        setCurrentItem={setTipoEndereco} />
       </div>
       
 
       <form>
-        <label>{isNEU(currEL.id) ? 'Novo!' : 'iD: ' + currEL.id }</label>
+        <label>{isNEU(currentEndereco.id) ? 'Novo!' : 'iD: ' + currentEndereco.id }</label>
 
         <section>
           <label htmlFor="cep">CEP:</label>
@@ -43,63 +43,65 @@ function EndLocCad() {
           id="cep"
           name="cep"
           placeholder="00.000-000"
-          value={currEL.cep}
+          value={currentEndereco.cep}
           maxLength={9}
           autoFocus={!isMobile()}
           onChange={(e) => {
             let val = e.target.value.replace(/[^0-9]/ig,'').trim()
-            setCurrEL({...currEL, cep: Format.formatCEP(val)})
+            setCurrentEndereco({...currentEndereco, cep: Format.formatCEP(val)})
           }}
            />
         </section>
 
-        <section className={tipoEL === "Local" ? "hidden" : undefined}>
+        <section className={tipoEndereco === "Local" ? "hidden" : undefined}>
           <label htmlFor="logradouro">Logradouro:</label>
           <textarea
             rows={2}
             id="logradouro"
             name="logradouro"
             placeholder="Rua.. Ladeira.. Avenida..."
-            value={currEL.logradouro}
-            onChange={(e) => setCurrEL({...currEL, logradouro: e.target.value})}
+            value={currentEndereco.logradouro}
+            onChange={(e) => setCurrentEndereco({...currentEndereco, logradouro: e.target.value})}
             onBlur={e => {e.target.value = e.target.value.trim()}}
          />
         </section>
 
-        <section className={tipoEL === "Endereço" ? "hidden" : undefined}>
+        <section className={tipoEndereco === "Endereço" ? "hidden" : undefined}>
           <label htmlFor="local">Local:</label>
           <textarea
             rows={2}
             id="local"
             name="local"
             placeholder="Casa, Edifício, Apartamento, Condomínio, Hospital, Escola..."
-            value={currEL.local}
-            onChange={(e) => setCurrEL({...currEL, local: e.target.value})}
+            value={currentEndereco.local}
+            onChange={(e) => setCurrentEndereco({...currentEndereco, local: e.target.value})}
             onBlur={e => {e.target.value = e.target.value.trim()}}
           />
         </section>
 
-        <section className={tipoEL === "Endereço" ? "hidden" : undefined}>
+        <section className={tipoEndereco === "Endereço" ? "hidden" : undefined}>
           <label htmlFor="numero">Número:</label>
           <input id="numero" name="numero"
           required placeholder="1600"
-            value={currEL.numero ?? ''}
-            onChange={(e) => setCurrEL({...currEL, numero: e.target.value})}
+            value={currentEndereco.numero ?? ''}
+            onChange={(e) => setCurrentEndereco({...currentEndereco, numero: e.target.value})}
             onBlur={e => {e.target.value = e.target.value.trim()}}
              />
         </section>
 
-        <section className={tipoEL === "Local" ? "hidden" : undefined}>
+        <section className={tipoEndereco === "Local" ? "hidden" : undefined}>
           <label htmlFor="bairro">Bairro:</label>
           <select id="bairro" name="bairro" required
-          value={!isNEU(currEL.bairro) ? currEL.bairro : 'Selecione..'}
-          onChange={(e) => setCurrEL({...currEL, bairro: e.target.value})}>
-            <option key={0} disabled={true}>Selecione..</option>
+          value={!isNEU(currentEndereco.bairro) ? currentEndereco.bairro.id : 'Selecione..'}
+          onChange={(e) => setCurrentEndereco({...currentEndereco, bairro: e.target.value})}>
+
+            <option key={0} disabled={true} value={''}>Selecione..</option>
+
             {bairros &&
               bairros
               .sort(ordem)
               .map((b) => (
-                <option key={b.id}
+                <option key={b.id} value={b.id}
                 label={`${b.nome}, ${Format.formatReal(b.taxa)}`}>
                   {b.nome}</option>
               ))}

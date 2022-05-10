@@ -22,28 +22,28 @@ function EndLocLista() {
   const { enderecos, locais, bairros } = useEnderecos();
   const [filtered, setFiltered] = useState([])
   const [lista, setLista] = useState();
-  const {currEL, setCurrEL, setTipoEL, tiposEL, callback} = useCadEndereco()
+  const {currentEndereco, setCurrentEndereco, setTipoEndereco, tiposEndereco, callback} = useCadEndereco()
   const { setCurrentRoute } = useRotas()
 
   const {contextMenu} = useContextMenu()
 
   function editar(e){
     if(tabs.length === 1) return
-      let preenchido = !misc.isNEU(misc.joinObj(currEL))
+      let preenchido = !misc.isNEU(misc.joinObj(currentEndereco))
 
       const getEmpty = (obj) => {return obj ? obj : ''}
   
       if (
-        currEL.id && currEL.id === e.id && 
-        (misc.isNEU(getEmpty(currEL.local)) === misc.isNEU(getEmpty(e.local)))
+        currentEndereco.id && currentEndereco.id === e.id && 
+        (misc.isNEU(getEmpty(currentEndereco.local)) === misc.isNEU(getEmpty(e.local)))
         ) {
         setCurrentTab(tabs[1])
       } else if ((preenchido && window.confirm("Deseja cancelar a edição atual?")) || !preenchido) {
-        setCurrEL(e)
+        setCurrentEndereco(e)
         
         misc.isNEU(getEmpty(e.local)) 
-        ? setTipoEL(tiposEL[0])
-        : setTipoEL(tiposEL[1])
+        ? setTipoEndereco(tiposEndereco[0])
+        : setTipoEndereco(tiposEndereco[1])
   
         setCurrentTab(tabs[1])
       }

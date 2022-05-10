@@ -16,7 +16,7 @@ export const Rodape = () => {
       observacoes, setObservacoes, valor, setValor, 
       tamanhoSelected, saboresSelected, getSaborId,
       isPriceLocked, setIsPriceLocked, getIngredientesDescritos,
-      callback, item, isLoaded, 
+      avancar, item, isLoaded, 
       isSearchFocused
     } = usePizza()
     const { tamanhos, bordas, valores } = usePizzas()
@@ -129,32 +129,14 @@ export const Rodape = () => {
         let r = ''
         let index = 0
         for (let s of saboresSelected) {
-            let ingr = getIngredientesDescritos({...s, id: getSaborId(s.id)}, false)
+
+            let ingr = getIngredientesDescritos(s, false)
             r = [r, `${index + 1} - ${join([s.nome, ingr], ', ')}`]
                 .filter(e => e !== '')
                 .join(', ')
             index++
         }
         return r
-    }
-
-    function avancar(){
-      if(!tamanhoSelected){
-        alert('Escolha o tamanho!')
-      }else if (saboresSelected.length === 0){
-        alert('Selecione ao menos um sabor!')
-      }else{
-        callback({
-          ...item, 
-          observacoes: observacoes,
-          tipo: 0,
-          valor: valor,
-          pizza: {
-            tamanho: tamanhos.find(e => equals(e.id, tamanhoSelected)) , 
-            sabores: saboresSelected, 
-          },
-        })
-      }
     }
 
   return (
@@ -184,7 +166,7 @@ export const Rodape = () => {
             onChange={e => setObservacoes(e.target.value)} />
             </div>
         </div>
-        <button className='avancar' onClick={avancar}>AVANÇAR</button>
+        <button className='avancar' onClick={avancar}>AVANÇAR [F1]</button>
     </Container>
   )
 }

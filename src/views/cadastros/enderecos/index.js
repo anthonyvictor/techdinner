@@ -29,10 +29,10 @@ export default function Enderecos({tabs, callback}) {
 const CadEnderecoContext = createContext(null);
 
 function Enderecos2({callback}) {
-  const [currEL, setCurrEL] = useState(getDefaultEL());
-  const [tiposEL] = useState(["Endereço", "Local"]);
+  const [currentEndereco, setCurrentEndereco] = useState(getDefaultEL());
+  const [tiposEndereco] = useState(["Endereço", "Local"]);
   const [currBai, setCurrBai] = useState(getDefaultBai())
-  const [tipoEL, setTipoEL] = useState(tiposEL[0]);
+  const [tipoEndereco, setTipoEndereco] = useState(tiposEndereco[0]);
 
   const {currentTab} = useTabControl() 
 
@@ -50,8 +50,8 @@ function Enderecos2({callback}) {
   function limparEL(confirm) {
     const res = confirm && window.confirm("Limpar formulário?");
     if (res) {
-        setTipoEL(tiposEL[0])
-        setCurrEL(getDefaultEL());
+        setTipoEndereco(tiposEndereco[0])
+        setCurrentEndereco(getDefaultEL());
     }
   }
 
@@ -75,10 +75,10 @@ function Enderecos2({callback}) {
   return (
     <CadEnderecoContext.Provider
       value={{
-        currEL, setCurrEL,
+        currentEndereco, setCurrentEndereco,
         limparEL,
-        tiposEL,
-        tipoEL, setTipoEL, 
+        tiposEndereco,
+        tipoEndereco, setTipoEndereco, 
         currBai, setCurrBai,
         limparBai, callback
       }}

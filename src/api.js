@@ -1,6 +1,6 @@
 import axios from "axios"
 import React, { useState, createContext, useContext, useEffect, useCallback } from "react"
-import { useInternetChecker } from "./components/InternetChecker"
+// import { useInternetChecker } from "./components/InternetChecker"
 import { useMessage } from "./components/Message"
 import { getStored } from "./util/local"
 import { isNEU } from "./util/misc" 

@@ -188,8 +188,6 @@ export const Pedido = () => {
     async function mudarPagamento(newPagamentos, pagamento=null) {
       // if pagamento is set, the array (newPagamentos) will replace old pagamento
         
-      console.log('aaaa', newPagamentos, pagamento)
-
       closeSelectBox()
         let ped = {
             id: curr.id,
@@ -225,6 +223,22 @@ export const Pedido = () => {
           refresh()
       
     })
+
+    async function acrescentarImpressao(){
+      let ped = {
+        id: curr.id,
+      }
+      const payload = {
+          pedido: ped,
+      }
+      const response = await api().post('pedidos/update/impressoes', payload) 
+
+        setCurr({
+          ...curr,
+          impr: (curr.impr + 1) ?? 1
+        })
+        // refresh(curr, )
+    }
 
     
     async function cancelar() { //motivo
@@ -296,6 +310,7 @@ export const Pedido = () => {
         mudarEndereco, mudarTaxa, mudarEntregador, 
         mudarItem, copiarItem, excluirItem, 
         mudarPagamento, mudarObservacoes,
+        acrescentarImpressao,
         cancelar, finalizar, 
 
       }}>

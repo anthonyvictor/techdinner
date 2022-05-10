@@ -113,7 +113,6 @@ const Pagamentos2 = () => {
 
             <div className='bottom'>
                 <AvancarButton avancar={() => {
-                    console.log('aa')
                     const fakePagamento = 
                     fakePedido.pagamentos.some(e => String(e.id).includes('fake'))
                     

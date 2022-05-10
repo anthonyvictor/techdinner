@@ -6,12 +6,12 @@ import { formatPhoneNumber, formatEndereco, formatReal, formatLitro } from '../.
 import { isNEU, join } from '../../../../util/misc';
 import { usePedido } from "..";
 import { useContextMenu } from "../../../../components/ContextMenu";
-import { getValorPendente } from "../../../../util/pedidoUtil";
+import { getSaboresDescritos, getValorPendente } from "../../../../util/pedidoUtil";
 
 export const Contato = ({contato}) => {
 
     const { curr } = useHome()
-    const {getSaboresDescritos} = usePedido()
+    // const {getSaboresDescritos} = usePedido()
     const { contextMenu } = useContextMenu()
 
     async function confirmacao(tipo, resolve){

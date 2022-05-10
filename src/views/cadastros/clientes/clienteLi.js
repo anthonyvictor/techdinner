@@ -138,7 +138,7 @@ const ClienteLi2 = ({ cliente }) => {
                     <span className='contato'>, {cliente.contato.map(e => formatPhoneNumber(e)).join(', ')}</span>
                     <span className='tags'>{!isNEU(cliente.tags) && ', ' + cliente.tags.join(', ')}</span>
 
-                    <p className='endereco'>{formatEndereco(cliente.endereco, false, true)}</p>
+                    <p className='endereco'>{formatEndereco(cliente.endereco, true, true)}</p>
 
                     <div className='bottom-info'>
                         {cliente.endereco?.taxa > 0 && <span>Taxa: {formatReal(cliente.endereco.taxa)}</span>}

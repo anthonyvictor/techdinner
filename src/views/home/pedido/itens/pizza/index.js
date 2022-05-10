@@ -33,7 +33,7 @@ export default function Pizza() {
     const [isHoverLocked, setIsHoverLocked] = useState(false)
     const [isPriceLocked, setIsPriceLocked] = useState(false)
     
-    const [ingredientesComponent, setIngredientesComponent] = useState(<></>)
+    const [ingredientesComponent, setIngredientesComponent] = useState(null)
     const [ingredientesComponentResult, setIngredientesComponentResult] = useState(null)
     
     const [tamanhoSelected, setTamanhoSelected] = useState(item.pizza?.tamanho?.id ? String(item.pizza?.tamanho?.id) : null)
@@ -181,55 +181,67 @@ export default function Pizza() {
     function abrirIngredientesComponent(sabor) {
         setIngredientesComponent(
             <IngredientesLista sabor={sabor} />
-        )
-    }
-    function fecharIngredientesComponent() {
-        setIngredientesComponent(<></>)
-        focusSearch()
-    }
-
-    function getSaborId(sabor) {return String(sabor.id).split('s')[0]}
-    function getTodosIngredientes(sabor) {return sabor.ingredientes.map(e => ingredientes.filter(i => i.id === e.id)[0].nome).join(', ')}
-    function getIsSelected(sabor) {return saboresSelected.map(e => String(e.id)).includes(String(sabor.id))}
-    function buildNewId(sabor, i=0) {return getSaborId(sabor) + 's' + (i > 0 ? i : saboresSelectedUpdates)}
+            )
+        }
+        function fecharIngredientesComponent() {
+            setIngredientesComponent(null)
+            focusSearch()
+        }
+        
+    function getSaborId(sabor) { return String(sabor.id).split('s')[0] }
+    function getTodosIngredientes(sabor) { return sabor.ingredientes.map(e => ingredientes.filter(i => i.id === e.id)[0].nome).join(', ') }
+    function getIsSelected(sabor) { return saboresSelected.map(e => String(e.id)).includes(String(sabor.id)) }
+    function buildNewId(sabor, i=0) { return getSaborId(sabor) + 's' + (i > 0 ? i : saboresSelectedUpdates) }
 
     function getIngredientesDescritos(sabor, retornarTudo = true) {
-        let res = ''
-        const concatRes = i => {
-            res = join(
-                [res, `${i.tipoAdd} ${i.nome}`], ', '
-                )
-        }
+        try{
+            let res = ''
+            const concatRes = i => {
+                res = join(
+                    [res, `${i.tipoAdd} ${i.nome}`], ', '
+                    )
+            }
 
-        const temTipoAdd = 
-        sabor.ingredientes
-        .map(i => i.tipoAdd ?? '')
-        .join('').length > 0
-        
-        const saborOriginal = temTipoAdd ? {
-            ...getFullSaborFromId(getSaborId(sabor)),
-            tipo: getFullTipoFromId(sabor.tipo.id),
-            ingredientes: getFullIngredientesFromIds(sabor.ingredientes.map(e => Number(e.id)))
-        } : sabor
+            const temTipoAdd = 
+            sabor.ingredientes
+            .map(i => i.tipoAdd ?? '')
+            .join('').length > 0
+            
 
-        if (temTipoAdd) {
-            const ingredientesModificados = sabor.ingredientes.filter(i => i.tipoAdd && i.tipoAdd !== '')
 
-            for (let ingredienteModificado of ingredientesModificados) {
-                const tipoAddModificadoUpperCase = ingredienteModificado.tipoAdd.toUpperCase()
-                if (['POUCO','BASTANTE'].includes(tipoAddModificadoUpperCase)) {
-                    concatRes(ingredienteModificado)
-                } else {
-                    let ingrOriginais = saborOriginal.ingredientes.map(e => String(e.id))
-                    const temNosIngredientesOriginais = ingrOriginais.includes(String(ingredienteModificado.id))
-                    if (
-                        (!temNosIngredientesOriginais && tipoAddModificadoUpperCase === 'COM') ||
-                        (temNosIngredientesOriginais && tipoAddModificadoUpperCase === 'SEM') 
-                    ){ concatRes(ingredienteModificado) }
+            let saborOriginal = {...sabor}
+            
+            if(temTipoAdd){
+                const orig = getFullSaborFromId(getSaborId(sabor))
+                saborOriginal = {
+                    ...orig,
+                    tipo: getFullTipoFromId(orig.tipo.id),
+                    ingredientes: getFullIngredientesFromIds(orig.ingredientes.map(e => Number(e.id)))
                 }
             }
-        }        
-        return (res === '' && retornarTudo) ? getTodosIngredientes(saborOriginal) : res
+
+            if (temTipoAdd) {
+                const ingredientesModificados = sabor.ingredientes.filter(i => i.tipoAdd && i.tipoAdd !== '')
+
+                for (let ingredienteModificado of ingredientesModificados) {
+                    const tipoAddModificadoUpperCase = ingredienteModificado.tipoAdd.toUpperCase()
+                    if (['POUCO','BASTANTE'].includes(tipoAddModificadoUpperCase)) {
+                        concatRes(ingredienteModificado)
+                    } else {
+                        let ingrOriginais = saborOriginal.ingredientes.map(e => String(e.id))
+                        const temNosIngredientesOriginais = ingrOriginais.includes(String(ingredienteModificado.id))
+                        if (
+                            (!temNosIngredientesOriginais && tipoAddModificadoUpperCase === 'COM') ||
+                            (temNosIngredientesOriginais && tipoAddModificadoUpperCase === 'SEM') 
+                        ){ concatRes(ingredienteModificado) }
+                    }
+                }
+            }        
+            return (res === '' && retornarTudo) ? getTodosIngredientes(saborOriginal) : res
+        }catch(err){
+            console.error(err)
+            return ''
+        }
     }
 
     function replaceSabor(sabor, novoSabor){
@@ -253,7 +265,11 @@ export default function Pizza() {
             setSaboresSelected(prev => prev.filter(p => !equals(p.id, sabor.id)))
             
             if (check) {
-                let novoSabor = { ...sabor, id: buildNewId(sabor) }
+                let newId = buildNewId(sabor)
+                if(saboresSelected.find(e => e.id === newId)){
+                    newId = newId.split('s')[0] + 's' + saboresSelected.length + 1    
+                }
+                let novoSabor = { ...sabor, id: newId }
                 insertSabor(novoSabor)
             } else {
                 removeSabor(sabor)
@@ -269,7 +285,27 @@ export default function Pizza() {
         }
         await api().post('pizzas/salvar/sabor', payload) 
         refresh()
-    }       
+    }     
+    
+    function avancar(){
+        console.log(tamanhoSelected)
+        if(!tamanhoSelected){
+          message('alert','Escolha o tamanho!')
+        }else if (saboresSelected.length === 0){
+          message('alert','Selecione ao menos um sabor!')
+        }else{
+          callback({
+            ...item, 
+            observacoes: observacoes,
+            tipo: 0,
+            valor: valor,
+            pizza: {
+              tamanho: tamanhos.find(e => equals(e.id, tamanhoSelected)) , 
+              sabores: saboresSelected, 
+            },
+          })
+        }
+      }
 
     return (
         <PizzaContext.Provider value={{
@@ -282,6 +318,7 @@ export default function Pizza() {
             isHoverLocked, setIsHoverLocked,
             getIsSelected, getIngredientesDescritos, getSaborId,
             abrirIngredientesComponent, fecharIngredientesComponent,
+            ingredientesComponent,
             ingredientesComponentResult, setIngredientesComponentResult,
             isSearchFocused, setIsSearchFocused, 
 
@@ -291,14 +328,14 @@ export default function Pizza() {
             observacoes, setObservacoes,
             valor, setValor,
             ativarDesativar,
-            
+            avancar,
             callback,
         }}>
             <Container className='container pizza'>
                 <TamanhosLista />
                 <SaboresLista />
                 <Rodape />
-                {ingredientesComponent}
+                {ingredientesComponent && ingredientesComponent}
             </Container>
         </PizzaContext.Provider>
     )
