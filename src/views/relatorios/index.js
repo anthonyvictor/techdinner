@@ -6,11 +6,14 @@ import { RelatoriosProvider, useRelatorios } from '../../context/relatoriosConte
 import { formatReal } from '../../util/Format'
 import { Pedido } from './pedidoLi'
 import { cores } from '../../util/cores'
-
+import { Refreshing } from '../../components/refreshing'
+import {OrderNoteProvider, useOrderNote} from '../../components/OrderNote'
 export const Relatorios = () => {
     return (
         <RelatoriosProvider>
-            <RelatoriosElement />
+            <OrderNoteProvider>
+                <RelatoriosElement />
+            </OrderNoteProvider>
         </RelatoriosProvider>
     )
 }
@@ -43,22 +46,33 @@ const InputAte = memo(({dataDe, dataAte, mudar}) => {
 })
 
 const RelatoriosElement = () => {
-    const { relatorios, carregar } = useRelatorios()
+    const { relatorios, carregar, isRefreshing } = useRelatorios()
 
     const [dados, setDados] = useState({})
     const [dataDe, setDataDe] = useState(getDataDeInicial())
     const [dataAte, setDataAte] = useState(dataDe)
-
+    
+    const {orderNote} = useOrderNote()
 
     useEffect(() => {
         buildData()
     }, [relatorios])
 
+    useEffect(() => {
+        _carregar()
+    }, [])
+
+    function _carregar(){
+        carregar({periodos: [{dataInic: dataDe, dataFim: dataAte}]})
+    }
+
     function getDataDeInicial(){
         const dataAtual = new Date()
-        if (dataAtual.getHours() >= 10) return dataAtual
+
+        if (dataAtual.getHours() >= 10) return dataAtual.toISOString().split('T')[0]
+
         dataAtual.setDate(dataAtual.getDate() - 1)
-        return dataAtual.toLocaleDateString('en-CA')
+        return dataAtual.toISOString().split('T')[0]//.toLocaleDateString('en-CA')
     }
 
 
@@ -113,12 +127,12 @@ const RelatoriosElement = () => {
                 <InputAte dataDe={dataDe} dataAte={dataAte} mudar={setDataAte} />
                 
             
-                <button onClick={() => carregar({periodos: [{dataInic: dataDe, dataFim: dataAte}]})}>Filtrar</button>
+                <button onClick={() => _carregar()}>Filtrar</button>
             </section>
             <ul>
-                {relatorios.map(pedido => (
-                    <Pedido key={pedido.id} pedido={pedido} />
-                ))}
+                {relatorios.sort((a, b) => new Date(a.dataInic) > new Date(b.dataInic) ? -1 : 1).map(pedido => (
+                    <Pedido key={pedido.id} pedido={pedido} abrir={() => orderNote(pedido, false)} />
+                    ))}
             </ul>
             <section className='info-container'>
                 {dados?.naoCancelados?.count > 0 && (
@@ -189,6 +203,7 @@ const RelatoriosElement = () => {
                     </div>
                 )}
             </section>
+            {isRefreshing && (<Refreshing />)}
         </Container>
     )
 }

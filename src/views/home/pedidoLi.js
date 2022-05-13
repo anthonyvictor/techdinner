@@ -11,6 +11,8 @@ import { useApi } from "../../api";
 import { useContextMenu } from "../../components/ContextMenu";
 import { usePedidos } from "../../context/pedidosContext";
 import { useHome } from "../../context/homeContext";
+import { DatePicker } from "./DatePicker";
+import { useMessage } from "../../components/Message";
 
 export const Pedido = ({pedido, atual, abrir}) => {
 
@@ -21,6 +23,8 @@ export const Pedido = ({pedido, atual, abrir}) => {
     const {getLocalUrl, api} = useApi()
     const {contextMenu} = useContextMenu()
     const {setCurr, setFiltroExibicao} = useHome()
+    const [datePicker, setDatePicker] = useState(null)
+    const {message} = useMessage()
   
     function openContextMenu(){
       contextMenu([
@@ -29,7 +33,7 @@ export const Pedido = ({pedido, atual, abrir}) => {
         {title: 'Desarquivar', click: desarquivar, visible: !!pedido.arq},
       ])
     }
-  
+    
     async function duplicar(){
       const payload = {
         pedido: {id: pedido.id}
@@ -40,19 +44,35 @@ export const Pedido = ({pedido, atual, abrir}) => {
         setCurr(resp.data)
       }
     }
-    
-    async function arquivar(){
+    function arquivar(){
 
-      // const dataFim = getData()
+      const getDate = () => {
 
-      const payload = {
-        pedido: {id: pedido.id}
+        const p = new Promise((res,rej) => {
+          setDatePicker(<DatePicker callback={res} close={rej} />)
+        })
+
+        return p
       }
-      const resp = await api().post('pedidos/arquivar', payload)
-      if(resp?.data){
-        refresh()
-        setCurr(null)
+
+      const close = () => setDatePicker(null)
+
+      const next = async (date) => {
+        setDatePicker(null)
+
+        const payload = {
+          pedido: {id: pedido.id},
+          dataFim: date
+        }
+        const resp = await api().post('pedidos/arquivar', payload)
+        if(resp?.data){
+          refresh()
+          setCurr(null)
+          message('ok', 'Pedido arquivado!')
+        }
       }
+      
+      getDate().then(next).catch(close)
       
     }
     
@@ -65,6 +85,7 @@ export const Pedido = ({pedido, atual, abrir}) => {
         refresh()
         setFiltroExibicao('')
         setCurr(resp.data)
+        message('ok', 'Pedido desarquivado!')
       }
   
     }
@@ -77,7 +98,8 @@ export const Pedido = ({pedido, atual, abrir}) => {
   },[])
   
     return (
-      <ItemContainer className={(atual && pedido && pedido.id && atual.id === pedido.id) ? 'active' : undefined}
+      <>
+        <ItemContainer className={(atual && pedido && pedido.id && atual.id === pedido.id) ? 'active' : undefined}
       onContextMenu={(e) => {
         e.preventDefault()
         openContextMenu()
@@ -119,6 +141,8 @@ export const Pedido = ({pedido, atual, abrir}) => {
           </div>
         </div>
       </ItemContainer>
+        {datePicker && datePicker}
+      </>
     );
   }
   

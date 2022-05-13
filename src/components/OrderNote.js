@@ -12,11 +12,12 @@ const OrderNoteContext = createContext()
 export const OrderNoteProvider = ({ children }) => {
     const [component, setComponent] = useState(<></>)
 
-   function orderNote(pedido) {
+   function orderNote(pedido, imprimirDireto=true) {
+       console.log(imprimirDireto)
         const p = new Promise((resolve, reject) => {
             try {
                 if (!pedido) throw new Error()
-                setComponent(<OrderNote pedido={pedido} fechar={orderNote} imprimir={() => {
+                setComponent(<OrderNote pedido={pedido} imprimirDireto={imprimirDireto} fechar={orderNote} imprimir={() => {
                     setComponent(<></>)
                     resolve(true)
                 }} />)
@@ -42,7 +43,7 @@ export const useOrderNote = () => {
 }
 
 const OrderNote = props => {
-    const { pedido, fechar, imprimir} = props
+    const { pedido, fechar, imprimir, imprimirDireto} = props
     const { user } = useApi()
 
     const [itensAgrupados] = useState(getItensAgrupados(pedido))
@@ -283,11 +284,13 @@ const OrderNote = props => {
     }
 
     useEffect(() => {
-        const docTitle = document.title
-        document.title = `TechDinner-PEDIDO_${pedido?.id ?? 0}_${pedido?.cliente?.nome ?? 'CLIENTE DESCONHECIDO'}`
-        window.print()
-        document.title = docTitle
-        imprimir()
+        if(imprimirDireto){
+            const docTitle = document.title
+            document.title = `TechDinner-PEDIDO_${pedido?.id ?? 0}_${pedido?.cliente?.nome ?? 'CLIENTE DESCONHECIDO'}`
+            window.print()
+            document.title = docTitle
+            imprimir()    
+        }
     }, [])
 
     return (
@@ -329,7 +332,7 @@ const Container = styled.div`
     top: 0;
     left: 0;
     width: 100vw;
-    height: 10px;//100%;
+    height: 100vh;//100%;
     z-index: 999;
     background-color: rgba(0, 0, 0, 0.6);
     display: flex;

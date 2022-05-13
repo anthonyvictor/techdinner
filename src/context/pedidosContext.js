@@ -40,7 +40,8 @@ export default function PedidosProvider({ children }) {
                   endereco: {cep: e?.endereco?.cep, taxa: e?.endereco?.taxa},
                   cliente: {id: e?.cliente?.id, nome: e?.cliente?.nome},
                   pagamentos: e.pagamentos.map(e => ({valorPago: e.valorPago, status: e.status})),
-                  impr: e.impr
+                  impr: e.impr,
+                  arq: e.arq
                 }
               })
           
@@ -48,8 +49,11 @@ export default function PedidosProvider({ children }) {
           let response = await api().post('pedidos/checkupdates', payload)
   
           if(montado) {
-            if(response.data === true){
+            if(response.data.willUpdate === true){
              refresh()
+             if(response.data.arqDiff){
+               message('info', 'Um pedido foi arquivado/desarquivado')
+             }
             }
     
           } 
@@ -70,8 +74,7 @@ export default function PedidosProvider({ children }) {
 
         if(montado) {
           let _peds = response.data
-          set_Pedidos(_peds)
-    
+          if(_peds && Array.isArray(_peds)) set_Pedidos(_peds ?? [])
         } 
       } 
       getAll(montado)

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 // import { usePedidos } from "../../context/pedidosContext";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,12 +8,24 @@ import { cores } from "../../util/cores";
 // import { useHome } from "../../context/homeContext";
 import { CorHora, CorImpr, CorTipo, CorValor, IcoTipo } from '../../util/pedidoUtil';
 import { useApi } from "../../api";
+import {useContextMenu} from '../../components/ContextMenu'
+import {useRelatorios} from '../../context/relatoriosContext'
 
-export const Pedido = ({pedido, abrir}) => {
+const Pedido2 = ({pedido, abrir}) => {
 
   const {getLocalUrl} = useApi()
+  const {contextMenu} = useContextMenu()
+  const {retomar} = useRelatorios()
   
 
+  function openContext(event){
+    event && event.preventDefault()
+    contextMenu([
+      {title: 'Ver nota', click: () => {}},
+      {title: 'Retomar...', click: () => retomar(pedido)},
+      {title: 'Mudar entregador', click: () => {}},
+    ])
+  }
     return (
       <ItemContainer
         pedido={{
@@ -23,9 +35,10 @@ export const Pedido = ({pedido, abrir}) => {
           corvalor: CorValor(pedido),
           corimpr: CorImpr(pedido.impr),
         }}
-        onClick={() => {
+        onDoubleClick={() => {
         abrir && abrir()
         }}
+        onContextMenu={openContext}
       >
 
         <div className="img-id">
@@ -76,6 +89,14 @@ export const Pedido = ({pedido, abrir}) => {
       </ItemContainer>
     );
   }
+
+  function areEqual(prevProps, nextProps){
+    return prevProps.pedido?.id === nextProps.pedido?.id
+  }
+
+  export const Pedido = memo(Pedido2, areEqual)
+
+
   
   const ItemContainer = styled.li`
     width: 100% ;

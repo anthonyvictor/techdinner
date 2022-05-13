@@ -172,8 +172,14 @@ export  function convertImageToBase64(imagem){
 }
 
 export function formatDateIso(d){
-  const date=new Date(d);
-  const res=new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
+  const worldDate = new Date(d);
+  const time = worldDate.getTime()
+  const tzo = worldDate.getTimezoneOffset()
+  const min = 60
+  const milli = min * 1000
+  const stamp = time - (tzo * milli)
+  const localDate = new Date(stamp)
+  const localDateString = localDate
   .toISOString().replace(/T/, ' ').replace(/\..+/, '');
-  return res
+  return localDateString
 }

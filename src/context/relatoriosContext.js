@@ -9,10 +9,12 @@ export const RelatoriosProvider = ({children}) => {
 
     const [relatorios, setRelatorios] = useState([])
     const [filtro, setFiltro] = useState(null)
+    const [isRefreshing, setIsRefreshing] = useState(false)
 
     useEffect(() => {
         let montado = true
         async function getRelatorios(){
+            setIsRefreshing(true)
             const payload = ( 
                 filtro 
                     ? {...filtro} 
@@ -23,6 +25,7 @@ export const RelatoriosProvider = ({children}) => {
             
             api().get('relatorios', {params: payload}).then(res => {
                 if (montado) setRelatorios(res?.data ?? [])
+                setIsRefreshing(false)
             })
         }
         getRelatorios()
@@ -33,9 +36,19 @@ export const RelatoriosProvider = ({children}) => {
         setFiltro({ids, tipos, periodos, status})
     }
 
+    async function retomar(pedido){
+        const res = await api().patch(`relatorios/retomar/${pedido.id}`)
+            if(res.status === 200){
+                setRelatorios(prev => prev.filter(e => e.id !== pedido.id))
+            }else{
+                console.dir(res)
+            }
+        
+    }
+
     return(
         <RelatoriosContext.Provider value={{
-            relatorios, carregar
+            relatorios, carregar, isRefreshing, retomar
         }}>
             {children}
         </RelatoriosContext.Provider>

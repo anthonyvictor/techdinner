@@ -14,7 +14,7 @@ export default function ClientesProvider({ children }) {
 
             async function getAll(){
                 api().get('clientes').then(r=>
-                    {if(montado) setClientes(r.data)}
+                    {if(montado) setClientes(Array.isArray(r.data) ? r.data : [])}
                 )
             }
 

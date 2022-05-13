@@ -146,6 +146,10 @@ export const isVogal = (chr) => {
   return ['a', 'e', 'i', 'o', 'u'].includes(chr.toLowerCase());
 }
 
+export const arrayer = (obj) => {
+  return Array.isArray(obj) ? obj : []
+}
+
 // function LugaresConhecidos(Mais) {
 //   let l = ["hotel", "condominio", "conjunto", "hospital",
 //            "edificio", "aparthotel", "apart", "hostel",

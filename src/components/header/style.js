@@ -33,8 +33,10 @@ export default styled.div`
     .icone{
             font-size: 25px;
             cursor: pointer;
-            &:hover{
-                color: ${cores.amarelo};
+            @media (hover: hover) and (pointer: fine){
+                &:hover{
+                    color: ${cores.amarelo};
+                }
             }
         }
 

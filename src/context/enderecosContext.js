@@ -15,9 +15,9 @@ function EnderecosProvider(props) {
     async function getAll(){
         api().get('enderecos').then(r=>
             {if(montado) {
-              setBairros(r.data.bairros)
-              setEnderecos(r.data.enderecos)
-              setLocais(r.data.locais)
+              setBairros(Array.isArray(r.data.bairros) ? r.data.bairros : [])
+              setEnderecos(Array.isArray(r.data.enderecos) ? r.data.enderecos : [])
+              setLocais(Array.isArray(r.data.locais) ? r.data.locais : [])
             } }
         )
     }   
