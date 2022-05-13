@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useApi } from '../api';
+import { arrayer } from '../util/misc';
 
 const PizzasContext = createContext()
 
@@ -20,12 +21,12 @@ function PizzasProvider({children}) {
             const response = await api().get('pizzas')
 
             if(montado) {
-                setTipos(response.data.tipos)
-                setIngredientes(response.data.ingredientes)
-                setSabores(response.data.sabores)
-                setTamanhos(response.data.tamanhos)
-                setValores(response.data.valores)
-                setBordas(response.data.bordas)
+                setTipos(arrayer( response.data.tipos))
+                setIngredientes(arrayer(response.data.ingredientes))
+                setSabores(arrayer(response.data.sabores))
+                setTamanhos(arrayer(response.data.tamanhos))
+                setValores(arrayer(response.data.valores))
+                setBordas(arrayer(response.data.bordas))
             }
         }   
         getAll()
@@ -38,26 +39,26 @@ function PizzasProvider({children}) {
     }
     async function refreshTamanhos(){
         const response = await api().get('pizzas/tamanhos')
-        setTamanhos(response.data)
+        setTamanhos(arrayer(response.data))
         refreshValores()
         refreshBordas()
     }
     async function refreshSabores(){
         const response = await api().get('pizzas/sabores')
-        setSabores(response.data)
+        setSabores(arrayer(response.data))
         refreshValores()
     }
     async function refreshIngredientes(){
         const response = await api().get('pizzas/ingredientes')
-        setIngredientes(response.data)
+        setIngredientes(arrayer(response.data))
     }
     async function refreshValores(){
         const response = await api().get('pizzas/valores')
-        setValores(response.data)
+        setValores(arrayer(response.data))
     }
     async function refreshBordas(){
         const response = await api().get('pizzas/bordas')
-        setBordas(response.data)
+        setBordas(arrayer(response.data))
     }
 
   return (

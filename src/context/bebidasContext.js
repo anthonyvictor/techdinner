@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useApi } from '../api';
+import { arrayer } from '../util/misc';
 
 const BebidasContext = createContext()
 function BebidasProvider({children}) {
@@ -12,7 +13,8 @@ function BebidasProvider({children}) {
         async function getAll(){
             api().get('bebidas').then(r=>
                 {if(montado) {
-                    setBebidas(r.data.map(e => {return{
+                    const _bebidas = arrayer(r.data)
+                    setBebidas(_bebidas.map(e => {return{
                         ...e, 
                         tamanho: (e.tamanho < 80 ? e.tamanho * 1000 : e.tamanho)
                     }}))

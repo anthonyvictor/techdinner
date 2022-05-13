@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useApi } from "../api";
 import { useMessage } from "../components/Message";
+import { arrayer } from "../util/misc";
 
 const PedidosContext = createContext();
 
@@ -74,7 +75,7 @@ export default function PedidosProvider({ children }) {
 
         if(montado) {
           let _peds = response.data
-          if(_peds && Array.isArray(_peds)) set_Pedidos(_peds ?? [])
+          set_Pedidos(arrayer(_peds))
         } 
       } 
       getAll(montado)

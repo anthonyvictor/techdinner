@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useApi } from "../api";
+import { arrayer } from "../util/misc";
 
 const EnderecosContext = createContext();
 
@@ -15,9 +16,9 @@ function EnderecosProvider(props) {
     async function getAll(){
         api().get('enderecos').then(r=>
             {if(montado) {
-              setBairros(Array.isArray(r.data.bairros) ? r.data.bairros : [])
-              setEnderecos(Array.isArray(r.data.enderecos) ? r.data.enderecos : [])
-              setLocais(Array.isArray(r.data.locais) ? r.data.locais : [])
+              setBairros(arrayer(r.data.bairros))
+              setEnderecos(arrayer(r.data.enderecos))
+              setLocais(arrayer(r.data.locais))
             } }
         )
     }   

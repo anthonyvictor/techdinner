@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useApi } from "../api";
+import { arrayer } from "../util/misc";
 
 const EntregadoresContext = createContext();
 
@@ -12,7 +13,7 @@ function EntregadoresProvider(props) {
     async function getAll(){
         api().get('entregadores').then(r=>
             {if(montado) {
-              setEntregadores(r.data)
+              setEntregadores(arrayer(r.data))
             } }
         )
     }   

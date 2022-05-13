@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useApi } from '../api'
+import { arrayer } from '../util/misc'
 
 const RelatoriosContext = createContext()
  
@@ -24,7 +25,7 @@ export const RelatoriosProvider = ({children}) => {
                 // periodos: [{dataInic: new Date(2021, 5, 10, 0,0,0), dataFim: new Date(2021, 7, 10,0,0,0)}]
             
             api().get('relatorios', {params: payload}).then(res => {
-                if (montado) setRelatorios(res?.data ?? [])
+                if (montado) setRelatorios(arrayer(res?.data))
                 setIsRefreshing(false)
             })
         }

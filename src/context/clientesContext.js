@@ -1,5 +1,6 @@
 import React, {useContext, useState, createContext, useEffect} from "react";
 import { useApi } from "../api";
+import { arrayer } from "../util/misc";
 
 const ClientesContext = createContext()
 
@@ -14,7 +15,7 @@ export default function ClientesProvider({ children }) {
 
             async function getAll(){
                 api().get('clientes').then(r=>
-                    {if(montado) setClientes(Array.isArray(r.data) ? r.data : [])}
+                    {if(montado) setClientes(arrayer(r.data))}
                 )
             }
 

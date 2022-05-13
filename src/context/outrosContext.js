@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useApi } from '../api';
+import { arrayer } from '../util/misc';
 
 const OutrosContext = createContext()
 
@@ -14,7 +15,7 @@ function OutrosProvider({children}) {
         async function getAll(){
             api().get('outros').then(r=>
                 {if(montado) {
-                    setOutros(r.data)
+                    setOutros(arrayer(r.data))
                 }}
             )
         }   
