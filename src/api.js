@@ -60,7 +60,7 @@ export default function ApiProvider({children}) {
 
     const api = useCallback((user=null, password=null) => {
         const url =  process.env.NODE_ENV === 'development' 
-        ? getApiUrl('fixed' )  
+        ? getApiUrl('fixed')  
         : getApiUrl('fixed')
 
         if(!url) return null
@@ -70,7 +70,7 @@ export default function ApiProvider({children}) {
               username: user ?? getStored('user'),
               password: password ?? getStored('password')
             },
-            timeout: 10000
+            timeout: 20 * 1000 //segundos
           })
 
           return newApi
